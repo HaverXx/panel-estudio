@@ -1,11 +1,11 @@
 // Apuntes de PSP. Para añadir otra asignatura, añade un objeto más a ASIGNATURAS.
 const escCodigo = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const code = (s, lang = "java") => `<pre data-lang="${lang}"><code>${escCodigo(s.trim())}</code></pre>`;
-const tip = (t) => `<div class="nota">💡 ${t}</div>`;
-const warn = (t) => `<div class="nota aviso">⚠️ ${t}</div>`;
+const tip = (t) => `<div class="nota"><span class="nl">Consejo</span>${t}</div>`;
+const warn = (t) => `<div class="nota aviso"><span class="nl">Atención</span>${t}</div>`;
 
 const PSP = {
-  id: "psp", claves: ["servicis","servicios"], nombre: "Programación de Servicios y Procesos", corto: "PSP", emoji: "🧵", color: "#7c5cff",
+  id: "psp", claves: ["servicis","servicios"], nombre: "Programación de Servicios y Procesos", corto: "PSP", color: "#7c5cff",
   profesor: "Jesús García",
   // Semanas según Aules. ini/fin = lunes y domingo (año 2026)
   semanas: [
@@ -47,7 +47,7 @@ const PSP = {
   },
   temas: {
     conceptos: {
-      t: "Conceptos teóricos", ic: "📚",
+      t: "Conceptos teóricos",
       resumen: "Qué es un proceso, un hilo y por qué hace falta la concurrencia.",
       html: `
 <h4>Proceso vs hilo</h4>
@@ -65,7 +65,7 @@ const PSP = {
 ${tip("El paralelismo es un caso de concurrencia, no al revés. Pregunta típica de examen.")}`
     },
     intellij: {
-      t: "IntelliJ y Java (repaso)", ic: "🛠️",
+      t: "IntelliJ y Java (repaso)",
       resumen: "Entorno de trabajo: proyectos Java en IntelliJ IDEA.",
       html: `<ul><li>Crear proyecto: <b>New Project → Java → JDK 17+</b>. La clase con <code>public static void main(String[] args)</code> es el punto de entrada.</li>
 <li>Atajos útiles: <code>psvm</code> + Tab (main), <code>sout</code> + Tab (println), <code>Shift+F10</code> ejecutar, <code>Alt+Enter</code> arreglos rápidos.</li>
@@ -82,7 +82,7 @@ public class Main {
 }`)}`
     },
     crear: {
-      t: "Creación de hilos", ic: "🧵",
+      t: "Creación de hilos",
       resumen: "Thread, Runnable, start() vs run(), join().",
       html: `
 <p>Hay dos formas de definir qué hace un hilo. <b>Se prefiere Runnable</b> (no gasta tu única herencia).</p>
@@ -113,7 +113,7 @@ ${warn("<code>start()</code> arranca un hilo nuevo. <code>run()</code> llamado d
 <ul><li><code>join()</code>: esperar a que acabe otro hilo.</li><li><code>Thread.sleep(ms)</code>: dormir el hilo actual (lanza InterruptedException).</li><li><code>setName / getName</code>, <code>setPriority(1..10)</code>, <code>setDaemon(true)</code> (hilos demonio mueren cuando acaban los normales).</li></ul>`
     },
     lambda: {
-      t: "Clases anónimas y lambdas", ic: "λ",
+      t: "Clases anónimas y lambdas",
       resumen: "Formas cortas de crear hilos (Ejercicio 1 las pide las tres).",
       html: `${code(`// Clase anónima
 Thread t1 = new Thread(new Runnable() {
@@ -133,7 +133,7 @@ t1.start(); t2.start(); t3.start();`)}
 ${tip("Referencia a método: <code>new Thread(Main::miMetodo).start()</code> (así lo usa el Ejercicio 11).")}`
     },
     info: {
-      t: "Información de los hilos", ic: "🔎",
+      t: "Información de los hilos",
       resumen: "ID, nombre, prioridad y los 6 estados de Thread.State.",
       html: `${code(`Thread t = new Thread(() -> {});
 System.out.println(t.getId());          // identificador (threadId() en Java 19+)
@@ -152,7 +152,7 @@ System.out.println(Thread.currentThread().getName()); // "main"`)}
 <p>Ejercicio 3: en un bucle del main, <code>while (algunoVivo) { for (Thread h : hilos) print(h.getId(), h.getName(), h.getState()); Thread.sleep(1000); }</code></p>`
     },
     suspension: {
-      t: "Suspensión de hilos", ic: "⏸️",
+      t: "Suspensión de hilos",
       resumen: "sleep, yield, join y por qué suspend()/resume() están obsoletos.",
       html: `<ul><li><code>Thread.sleep(ms)</code>: pausa el hilo actual; <b>no libera</b> los monitores que tenga.</li>
 <li><code>Thread.yield()</code>: sugiere ceder la CPU (no garantizado).</li>
@@ -167,7 +167,7 @@ try {
 ${tip("Número aleatorio en [a, b]: <code>rnd.nextInt(b - a + 1) + a</code>.")}`
     },
     flags: {
-      t: "Finalización con flags", ic: "🚩",
+      t: "Finalización con flags",
       resumen: "Detener un hilo con una variable booleana volatile (Ejercicio 4).",
       html: `${code(`class Contador implements Runnable {
     private volatile boolean activo = true;   // volatile: visible entre hilos
@@ -196,7 +196,7 @@ ${warn("Sin <code>volatile</code> la JVM puede cachear el booleano y el hilo no 
 <p><b>Limitación:</b> si el hilo está en un <code>sleep</code> largo no reacciona hasta despertar → para eso están las interrupciones.</p>`
     },
     interrupt: {
-      t: "Finalización con interrupciones", ic: "✋",
+      t: "Finalización con interrupciones",
       resumen: "interrupt(), InterruptedException e isInterrupted() (Ejercicio 5).",
       html: `<ul><li><code>t.interrupt()</code> activa el flag de interrupción de <code>t</code>.</li>
 <li>Si <code>t</code> está en sleep/wait/join → lanza <b>InterruptedException</b> y el flag se <b>borra</b>.</li>
@@ -220,7 +220,7 @@ t.interrupt();`)}
 ${tip("Si capturas InterruptedException y no sales, haz <code>Thread.currentThread().interrupt()</code> para no «tragarte» la petición.")}`
     },
     memoria: {
-      t: "Memoria compartida y condición de carrera", ic: "🏁",
+      t: "Memoria compartida y condición de carrera",
       resumen: "Por qué count++ no es atómico y qué es una race condition.",
       html: `<p>Si varios hilos leen y escriben la misma variable sin control, el resultado depende del orden en que se intercalan → <b>condición de carrera</b>.</p>
 ${code(`class Contador { int n = 0; void inc() { n++; } }   // n++ = leer, sumar, escribir (3 pasos)
@@ -237,7 +237,7 @@ System.out.println(c.n);   // ¡casi nunca 200000!`)}
 <p>Soluciones: exclusión mutua (<code>synchronized</code>, Lock) o clases atómicas (<code>AtomicInteger.incrementAndGet()</code>).</p>`
     },
     critica: {
-      t: "Sección crítica", ic: "🚧",
+      t: "Sección crítica",
       resumen: "El trozo de código que accede al recurso compartido.",
       html: `<p><b>Sección crítica</b>: fragmento que accede a datos compartidos y que <b>solo puede ejecutar un hilo a la vez</b> (exclusión mutua).</p>
 <h4>Requisitos de una buena solución</h4>
@@ -246,7 +246,7 @@ System.out.println(c.n);   // ¡casi nunca 200000!`)}
 ${tip("Mantén la sección crítica lo más <b>corta</b> posible: cuanto más grande, menos concurrencia.")}`
     },
     monitores: {
-      t: "Monitores", ic: "🖥️",
+      t: "Monitores",
       resumen: "Objeto con exclusión mutua automática; cada objeto Java tiene uno.",
       html: `<p>Un <b>monitor</b> encapsula datos + operaciones y garantiza que solo un hilo ejecuta sus métodos sincronizados a la vez. En Java <b>todo objeto tiene un monitor</b> (su «cerrojo intrínseco»).</p>
 <ul><li>Un hilo que entra en <code>synchronized</code> «adquiere el monitor». Los demás pasan a <code>BLOCKED</code>.</li>
@@ -255,7 +255,7 @@ ${tip("Mantén la sección crítica lo más <b>corta</b> posible: cuanto más gr
 <p>Además del cerrojo, el monitor tiene una <b>cola de espera</b> (<code>wait/notify</code>) para coordinar hilos.</p>`
     },
     synchronized: {
-      t: "Métodos y bloques synchronized", ic: "🔒",
+      t: "Métodos y bloques synchronized",
       resumen: "La herramienta básica de exclusión mutua en Java (Ejercicio 6).",
       html: `${code(`// 1) Método sincronizado: bloquea sobre "this"
 public synchronized void inc() { n++; }
@@ -278,7 +278,7 @@ ${warn("Todos los hilos deben sincronizar sobre <b>el mismo objeto</b>. <code>sy
 ${tip("Si una variable solo se incrementa, <code>AtomicInteger</code> es más simple y rápido que synchronized.")}`
     },
     waitnotify: {
-      t: "wait() y notify()", ic: "📣",
+      t: "wait() y notify()",
       resumen: "Coordinación entre hilos: productor-consumidor (Ejercicios 7 y 8).",
       html: `<ul><li><code>wait()</code>: el hilo <b>libera el monitor</b> y se duerme (WAITING) hasta que lo notifiquen.</li>
 <li><code>notify()</code>: despierta a <b>un</b> hilo que espera en ese objeto. <code>notifyAll()</code>: a todos.</li>
@@ -306,7 +306,7 @@ ${code(`class Contenedor {
 ${warn("<code>sleep()</code> NO libera el monitor; <code>wait()</code> SÍ. Diferencia que cae mucho en examen.")}`
     },
     deadlock: {
-      t: "Interbloqueos (deadlock)", ic: "💀",
+      t: "Interbloqueos (deadlock)",
       resumen: "Dos hilos esperándose para siempre. Condiciones de Coffman y cómo evitarlos.",
       html: `<p><b>Deadlock</b>: un conjunto de hilos bloqueados, cada uno esperando un recurso que tiene otro del conjunto.</p>
 <h4>Las 4 condiciones (deben darse todas)</h4>
@@ -331,7 +331,7 @@ ${code(`public static void utilizarRecursos(Recurso r1, Recurso r2) {
 ${tip("Otros problemas: <b>inanición</b> (un hilo nunca consigue el recurso) y <b>livelock</b> (los hilos se mueven sin avanzar, como dos personas esquivándose en un pasillo).")}`
     },
     locks: {
-      t: "Cerrojos (Lock)", ic: "🔐",
+      t: "Cerrojos (Lock)",
       resumen: "Interfaz java.util.concurrent.locks.Lock: más flexible que synchronized.",
       html: `<p>Un <code>Lock</code> es un cerrojo <b>explícito</b>: tú decides cuándo bloquear y desbloquear.</p>
 <table><tr><th></th><th>synchronized</th><th>Lock</th></tr>
@@ -350,7 +350,7 @@ try {
 <p>Ej. 12 (robots): cada <code>Interseccion</code> tiene su <code>Lock</code>; <code>entrar()</code> hace <code>lock.lock()</code> y <code>salir()</code> hace <code>lock.unlock()</code>.</p>`
     },
     reentrant: {
-      t: "ReentrantLock", ic: "♻️",
+      t: "ReentrantLock",
       resumen: "La implementación principal de Lock: reentrante, con tryLock y fairness.",
       html: `${code(`ReentrantLock lock = new ReentrantLock(true);   // true = justo (FIFO, evita inanición)
 
@@ -379,7 +379,7 @@ try {
 <p>¿lock() dentro del try? <b>No</b>: si <code>lock()</code> fallara, el <code>finally</code> haría <code>unlock()</code> sin ser dueño (IllegalMonitorStateException).</p>`
     },
     condition: {
-      t: "Condition", ic: "🎛️",
+      t: "Condition",
       resumen: "El wait/notify de los Lock: await() y signal() (Ejercicio 16).",
       html: `<p>Un Lock puede crear varias <code>Condition</code> (colas de espera distintas), p. ej. «hay hueco» y «hay datos».</p>
 <table><tr><th>Monitor</th><th>Lock + Condition</th></tr><tr><td>wait()</td><td>cond.await()</td></tr><tr><td>notify()</td><td>cond.signal()</td></tr><tr><td>notifyAll()</td><td>cond.signalAll()</td></tr></table>
@@ -412,7 +412,7 @@ ${code(`class Buffer {
 ${tip("Ventaja sobre wait/notify: despiertas solo a quien corresponde (productores o consumidores) en vez de a todos.")}`
     },
     pools: {
-      t: "Gestión de múltiples hilos: Thread Pools", ic: "🏊",
+      t: "Gestión de múltiples hilos: Thread Pools",
       resumen: "ExecutorService: reutilizar hilos en vez de crear uno por tarea (Ejercicio 17).",
       html: `<p>Crear un hilo es <b>caro</b>. Un <b>pool</b> mantiene N hilos vivos que van cogiendo tareas de una cola.</p>
 <h4>Tipos (clase Executors)</h4>
@@ -453,7 +453,7 @@ pool.shutdown();`)}
 ${tip("«Un 4 y dos 6» no depende del orden: ordena ambos arrays (<code>Arrays.sort</code>) antes de comparar.")}`
     },
     ejpools: {
-      t: "Ejemplos de Thread Pools", ic: "🧪",
+      t: "Ejemplos de Thread Pools",
       resumen: "Callable, Future, invokeAll y ScheduledExecutorService (Ejercicio 18).",
       html: `<h4>Callable + Future (tareas que devuelven valor)</h4>
 ${code(`ExecutorService pool = Executors.newFixedThreadPool(3);
@@ -479,7 +479,7 @@ s.scheduleAtFixedRate(() -> cap.capturar(directorio),
 <ul><li><code>scheduleAtFixedRate</code>: periodo fijo entre <i>inicios</i>.</li><li><code>scheduleWithFixedDelay</code>: espera fija entre el <i>fin</i> de una y el inicio de la siguiente.</li></ul>`
     },
     async: {
-      t: "C#: async y await", ic: "⚡",
+      t: "C#: async y await",
       resumen: "Programación asíncrona sin bloquear el hilo (Ejercicios 19–22).",
       html: `<p>Asíncrono ≠ crear hilos a mano. Con <code>async/await</code> el método <b>se suspende</b> mientras espera (E/S, red, timer) y <b>libera el hilo</b> (p. ej. el de la interfaz).</p>
 ${code(`async Task<string> DescargarAsync(string url) {
@@ -503,7 +503,7 @@ private async void Button_Click(object sender, RoutedEventArgs e) {
 ${warn("Por eso los ejercicios 20–22 «bloquean la aplicación»: usan Thread.Sleep o código síncrono en el hilo de la UI.")}`
     },
     tasks: {
-      t: "C#: creación de tareas", ic: "🧩",
+      t: "C#: creación de tareas",
       resumen: "Task.Run, Task.WhenAll, WhenAny (Ejercicio 19: la paella).",
       html: `${code(`// Ej. 19: calentar+sofreír EN PARALELO con el caldo
 Task paella = Task.Run(async () => { await CalentarPaella(); await Sofreir(); });
@@ -521,7 +521,7 @@ await Cocinar();`, "csharp")}
 ${tip("Truco: guarda las tareas en variables ANTES de hacer await. Si haces <code>await A(); await B();</code> son secuenciales; si haces <code>var a=A(); var b=B(); await a; await b;</code> son concurrentes.")}`
     },
     callbacks: {
-      t: "C#: callbacks y progreso", ic: "📞",
+      t: "C#: callbacks y progreso",
       resumen: "Notificar el avance de una tarea (Ejercicio 22: barra de progreso).",
       html: `<p>Un <b>callback</b> es una función que le pasas a otra para que la llame cuando ocurra algo (p. ej. «se ha leído un bloque»).</p>
 ${code(`async Task LeerArchivo(string ruta, Action<int> alProgresar) {
@@ -541,7 +541,7 @@ await Task.Run(() => LeerArchivo(ruta, p =>
 <ul><li>Solo el hilo de la UI puede modificar controles → <code>Dispatcher.Invoke</code> (o <code>IProgress&lt;T&gt;</code>, que ya lo gestiona).</li><li>Delegados útiles: <code>Action&lt;T&gt;</code> (sin retorno), <code>Func&lt;T,R&gt;</code> (con retorno).</li></ul>`
     },
     protocolos: {
-      t: "Protocolos de comunicación", ic: "🌐",
+      t: "Protocolos de comunicación",
       resumen: "Modelo OSI/TCP-IP, TCP vs UDP, puertos y sockets, HTTP.",
       html: `<h4>Modelo TCP/IP</h4>
 <table><tr><th>Capa</th><th>Protocolos</th></tr><tr><td>Aplicación</td><td>HTTP, HTTPS, FTP, SMTP, DNS, SSH</td></tr><tr><td>Transporte</td><td>TCP, UDP</td></tr><tr><td>Internet</td><td>IP, ICMP</td></tr><tr><td>Acceso a red</td><td>Ethernet, Wi-Fi</td></tr></table>
@@ -561,7 +561,7 @@ Content-Type: application/json
 [{"id":1,"titulo":"Entregar ejercicio 17"}]`, "text")}`
     },
     node: {
-      t: "Introducción a Node.js", ic: "🟢",
+      t: "Introducción a Node.js",
       resumen: "JavaScript fuera del navegador: motor V8, event loop y E/S no bloqueante.",
       html: `<ul><li>Entorno de ejecución de JavaScript basado en el motor <b>V8</b> de Chrome.</li><li><b>Monohilo con bucle de eventos (event loop)</b>: la E/S se delega al sistema y se atiende con callbacks/promesas → muy eficiente para muchas conexiones.</li><li>No es ideal para cálculo intensivo de CPU.</li></ul>
 ${code(`// hola.js   →   node hola.js
@@ -585,7 +585,7 @@ const { readFile } = require("fs/promises");
 (async () => console.log(await readFile("datos.txt", "utf8")))();`, "js")}`
     },
     modulos: {
-      t: "Módulos en Node", ic: "📦",
+      t: "Módulos en Node",
       resumen: "Dividir el código: CommonJS (require) y ES Modules (import).",
       html: `${code(`// CommonJS
 // matematicas.js
@@ -602,7 +602,7 @@ import { restar } from "./matematicas.js";`, "js")}
 <ul><li>Módulos del núcleo (sin instalar): <code>fs</code>, <code>http</code>, <code>path</code>, <code>os</code>, <code>events</code>.</li><li>Rutas propias empiezan por <code>./</code>; sin ella Node busca en <code>node_modules</code>.</li></ul>`
     },
     npm: {
-      t: "Gestión de paquetes con NPM", ic: "📥",
+      t: "Gestión de paquetes con NPM",
       resumen: "package.json, instalar dependencias y scripts.",
       html: `${code(`npm init -y                 # crea package.json
 npm install express         # dependencia (se guarda en "dependencies")
@@ -623,7 +623,7 @@ ${code(`{
 
 
 const PMDM = {
-  id: "pmdm", claves: ["multimedia"], nombre: "Programación multimedia y dispositivos móviles", corto: "PMDM", emoji: "📱", color: "#02a9f4",
+  id: "pmdm", claves: ["multimedia"], nombre: "Programación multimedia y dispositivos móviles", corto: "PMDM", color: "#02a9f4",
   profesor: "",
   // Sin fechas todavía: las unidades hacen de «semanas». Cuando tengas el calendario, añade ini/fin (AAAA-MM-DD) a cada una.
   semanas: [
@@ -637,7 +637,7 @@ const PMDM = {
     "Práctica 3": ["Práctica 3 · paisesgui (pantallas de países)", "ContinentesScreen, PaisesScreen, InfoPaisGeneral e InfoPaisDetalle + registrar assets en pubspec.yaml. Entrega: flutter clean + PDF + zip."],
   },
   temas: {
-    f_intro: { t: "Desarrollo multiplataforma y Flutter", ic: "🌍", resumen: "Nativo vs multiplataforma, Dart, JIT/AOT, Skia e Impeller.",
+    f_intro: { t: "Desarrollo multiplataforma y Flutter", resumen: "Nativo vs multiplataforma, Dart, JIT/AOT, Skia e Impeller.",
       html: `
 <h4>Nativo vs multiplataforma</h4>
 <ul><li><b>Nativa</b>: un lenguaje y tecnología por sistema (Swift para iOS, Kotlin para Android). Máximo rendimiento y acceso a todo, pero hay que hacer la app varias veces.</li>
@@ -655,11 +655,11 @@ const PMDM = {
 <li>Motor gráfico: <b>Skia</b> y, en versiones actuales, <b>Impeller</b> (animaciones más fluidas y predecibles; 60–120 fps).</li>
 <li>Todo es un <b>widget</b>: la interfaz es un árbol de widgets.</li></ul>
 <h4>Ventajas e inconvenientes</h4>
-<ul><li>✅ Stateful <b>hot reload</b>, rendimiento casi nativo, interfaces vistosas, un solo código.</li>
-<li>⚠️ Las últimas novedades del SO llegan antes a nativo · ejecutables más grandes · en casos muy concretos, algo menos de rendimiento.</li>
+<ul><li><b>Ventajas:</b> stateful <b>hot reload</b>, rendimiento casi nativo, interfaces vistosas, un solo código.</li>
+<li><b>Inconvenientes:</b> las últimas novedades del SO llegan antes a nativo · ejecutables más grandes · en casos muy concretos, algo menos de rendimiento.</li>
 <li>Si hace falta algo específico: desarrollo <b>híbrido</b> (parte Flutter + parte nativa).</li></ul>
 ${tip("Pregunta típica: JIT = durante la ejecución (desarrollo, hot reload). AOT = antes de ejecutar (producción, rendimiento).")}`},
-    f_arq: { t: "Arquitectura y herramientas del SDK", ic: "🏗️", resumen: "Capas de Flutter, canales y comandos de la CLI.",
+    f_arq: { t: "Arquitectura y herramientas del SDK", resumen: "Capas de Flutter, canales y comandos de la CLI.",
       html: `
 <h4>Capas (de arriba abajo)</h4>
 <ol><li><b>Framework</b> (Dart): Material/Cupertino → capa de widgets → capa de renderizado (+ animación, pintado, bases).</li>
@@ -676,20 +676,20 @@ ${tip("Pregunta típica: JIT = durante la ejecución (desarrollo, hot reload). A
 <tr><td><code>flutter clean</code></td><td>Borra lo generado al compilar (¡antes de entregar!)</td></tr>
 <tr><td><code>flutter devices</code> / <code>emulators</code></td><td>Lista dispositivos y emuladores</td></tr>
 <tr><td><code>flutter help</code></td><td>Ayuda y subcomandos</td></tr></table>`},
-    f_inst: { t: "Instalación, VSCode y emuladores", ic: "🛠️", resumen: "SDK, extensiones de VSCode y dónde probar la app.",
+    f_inst: { t: "Instalación, VSCode y emuladores", resumen: "SDK, extensiones de VSCode y dónde probar la app.",
       html: `
 <ul><li><b>SDK</b>: descargar y añadir <code>flutter/bin</code> al <b>PATH</b> (guía: docs.flutter.dev/get-started/install). Si VSCode no lo encuentra, normalmente falta <b>reiniciar</b> para cargar el PATH.</li>
 <li><b>Extensiones de VSCode</b>: <b>Flutter</b> y <b>Dart</b> (obligatorias; Dart es dependencia de Flutter). Útiles: Pubspec Assist, Awesome Flutter Snippets.</li>
 <li>También se puede usar Android Studio con su plugin de Flutter (que requiere el de Dart).</li></ul>
 <h4>Dónde probar la app</h4>
-<ul><li>📱 <b>Móvil Android físico</b> (USB o WiFi, con modo desarrollador): lo más recomendable, es el comportamiento real.</li>
-<li>🖥️ <b>Emulador</b> de Android Studio (dispositivos virtuales).</li>
-<li>🌐 <b>Chrome/Edge</b>: muy cómodo para pruebas rápidas de interfaz.</li><li>Genymotion (alternativa de terceros, menos usada).</li></ul>
+<ul><li><b>Móvil Android físico</b> (USB o WiFi, con modo desarrollador): lo más recomendable, es el comportamiento real.</li>
+<li><b>Emulador</b> de Android Studio (dispositivos virtuales).</li>
+<li><b>Chrome/Edge</b>: muy cómodo para pruebas rápidas de interfaz.</li><li>Genymotion (alternativa de terceros, menos usada).</li></ul>
 <h4>Ejecutar desde VSCode</h4>
 <ul><li><code>Ctrl+Shift+P</code> → <b>Flutter: New Project</b> / <b>Flutter: Select Device</b> (o clic en el dispositivo de la barra inferior).</li>
 <li><b>F5</b> = Start Debugging · <b>Run Without Debugging</b> · «Run Code» solo vale para programas Dart sencillos.</li>
 <li>La primera ejecución tarda (descarga librerías); las siguientes son más rápidas.</li></ul>`},
-    f_proy: { t: "Estructura de un proyecto Flutter", ic: "📁", resumen: "lib, pubspec.yaml, carpetas por plataforma y flutter create.",
+    f_proy: { t: "Estructura de un proyecto Flutter", resumen: "lib, pubspec.yaml, carpetas por plataforma y flutter create.",
       html: `
 <table><tr><th>Elemento</th><th>Qué contiene</th></tr>
 <tr><td><code>lib/</code></td><td>Código Dart. <code>main.dart</code> es el punto de entrada</td></tr>
@@ -705,7 +705,7 @@ flutter create --platforms=android,web,linux ejemplo_1  # solo algunas
 cd ejemplo_1
 flutter create --platforms=windows .                    # añadir otra después ('.' = carpeta actual)`, "bash")}
 <ul><li>El nombre debe ser válido en Dart: <b>minúsculas, números (no al inicio) y guion bajo</b>.</li><li><code>flutter create --help</code> muestra más opciones.</li></ul>`},
-    d_repaso: { t: "Dart: repaso rápido (complemento)", ic: "🎯", resumen: "Lo esencial de Dart que se usa en las prácticas. No venía en tus archivos: es un resumen mío.",
+    d_repaso: { t: "Dart: repaso rápido (complemento)", resumen: "Lo esencial de Dart que se usa en las prácticas. No venía en tus archivos: es un resumen mío.",
       html: `
 ${warn("Esta ficha es un complemento mío: en lo que me pasaste de la Unidad 2 solo estaba la Práctica 2. Contrástala con los apuntes de Aules.")}
 ${code(`// Tipos y null safety
@@ -742,7 +742,7 @@ Future<void> conAsync() async {
   try { print(await api.getContinentes()); }
   catch (e) { print("Error: $e"); }
 }`, "dart")}`},
-    d_p2: { t: "Práctica 2: paisescli (arquitectura en capas)", ic: "🧪", resumen: "App de consola con API REST: capas, clases y qué hay que implementar.",
+    d_p2: { t: "Práctica 2: paisescli (arquitectura en capas)", resumen: "App de consola con API REST: capas, clases y qué hay que implementar.",
       html: `
 <p>App de consola que consulta la API <code>https://api-paises-uagm.onrender.com</code>.</p>
 ${code(`dart run paisescli continentes
@@ -780,7 +780,7 @@ Future<List<Pais>> getPaises(String continente) async {
 <ul><li>Argumentos: se copia la lista, <code>removeAt(0)</code> saca la orden y <code>join(" ")</code> une los nombres compuestos.</li>
 <li>Color en consola con ANSI: <code>print("\\x1B[31mTexto en rojo\\x1B[0m");</code> (30 negro, 31 rojo, 32 verde, 33 amarillo, 34 azul, 35 magenta, 36 cian, 37 blanco, <code>[0m</code> reset).</li>
 <li>La API está en Render: la primera petición puede tardar si estaba «dormida».</li></ul>`},
-    w_intro: { t: "Introducción a los widgets", ic: "🧱", resumen: "UI declarativa, árbol de widgets, Stateless vs Stateful.",
+    w_intro: { t: "Introducción a los widgets", resumen: "UI declarativa, árbol de widgets, Stateless vs Stateful.",
       html: `
 <ul><li><b>Imperativo</b>: dices <i>cómo</i> cambiar la interfaz (<code>findViewById…text = "Hola"</code>). <b>Declarativo</b> (Flutter, React, Compose, SwiftUI): describes <i>qué</i> quieres según el estado y el framework redibuja.</li></ul>
 ${code(`Center(child: Text('Hola Mundo'))   // «quiero un texto centrado»`, "dart")}
@@ -812,7 +812,7 @@ class MyApp extends StatelessWidget {
   }
 }`, "dart")}
 ${tip("<code>BuildContext</code> = posición del widget en el árbol; permite consultar a los ancestros (tema, MediaQuery, ScaffoldMessenger…).")}`},
-    w_contador: { t: "Del Hola Mundo al Contador", ic: "🔢", resumen: "const, extract widget, Scaffold, Column y setState paso a paso.",
+    w_contador: { t: "Del Hola Mundo al Contador", resumen: "const, extract widget, Scaffold, Column y setState paso a paso.",
       html: `
 <ol><li><b>Hola Mundo</b>: <code>runApp(const Text('Hola Mundo', textDirection: TextDirection.ltr))</code> (sin MaterialApp hay que dar la dirección del texto).</li>
 <li><b>Centrar</b>: envolver con <code>Center</code> (bombilla / <code>Ctrl+.</code> → <i>Wrap with Center</i>).</li>
@@ -851,7 +851,7 @@ class _HomeScreenState extends State<HomeScreen> {
 }`, "dart")}
 <ul><li>Si el widget es Stateless o no usas <code>setState</code>, la variable cambia pero la pantalla <b>no</b>.</li><li>Modifica el estado <b>dentro</b> de <code>setState</code> para dejar claro qué provoca la reconstrucción.</li><li><code>MainAxisAlignment</code>: start, center, end, spaceAround, spaceBetween, spaceEvenly.</li></ul>
 <p><b>Ejercicio voluntario</b>: botones para decrementar y resetear. Pista: <code>floatingActionButton</code> puede ser una <code>Row</code>/<code>Column</code> con varios botones; <code>floatingActionButtonLocation</code> cambia su posición.</p>`},
-    w_ciclo: { t: "Ciclo de vida de los widgets", ic: "♻️", resumen: "build, createState, initState, setState, dispose.",
+    w_ciclo: { t: "Ciclo de vida de los widgets", resumen: "build, createState, initState, setState, dispose.",
       html: `
 <ul><li><b>Stateless</b>: constructor → <code>build()</code> (se repite cuando haga falta; los widgets son baratos).</li></ul>
 <h4>Stateful: orden de los métodos</h4>
@@ -868,7 +868,7 @@ ${code(`class _MiEstado extends State<MiWidget> {
   @override void dispose()   { /* liberar recursos */ super.dispose(); }
   @override Widget build(BuildContext context) => const Placeholder();
 }`, "dart")}`},
-    w_basicos: { t: "Widgets básicos", ic: "🔤", resumen: "Text, Image, Icon, ElevatedButton, AppBar, Scaffold, SnackBar.",
+    w_basicos: { t: "Widgets básicos", resumen: "Text, Image, Icon, ElevatedButton, AppBar, Scaffold, SnackBar.",
       html: `
 <h4>Text</h4>
 <ul><li>Primer argumento posicional: el texto (admite interpolación <code>"Hola $x"</code> / <code>"${"$"}{x.length}"</code>; entonces no es const).</li>
@@ -901,7 +901,7 @@ ${code(`ScaffoldMessenger.of(context).showSnackBar(
 );
 ScaffoldMessenger.of(context).hideCurrentSnackBar();`, "dart")}
 ${warn("<code>ScaffoldMessenger.of(context)</code> busca hacia arriba. Si lo llamas con el contexto del propio MaterialApp (que está por encima del Scaffold) da error de que no encuentra ningún ScaffoldMessenger.")}`},
-    w_layout: { t: "Contenedores y layouts", ic: "📐", resumen: "Container, Row/Column, Expanded, ListView, GridView, Stack, Wrap…",
+    w_layout: { t: "Contenedores y layouts", resumen: "Container, Row/Column, Expanded, ListView, GridView, Stack, Wrap…",
       html: `
 <h4>Un solo hijo</h4>
 <ul><li><b>Container</b>: <code>width/height</code>, <code>decoration: BoxDecoration(color, borderRadius, boxShadow, border)</code>, <code>padding</code> (dentro), <code>margin</code> (fuera), <code>transform</code>.</li>
@@ -942,7 +942,7 @@ GridView.builder(
 <ul><li><code>ListView(scrollDirection: Axis.horizontal)</code> para listas horizontales.</li>
 <li><b>SingleChildScrollView</b> + Column: evita «RenderFlex overflowed by X pixels», pero para muchos elementos usa ListView.builder.</li></ul>
 ${warn("ListView/GridView dentro de una Column sin altura → error de restricciones «unbounded». Envuélvelos en <code>Expanded</code> o dales altura.")}`},
-    w_material: { t: "Widgets de Material Design", ic: "🎴", resumen: "Divider, ListTile, Card, CircleAvatar, GestureDetector e InkWell.",
+    w_material: { t: "Widgets de Material Design", resumen: "Divider, ListTile, Card, CircleAvatar, GestureDetector e InkWell.",
       html: `
 ${code(`const Divider(height: 16, thickness: 2, indent: 20, endIndent: 20, color: Colors.amber)
 
@@ -969,7 +969,7 @@ CircleAvatar(radius: 110, backgroundImage: NetworkImage("https://picsum.photos/4
 <tr><td><code>onTap</code>, doble toque, <b>swipe, drag</b>, escalado…</td><td><code>onTap</code>, <code>onDoubleTap</code>, <code>onLongPress</code></td></tr>
 <tr><td>Sin efecto visual</td><td>Con efecto <b>ripple</b>; debe estar dentro de un <code>Material</code> (Scaffold, Card…)</td></tr>
 <tr><td>Su constructor <b>no es const</b></td><td>Recomendado para tocar tarjetas, imágenes, contenedores</td></tr></table>`},
-    w_recursos: { t: "Trabajando con recursos (assets)", ic: "🖼️", resumen: "Declarar assets, resoluciones 2.0x/3.0x, iconos de lanzador y fuentes.",
+    w_recursos: { t: "Trabajando con recursos (assets)", resumen: "Declarar assets, resoluciones 2.0x/3.0x, iconos de lanzador y fuentes.",
       html: `
 ${code(`flutter:
   assets:
@@ -993,7 +993,7 @@ ${code(`flutter pub add dev:flutter_launcher_icons
 flutter pub get
 dart run flutter_launcher_icons -f flutter_launcher_icons.yaml`, "bash")}
 <p>Se configura en <code>flutter_launcher_icons:</code> con <code>android</code>, <code>ios</code>, <code>image_path</code>, <code>min_sdk_android</code>, <code>web/windows/macos: generate</code>. No genera para Linux.</p>`},
-    w_temas: { t: "Temas", ic: "🎨", resumen: "ThemeData, colorSchemeSeed, copyWith, TextTheme y Theme.",
+    w_temas: { t: "Temas", resumen: "ThemeData, colorSchemeSeed, copyWith, TextTheme y Theme.",
       html: `
 <ul><li>Desde Flutter 3.16 el tema por defecto es <b>Material 3</b> (antes Material 2, tonos azules). <code>ThemeData.light(useMaterial3: false)</code> vuelve al antiguo.</li>
 <li><b>Fondo</b> = el Scaffold. Los widgets que pones encima son <b>superficies</b> con color y texto asociados.</li></ul>
@@ -1018,7 +1018,7 @@ ThemeData.light().copyWith(appBarTheme: const AppBarTheme(color: Colors.amber)) 
 // Tema solo para una parte del árbol
 Theme(data: temaPersonalizado, child: ElevatedButton(onPressed: () {}, child: const Text('Hola')))`, "dart")}
 ${tip("<code>primarySwatch</code> es de Material 2; en Material 3 se recomienda <code>colorSchemeSeed</code> o <code>ColorScheme.fromSeed</code>.")}`},
-    w_p3: { t: "Práctica 3: paisesgui (pantallas)", ic: "🧪", resumen: "Qué piden las 4 pantallas, estructura y mejoras opcionales.",
+    w_p3: { t: "Práctica 3: paisesgui (pantallas)", resumen: "Qué piden las 4 pantallas, estructura y mejoras opcionales.",
       html: `
 <p>Diseño de pantallas (sin funcionalidad real todavía) para una futura app de países. Los datos vienen de <code>PaisesEjemplo</code> (JSON en local) a través de <code>PaisesRepository</code>.</p>
 ${code(`lib/
@@ -1042,14 +1042,14 @@ assets/{fonts, icons, img}        ← hay que registrarlos en pubspec.yaml`, "te
 };
 
 const NOMBRES = [
-  ["ad", "AD", "Acceso a datos", "🗄️", "#e0884a", ["accés a dades", "acceso a datos"]],
-  ["di", "DI", "Desarrollo de interfaces", "🎨", "#d6458e", ["interfícies", "interficies", "interfaces"]],
-  ["dig", "DIG", "Digitalización aplicada al sistema productivo", "🏭", "#5b7f95", ["digitalitz"]],
-  ["nube", "NUBE", "Introducción a la nube pública", "☁️", "#3d8bd9", ["núvol", "nuvol", "nube"]],
-  ["pim", "PIM", "Proyecto intermodular 2 de DAM", "🧩", "#2f9e6f", ["intermodular"]],
-  ["sge", "SGE", "Sistemas de gestión empresarial", "📊", "#a1873a", ["gestió empresarial", "gestión empresarial", "empresarial"]],
-  ["sos", "SOS", "Sostenibilidad aplicada al sistema productivo", "🌱", "#58a64a", ["sostenibilitat", "sostenibilidad"]],
+  ["ad", "AD", "Acceso a datos", "#e0884a", ["accés a dades", "acceso a datos"]],
+  ["di", "DI", "Desarrollo de interfaces", "#d6458e", ["interfícies", "interficies", "interfaces"]],
+  ["dig", "DIG", "Digitalización aplicada al sistema productivo", "#5b7f95", ["digitalitz"]],
+  ["nube", "NUBE", "Introducción a la nube pública", "#3d8bd9", ["núvol", "nuvol", "nube"]],
+  ["pim", "PIM", "Proyecto intermodular 2 de DAM", "#2f9e6f", ["intermodular"]],
+  ["sge", "SGE", "Sistemas de gestión empresarial", "#a1873a", ["gestió empresarial", "gestión empresarial", "empresarial"]],
+  ["sos", "SOS", "Sostenibilidad aplicada al sistema productivo", "#58a64a", ["sostenibilitat", "sostenibilidad"]],
 ];
 // Asignaturas todavía sin apuntes: solo aparecen en la lista. Añade semanas/temas/ejercicios cuando tengas contenido.
-const VACIAS = NOMBRES.map(([id, corto, nombre, emoji, color, claves]) => ({ id, corto, nombre, emoji, color, claves, profesor: "", semanas: [], temas: {}, ejercicios: {} }));
+const VACIAS = NOMBRES.map(([id, corto, nombre, color, claves]) => ({ id, corto, nombre, color, claves, profesor: "", semanas: [], temas: {}, ejercicios: {} }));
 const ASIGNATURAS = [PSP, PMDM, ...VACIAS];
