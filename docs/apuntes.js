@@ -5,7 +5,7 @@ const tip = (t) => `<div class="nota">💡 ${t}</div>`;
 const warn = (t) => `<div class="nota aviso">⚠️ ${t}</div>`;
 
 const PSP = {
-  id: "psp", nombre: "Programación de Servicios y Procesos", corto: "PSP", emoji: "🧵", color: "#7c5cff",
+  id: "psp", claves: ["servicis","servicios"], nombre: "Programación de Servicios y Procesos", corto: "PSP", emoji: "🧵", color: "#7c5cff",
   profesor: "Jesús García",
   // Semanas según Aules. ini/fin = lunes y domingo (año 2026)
   semanas: [
@@ -620,4 +620,436 @@ ${code(`{
     },
   },
 };
-const ASIGNATURAS = [PSP];
+
+
+const PMDM = {
+  id: "pmdm", claves: ["multimedia"], nombre: "Programación multimedia y dispositivos móviles", corto: "PMDM", emoji: "📱", color: "#02a9f4",
+  profesor: "",
+  // Sin fechas todavía: las unidades hacen de «semanas». Cuando tengas el calendario, añade ini/fin (AAAA-MM-DD) a cada una.
+  semanas: [
+    { n: "U1", titulo: "Unidad 1 · Introducción a Flutter", temas: ["f_intro", "f_arq", "f_inst", "f_proy"], ejercicios: ["Práctica 1"] },
+    { n: "U2", titulo: "Unidad 2 · El lenguaje Dart", temas: ["d_repaso", "d_p2"], ejercicios: ["Práctica 2"] },
+    { n: "U3", titulo: "Unidad 3 · Widgets", temas: ["w_intro", "w_contador", "w_ciclo", "w_basicos", "w_layout", "w_material", "w_recursos", "w_temas", "w_p3"], ejercicios: ["Práctica 3"] },
+  ],
+  ejercicios: {
+    "Práctica 1": ["Práctica 1 · Instalación y primer proyecto", "El enunciado no está en lo que me pasaste. Probablemente: instalar SDK + VSCode + emulador y ejecutar un proyecto (revísalo en Aules)."],
+    "Práctica 2": ["Práctica 2 · paisescli (app de consola con API REST)", "Implementar getPaises e infoPais, la clase Pais (+ fromJSON y toString) y muestraPaises/muestraInfoPais en paisescli.dart."],
+    "Práctica 3": ["Práctica 3 · paisesgui (pantallas de países)", "ContinentesScreen, PaisesScreen, InfoPaisGeneral e InfoPaisDetalle + registrar assets en pubspec.yaml. Entrega: flutter clean + PDF + zip."],
+  },
+  temas: {
+    f_intro: { t: "Desarrollo multiplataforma y Flutter", ic: "🌍", resumen: "Nativo vs multiplataforma, Dart, JIT/AOT, Skia e Impeller.",
+      html: `
+<h4>Nativo vs multiplataforma</h4>
+<ul><li><b>Nativa</b>: un lenguaje y tecnología por sistema (Swift para iOS, Kotlin para Android). Máximo rendimiento y acceso a todo, pero hay que hacer la app varias veces.</li>
+<li><b>Multiplataforma</b>: un único código fuente que se ejecuta en varios sistemas con cambios mínimos.</li></ul>
+<table><tr><th>Enfoque</th><th>Cómo funciona</th><th>Ejemplos</th><th>Pega</th></tr>
+<tr><td>Web responsiva</td><td>HTML+CSS+JS en el navegador</td><td>cualquier web adaptable</td><td>Menos fluida, no accede a todo el hardware</td></tr>
+<tr><td>Híbrida</td><td>Web dentro de un <b>WebView</b></td><td>Ionic (con React/Angular/Vue)</td><td>Acceso limitado al dispositivo</td></tr>
+<tr><td>PWA</td><td>Web + Service Workers: offline, notificaciones</td><td>PWA Builder, Angular PWA…</td><td>Sigue siendo web</td></tr>
+<tr><td>Compilada a nativo</td><td>Un código base → app nativa por plataforma</td><td>React Native, NativeScript, <b>Flutter</b></td><td>Algo más pesadas</td></tr></table>
+<h4>¿Qué es Flutter?</h4>
+<ul><li>SDK y framework <b>de código abierto de Google (2017)</b>; núcleo en C++, aplicaciones escritas en <b>Dart</b> (Google, 2011).</li>
+<li>Genera apps para Android, iOS, Linux, Windows, macOS y web desde el mismo código.</li>
+<li><b>Dart VM</b> con dos compilaciones: <b>JIT</b> (durante el desarrollo → <i>hot reload</i>) y <b>AOT</b> (antes de ejecutar, a código nativo → rendimiento casi nativo).</li>
+<li><b>Null safety</b>: el compilador evita errores por referencias nulas.</li>
+<li>Motor gráfico: <b>Skia</b> y, en versiones actuales, <b>Impeller</b> (animaciones más fluidas y predecibles; 60–120 fps).</li>
+<li>Todo es un <b>widget</b>: la interfaz es un árbol de widgets.</li></ul>
+<h4>Ventajas e inconvenientes</h4>
+<ul><li>✅ Stateful <b>hot reload</b>, rendimiento casi nativo, interfaces vistosas, un solo código.</li>
+<li>⚠️ Las últimas novedades del SO llegan antes a nativo · ejecutables más grandes · en casos muy concretos, algo menos de rendimiento.</li>
+<li>Si hace falta algo específico: desarrollo <b>híbrido</b> (parte Flutter + parte nativa).</li></ul>
+${tip("Pregunta típica: JIT = durante la ejecución (desarrollo, hot reload). AOT = antes de ejecutar (producción, rendimiento).")}`},
+    f_arq: { t: "Arquitectura y herramientas del SDK", ic: "🏗️", resumen: "Capas de Flutter, canales y comandos de la CLI.",
+      html: `
+<h4>Capas (de arriba abajo)</h4>
+<ol><li><b>Framework</b> (Dart): Material/Cupertino → capa de widgets → capa de renderizado (+ animación, pintado, bases).</li>
+<li><b>Engine</b> (C/C++): dibuja cada frame (Skia/Impeller), texto, E/S, accesibilidad.</li>
+<li><b>Embedder</b>: empaqueta en formato nativo e integra la app en el sistema operativo.</li></ol>
+<h4>Canales del SDK</h4>
+<ul><li><b>stable</b>: el recomendado (el que usamos en clase).</li><li><b>beta</b>: novedades antes de llegar a stable.</li></ul>
+<h4>Comandos principales</h4>
+<table><tr><th>Comando</th><th>Para qué</th></tr>
+<tr><td><code>flutter doctor</code></td><td>Revisa tu instalación (Android SDK, Java, emuladores…) y dice qué falta</td></tr>
+<tr><td><code>flutter create</code></td><td>Crea un proyecto</td></tr>
+<tr><td><code>flutter run</code></td><td>Ejecuta la app en un dispositivo/emulador</td></tr>
+<tr><td><code>flutter build</code></td><td>Genera la versión para distribuir</td></tr>
+<tr><td><code>flutter clean</code></td><td>Borra lo generado al compilar (¡antes de entregar!)</td></tr>
+<tr><td><code>flutter devices</code> / <code>emulators</code></td><td>Lista dispositivos y emuladores</td></tr>
+<tr><td><code>flutter help</code></td><td>Ayuda y subcomandos</td></tr></table>`},
+    f_inst: { t: "Instalación, VSCode y emuladores", ic: "🛠️", resumen: "SDK, extensiones de VSCode y dónde probar la app.",
+      html: `
+<ul><li><b>SDK</b>: descargar y añadir <code>flutter/bin</code> al <b>PATH</b> (guía: docs.flutter.dev/get-started/install). Si VSCode no lo encuentra, normalmente falta <b>reiniciar</b> para cargar el PATH.</li>
+<li><b>Extensiones de VSCode</b>: <b>Flutter</b> y <b>Dart</b> (obligatorias; Dart es dependencia de Flutter). Útiles: Pubspec Assist, Awesome Flutter Snippets.</li>
+<li>También se puede usar Android Studio con su plugin de Flutter (que requiere el de Dart).</li></ul>
+<h4>Dónde probar la app</h4>
+<ul><li>📱 <b>Móvil Android físico</b> (USB o WiFi, con modo desarrollador): lo más recomendable, es el comportamiento real.</li>
+<li>🖥️ <b>Emulador</b> de Android Studio (dispositivos virtuales).</li>
+<li>🌐 <b>Chrome/Edge</b>: muy cómodo para pruebas rápidas de interfaz.</li><li>Genymotion (alternativa de terceros, menos usada).</li></ul>
+<h4>Ejecutar desde VSCode</h4>
+<ul><li><code>Ctrl+Shift+P</code> → <b>Flutter: New Project</b> / <b>Flutter: Select Device</b> (o clic en el dispositivo de la barra inferior).</li>
+<li><b>F5</b> = Start Debugging · <b>Run Without Debugging</b> · «Run Code» solo vale para programas Dart sencillos.</li>
+<li>La primera ejecución tarda (descarga librerías); las siguientes son más rápidas.</li></ul>`},
+    f_proy: { t: "Estructura de un proyecto Flutter", ic: "📁", resumen: "lib, pubspec.yaml, carpetas por plataforma y flutter create.",
+      html: `
+<table><tr><th>Elemento</th><th>Qué contiene</th></tr>
+<tr><td><code>lib/</code></td><td>Código Dart. <code>main.dart</code> es el punto de entrada</td></tr>
+<tr><td><code>pubspec.yaml</code></td><td>Configuración: dependencias, assets, fuentes</td></tr>
+<tr><td><code>assets/</code></td><td>(no se crea solo) imágenes, fuentes, JSON… hay que declararlos en pubspec</td></tr>
+<tr><td><code>android/ ios/ web/ linux/ windows/</code></td><td>Proyecto nativo de cada plataforma (iOS requiere Xcode)</td></tr>
+<tr><td><code>test/</code></td><td>Pruebas (misma estructura que <code>lib</code>)</td></tr>
+<tr><td><code>analysis_options.yaml</code></td><td>Reglas del análisis estático (avisos)</td></tr>
+<tr><td><code>pubspec.lock</code>, <code>.metadata</code>, <code>.gitignore</code>, <code>README.md</code></td><td>Versiones resueltas, metadatos, git, descripción del proyecto</td></tr></table>
+<h4>Crear proyectos por terminal</h4>
+${code(`flutter create mi_app                                   # todas las plataformas
+flutter create --platforms=android,web,linux ejemplo_1  # solo algunas
+cd ejemplo_1
+flutter create --platforms=windows .                    # añadir otra después ('.' = carpeta actual)`, "bash")}
+<ul><li>El nombre debe ser válido en Dart: <b>minúsculas, números (no al inicio) y guion bajo</b>.</li><li><code>flutter create --help</code> muestra más opciones.</li></ul>`},
+    d_repaso: { t: "Dart: repaso rápido (complemento)", ic: "🎯", resumen: "Lo esencial de Dart que se usa en las prácticas. No venía en tus archivos: es un resumen mío.",
+      html: `
+${warn("Esta ficha es un complemento mío: en lo que me pasaste de la Unidad 2 solo estaba la Práctica 2. Contrástala con los apuntes de Aules.")}
+${code(`// Tipos y null safety
+String nombre = "Ana";
+int edad = 20;
+double nota = 7.5;
+String? imagen;            // ? = puede ser null
+late String capital;       // se inicializa más tarde
+print("Hola $nombre, tienes \${edad + 1} el año que viene");
+var texto = imagen ?? "sin imagen";      // ?? valor por defecto
+
+// Colecciones
+List<String> lista = ["a", "b"];
+Map<String, dynamic> mapa = {"nombre": "España", "poblacion": "47M"};
+lista.add("c");   lista.removeAt(0);   print(lista.join(" "));
+
+// Clase con constructor con nombre y constructor fromJSON
+class Pais {
+  String nombre;
+  String? capital;
+  Pais({required this.nombre, this.capital});
+  Pais.fromJSON(Map<String, dynamic> j)
+      : nombre = j["nombre"] ?? "",
+        capital = j["capital"];
+  @override
+  String toString() => "$nombre ($capital)";
+}
+
+// Asincronía: dos formas equivalentes
+Future<void> conFuture() {
+  return api.getContinentes().then((datos) => print(datos)).catchError((e) => print(e));
+}
+Future<void> conAsync() async {
+  try { print(await api.getContinentes()); }
+  catch (e) { print("Error: $e"); }
+}`, "dart")}`},
+    d_p2: { t: "Práctica 2: paisescli (arquitectura en capas)", ic: "🧪", resumen: "App de consola con API REST: capas, clases y qué hay que implementar.",
+      html: `
+<p>App de consola que consulta la API <code>https://api-paises-uagm.onrender.com</code>.</p>
+${code(`dart run paisescli continentes
+dart run paisescli paises Europa
+dart run paisescli infopais España
+dart run paisescli infopais "Estados Unidos"    # nombres compuestos entre comillas`, "bash")}
+<table><tr><th>Ruta</th><th>Devuelve</th></tr><tr><td><code>/continentes</code></td><td>Lista de continentes + imagen</td></tr>
+<tr><td><code>/paises/$continente</code></td><td>Países del continente + imagen</td></tr><tr><td><code>/infopais/$pais</code></td><td>Información detallada de un país</td></tr></table>
+<h4>Capas y responsabilidades</h4>
+${code(`bin/paisescli.dart                         ← interacción con el usuario (argumentos, switch, print)
+lib/domain/entities/{continente,pais}.dart ← DOMINIO: entidades (Continente, Pais)
+lib/data/services/paises_api.dart          ← DATOS · servicio: HTTP y JSON (devuelve dynamic)
+lib/data/repositories/paises_repository.dart ← DATOS · repositorio: convierte JSON en entidades`, "text")}
+<ul><li><b>Servicio</b>: habla con la API, procesa el JSON y lo devuelve (<code>Future&lt;List&lt;dynamic&gt;&gt;</code>).</li>
+<li><b>Repositorio</b>: intermediario; transforma JSON en <code>Continente</code>/<code>Pais</code>. Si cambia la API solo tocas el servicio.</li>
+<li>Ventajas: separación de responsabilidades, mantenimiento, testeo por capas, escalabilidad (caché, BD local…).</li></ul>
+<h4>Clase <code>Pais</code> (a implementar)</h4>
+<p>Propiedades: <code>nombre</code> (obligatoria), <code>capital</code>, <code>poblacion</code> (String), <code>imagen</code>, <code>descripcion</code> (String) y <code>latitud</code>, <code>longitud</code> (double). Todas nulables salvo nombre. Constructor con nombre <code>Pais.fromJSON</code> y <code>toString</code> sobrescrito.</p>
+<h4>Qué te toca hacer (orientativo)</h4>
+${code(`// paises_api.dart
+Future<List<dynamic>> getPaises(String continente) async {
+  final respuesta = await http.get(Uri.parse("$urlBase/paises/$continente"));
+  if (respuesta.statusCode != 200) throw Exception("Error \${respuesta.statusCode}");
+  return jsonDecode(respuesta.body);
+}
+Future<dynamic> infoPais(String pais) async { /* igual con /infopais/$pais */ }
+
+// paises_repository.dart
+Future<List<Pais>> getPaises(String continente) async {
+  final lista = await api.getPaises(continente);
+  return lista.map((j) => Pais.fromJSON(j)).toList();
+}
+
+// paisescli.dart: implementa muestraPaises() y muestraInfoPais() con then() o async/await`, "dart")}
+<ul><li>Argumentos: se copia la lista, <code>removeAt(0)</code> saca la orden y <code>join(" ")</code> une los nombres compuestos.</li>
+<li>Color en consola con ANSI: <code>print("\\x1B[31mTexto en rojo\\x1B[0m");</code> (30 negro, 31 rojo, 32 verde, 33 amarillo, 34 azul, 35 magenta, 36 cian, 37 blanco, <code>[0m</code> reset).</li>
+<li>La API está en Render: la primera petición puede tardar si estaba «dormida».</li></ul>`},
+    w_intro: { t: "Introducción a los widgets", ic: "🧱", resumen: "UI declarativa, árbol de widgets, Stateless vs Stateful.",
+      html: `
+<ul><li><b>Imperativo</b>: dices <i>cómo</i> cambiar la interfaz (<code>findViewById…text = "Hola"</code>). <b>Declarativo</b> (Flutter, React, Compose, SwiftUI): describes <i>qué</i> quieres según el estado y el framework redibuja.</li></ul>
+${code(`Center(child: Text('Hola Mundo'))   // «quiero un texto centrado»`, "dart")}
+<ul><li>Un <b>widget</b> describe una parte de la interfaz o de su comportamiento. Se configuran con el constructor (parámetros <b>con nombre</b>) y se <b>componen en un árbol</b>.</li>
+<li><code>child</code> = un hijo · <code>children</code> = lista de hijos (aunque sea uno solo).</li></ul>
+<table><tr><th>StatelessWidget</th><th>StatefulWidget</th></tr>
+<tr><td>Sin estado mutable. Se ve igual con los mismos datos</td><td>Tiene un objeto <code>State</code> mutable asociado</td></tr>
+<tr><td>Texto fijo, botón estático</td><td>Contador, resultado de una petición, formularios</td></tr>
+<tr><td>Solo <code>build()</code></td><td><code>createState()</code> + <code>State.build()</code> + <code>setState()</code></td></tr></table>
+<p>Aplicación mínima en Material:</p>
+${code(`import 'package:flutter/material.dart';
+
+void main() => runApp(const MyApp());
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'App Material',
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        appBar: AppBar(title: const Text('Barra de aplicación')),
+        body: const Center(child: Text('Hola Mundo')),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {}, child: const Icon(Icons.add)),
+      ),
+    );
+  }
+}`, "dart")}
+${tip("<code>BuildContext</code> = posición del widget en el árbol; permite consultar a los ancestros (tema, MediaQuery, ScaffoldMessenger…).")}`},
+    w_contador: { t: "Del Hola Mundo al Contador", ic: "🔢", resumen: "const, extract widget, Scaffold, Column y setState paso a paso.",
+      html: `
+<ol><li><b>Hola Mundo</b>: <code>runApp(const Text('Hola Mundo', textDirection: TextDirection.ltr))</code> (sin MaterialApp hay que dar la dirección del texto).</li>
+<li><b>Centrar</b>: envolver con <code>Center</code> (bombilla / <code>Ctrl+.</code> → <i>Wrap with Center</i>).</li>
+<li><b>Widget propio</b>: clase que extiende <code>StatelessWidget</code> y sobrescribe <code>build</code>. Acción <i>Extract Widget</i> lo hace solo.</li>
+<li><b>MaterialApp + Scaffold</b> (snippet <code>mateapp</code>): <code>appBar</code>, <code>body</code>, <code>floatingActionButton</code>.</li></ol>
+<h4>Reglas del <code>const</code></h4>
+<ul><li>Pon <code>const</code> en widgets que no cambian: Flutter los reutiliza (más eficiente).</li><li>Ponlo <b>lo más arriba posible</b>: los hijos ya son const (si no, aviso <i>Unnecessary const</i>).</li><li>El constructor lleva <code>const MyApp({super.key})</code>; la <b>key</b> identifica widgets al reconstruir.</li></ul>
+<h4>El contador (con estado)</h4>
+${code(`class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int contador = 0;                    // el estado va en la clase State, NO en build()
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('Valor del contador'),
+            Text('$contador', style: const TextStyle(fontSize: 50)),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => setState(() { contador++; }),   // setState = «redibuja»
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+}`, "dart")}
+<ul><li>Si el widget es Stateless o no usas <code>setState</code>, la variable cambia pero la pantalla <b>no</b>.</li><li>Modifica el estado <b>dentro</b> de <code>setState</code> para dejar claro qué provoca la reconstrucción.</li><li><code>MainAxisAlignment</code>: start, center, end, spaceAround, spaceBetween, spaceEvenly.</li></ul>
+<p><b>Ejercicio voluntario</b>: botones para decrementar y resetear. Pista: <code>floatingActionButton</code> puede ser una <code>Row</code>/<code>Column</code> con varios botones; <code>floatingActionButtonLocation</code> cambia su posición.</p>`},
+    w_ciclo: { t: "Ciclo de vida de los widgets", ic: "♻️", resumen: "build, createState, initState, setState, dispose.",
+      html: `
+<ul><li><b>Stateless</b>: constructor → <code>build()</code> (se repite cuando haga falta; los widgets son baratos).</li></ul>
+<h4>Stateful: orden de los métodos</h4>
+<ol><li>Constructor del widget → <code>createState()</code> (se llama al insertarlo en el árbol).</li>
+<li>Constructor del <code>State</code> (aún sin contexto: no inicialices aquí lo que lo necesite).</li>
+<li><code>initState()</code>: <b>una sola vez</b>; inicializar datos, pedir datos a red/BD. Llama a <code>super.initState()</code>.</li>
+<li><code>didChangeDependencies()</code>: tras initState y cada vez que cambia un <code>InheritedWidget</code> del que depende.</li>
+<li><code>build()</code>: dibuja. Se repite en cada cambio.</li></ol>
+<h4>Qué provoca una reconstrucción</h4>
+<ul><li><b>setState()</b> (por un evento) · reconstrucción de un widget <b>ancestro</b> · cambio de un <b>InheritedWidget</b> del que depende.</li>
+<li><b>dispose()</b>: el widget ya no se usa → parar animaciones, cerrar conexiones, liberar controladores.</li></ul>
+${code(`class _MiEstado extends State<MiWidget> {
+  @override void initState() { super.initState(); /* cargar datos */ }
+  @override void dispose()   { /* liberar recursos */ super.dispose(); }
+  @override Widget build(BuildContext context) => const Placeholder();
+}`, "dart")}`},
+    w_basicos: { t: "Widgets básicos", ic: "🔤", resumen: "Text, Image, Icon, ElevatedButton, AppBar, Scaffold, SnackBar.",
+      html: `
+<h4>Text</h4>
+<ul><li>Primer argumento posicional: el texto (admite interpolación <code>"Hola $x"</code> / <code>"${"$"}{x.length}"</code>; entonces no es const).</li>
+<li><code>overflow</code>: clip, ellipsis, fade, visible · <code>textAlign</code>: center, start, end, left, right, justify.</li>
+<li><code>style: TextStyle(color, backgroundColor, fontSize, fontWeight, fontStyle, fontFamily)</code>.</li>
+<li>Colores: <code>Color(0xFF42A5F5)</code> (ARGB), <code>Color.fromARGB(255,66,165,245)</code> o <code>Colors.amber</code>.</li></ul>
+<h4>Image (según el proveedor)</h4>
+<table><tr><th>Constructor</th><th>Origen</th></tr><tr><td><code>Image.asset('assets/…')</code></td><td>Recurso de la app</td></tr><tr><td><code>Image.network(url)</code></td><td>Internet</td></tr>
+<tr><td><code>Image.file(File(ruta))</code></td><td>Fichero del dispositivo</td></tr><tr><td><code>Image.memory(bytes)</code></td><td>Bytes en memoria</td></tr></table>
+<h4>Icon, botones y otros</h4>
+${code(`const Icon(Icons.access_alarm)                       // solo muestra, no interactúa
+IconButton(onPressed: () {}, icon: const Icon(Icons.add))
+
+ElevatedButton(
+  onPressed: () => debugPrint('click'),   // null = botón DESACTIVADO; () {} = activo sin acción
+  style: ElevatedButton.styleFrom(backgroundColor: Colors.amber, foregroundColor: Colors.indigo),
+  child: const Text('Pulsa'),
+)
+TextButton(onPressed: () {}, child: const Text('Sin elevación'))  // para diálogos, cards, appbar`, "dart")}
+<ul><li><b>Placeholder</b>: recuadro que marca «aquí irá un widget».</li>
+<li><b>AppBar</b>: <code>title</code>, <code>centerTitle</code>, <code>leading</code>, <code>actions</code> (IconButtons), <code>elevation</code>.</li>
+<li><b>Scaffold</b>: <code>appBar</code>, <code>body</code>, <code>floatingActionButton</code>, <code>drawer</code>, <code>bottomNavigationBar</code>.</li></ul>
+<h4>SnackBar y MaterialBanner</h4>
+${code(`ScaffoldMessenger.of(context).showSnackBar(
+  SnackBar(
+    content: const Text('Guardado'),
+    duration: const Duration(seconds: 3),
+    action: SnackBarAction(label: 'Deshacer', onPressed: () {}),
+  ),
+);
+ScaffoldMessenger.of(context).hideCurrentSnackBar();`, "dart")}
+${warn("<code>ScaffoldMessenger.of(context)</code> busca hacia arriba. Si lo llamas con el contexto del propio MaterialApp (que está por encima del Scaffold) da error de que no encuentra ningún ScaffoldMessenger.")}`},
+    w_layout: { t: "Contenedores y layouts", ic: "📐", resumen: "Container, Row/Column, Expanded, ListView, GridView, Stack, Wrap…",
+      html: `
+<h4>Un solo hijo</h4>
+<ul><li><b>Container</b>: <code>width/height</code>, <code>decoration: BoxDecoration(color, borderRadius, boxShadow, border)</code>, <code>padding</code> (dentro), <code>margin</code> (fuera), <code>transform</code>.</li>
+<li><b>EdgeInsets</b>: <code>.all(10)</code>, <code>.symmetric(horizontal: 8)</code>, <code>.only(left: 4)</code>.</li>
+<li><b>SizedBox</b>: tamaño fijo o separador (<code>SizedBox(width: 8)</code>); el padre puede imponer su tamaño.</li>
+<li><b>Center</b>, <b>Align</b>(<code>alignment: Alignment.centerRight</code>), <b>Padding</b>.</li></ul>
+<h4>Varios hijos</h4>
+${code(`Column(                                   // Row = igual pero en horizontal
+  mainAxisAlignment: MainAxisAlignment.center,       // eje PRINCIPAL (vertical en Column)
+  crossAxisAlignment: CrossAxisAlignment.start,      // eje SECUNDARIO (horizontal)
+  children: [
+    Container(color: Colors.red, height: 50),
+    Expanded(                                        // ocupa todo el espacio restante
+      child: Row(children: [
+        Container(color: Colors.green, width: 50),
+        Expanded(flex: 2, child: Container(color: Colors.orange)),  // flex reparte proporciones
+        Expanded(flex: 1, child: Container(color: Colors.blue)),
+      ]),
+    ),
+  ],
+)`, "dart")}
+<ul><li><b>Expanded</b> solo dentro de Row/Column/Flex. <b>Flexible</b>: ocupa proporción pero sin obligar a llenarlo. <b>Spacer</b>: hueco que empuja (<code>Row(children:[Icon, Spacer(), Icon])</code>).</li>
+<li><b>Wrap</b>: como Row pero salta de línea (ideal con <code>Chip</code>).</li>
+<li><b>Stack + Positioned</b>: superponer widgets (posicionamiento absoluto <code>left/top</code>).</li></ul>
+<h4>Listas y cuadrículas</h4>
+${code(`ListView.builder(                       // perezoso: crea los elementos bajo demanda
+  itemCount: items.length,
+  itemBuilder: (BuildContext context, int index) => Text(items[index]),
+)
+
+GridView.builder(
+  itemCount: items.length,
+  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+    crossAxisCount: 2, crossAxisSpacing: 8, mainAxisSpacing: 8, childAspectRatio: 2.5),
+  itemBuilder: (context, i) => Center(child: Text(items[i])),
+)
+// alternativa: SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 220)`, "dart")}
+<ul><li><code>ListView(scrollDirection: Axis.horizontal)</code> para listas horizontales.</li>
+<li><b>SingleChildScrollView</b> + Column: evita «RenderFlex overflowed by X pixels», pero para muchos elementos usa ListView.builder.</li></ul>
+${warn("ListView/GridView dentro de una Column sin altura → error de restricciones «unbounded». Envuélvelos en <code>Expanded</code> o dales altura.")}`},
+    w_material: { t: "Widgets de Material Design", ic: "🎴", resumen: "Divider, ListTile, Card, CircleAvatar, GestureDetector e InkWell.",
+      html: `
+${code(`const Divider(height: 16, thickness: 2, indent: 20, endIndent: 20, color: Colors.amber)
+
+ListTile(
+  leading: const CircleAvatar(backgroundColor: Colors.blue, child: Text("HS")),
+  title: const Text('Han Solo'),
+  subtitle: const Text('Piloto'),
+  trailing: const Icon(Icons.menu),
+)
+
+Card(
+  elevation: 5,
+  child: Column(children: [
+    Image.network("https://picsum.photos/500/200"),
+    const ListTile(title: Text("Título"), subtitle: Text("Subtítulo")),
+    Row(mainAxisAlignment: MainAxisAlignment.end,
+        children: [TextButton(onPressed: () {}, child: const Text("Acción"))]),
+  ]),
+)
+
+CircleAvatar(radius: 110, backgroundImage: NetworkImage("https://picsum.photos/400"))`, "dart")}
+<h4>Detectar toques en cualquier widget</h4>
+<table><tr><th>GestureDetector</th><th>InkWell</th></tr>
+<tr><td><code>onTap</code>, doble toque, <b>swipe, drag</b>, escalado…</td><td><code>onTap</code>, <code>onDoubleTap</code>, <code>onLongPress</code></td></tr>
+<tr><td>Sin efecto visual</td><td>Con efecto <b>ripple</b>; debe estar dentro de un <code>Material</code> (Scaffold, Card…)</td></tr>
+<tr><td>Su constructor <b>no es const</b></td><td>Recomendado para tocar tarjetas, imágenes, contenedores</td></tr></table>`},
+    w_recursos: { t: "Trabajando con recursos (assets)", ic: "🖼️", resumen: "Declarar assets, resoluciones 2.0x/3.0x, iconos de lanzador y fuentes.",
+      html: `
+${code(`flutter:
+  assets:
+    - assets/config/config.json
+    - assets/images/          # incluye los ficheros de la carpeta, NO las subcarpetas
+    - assets/images/hi_res/   # cada subcarpeta hay que añadirla
+  fonts:
+    - family: Lato
+      fonts:
+        - asset: assets/fonts/Lato/Lato-Regular.ttf
+        - asset: assets/fonts/Lato/Lato-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Lato/Lato-Italic.ttf
+          style: italic`, "yaml")}
+<ul><li>Las rutas son relativas a <code>pubspec.yaml</code>. Tras editarlo: <code>flutter pub get</code>.</li>
+<li><b>Variantes por densidad</b>: <code>assets/images/logo.png</code> (1x) + <code>2.0x/logo.png</code> + <code>3.0x/logo.png</code>. Se declara solo la principal y <code>AssetImage</code> elige la más cercana a <code>devicePixelRatio</code>.</li>
+<li><code>View.of(context).devicePixelRatio</code> (píxeles físicos por lógico), <code>MediaQuery.of(context).size</code> (tamaño en píxeles lógicos).</li>
+<li>Fuentes: formatos <b>.ttf .otf .ttc</b>. Uso: <code>TextStyle(fontFamily: 'Pacifico')</code>.</li></ul>
+<h4>Icono del lanzador</h4>
+${code(`flutter pub add dev:flutter_launcher_icons
+flutter pub get
+dart run flutter_launcher_icons -f flutter_launcher_icons.yaml`, "bash")}
+<p>Se configura en <code>flutter_launcher_icons:</code> con <code>android</code>, <code>ios</code>, <code>image_path</code>, <code>min_sdk_android</code>, <code>web/windows/macos: generate</code>. No genera para Linux.</p>`},
+    w_temas: { t: "Temas", ic: "🎨", resumen: "ThemeData, colorSchemeSeed, copyWith, TextTheme y Theme.",
+      html: `
+<ul><li>Desde Flutter 3.16 el tema por defecto es <b>Material 3</b> (antes Material 2, tonos azules). <code>ThemeData.light(useMaterial3: false)</code> vuelve al antiguo.</li>
+<li><b>Fondo</b> = el Scaffold. Los widgets que pones encima son <b>superficies</b> con color y texto asociados.</li></ul>
+${code(`MaterialApp(
+  theme: ThemeData(
+    colorSchemeSeed: Colors.amber,            // genera una paleta completa desde un color semilla
+    fontFamily: 'Lato',
+    textTheme: const TextTheme(
+      displayLarge: TextStyle(fontSize: 72, fontWeight: FontWeight.bold),
+      titleLarge:   TextStyle(fontSize: 36, fontFamily: 'Pacifico'),
+      bodyMedium:   TextStyle(fontSize: 14),
+    ),
+  ),
+  darkTheme: ThemeData.dark(),
+  home: const MiPantalla(),
+)
+
+// Variantes
+ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.amber, brightness: Brightness.dark))
+ThemeData.light().copyWith(appBarTheme: const AppBarTheme(color: Colors.amber))  // partir de un tema y cambiar algo
+
+// Tema solo para una parte del árbol
+Theme(data: temaPersonalizado, child: ElevatedButton(onPressed: () {}, child: const Text('Hola')))`, "dart")}
+${tip("<code>primarySwatch</code> es de Material 2; en Material 3 se recomienda <code>colorSchemeSeed</code> o <code>ColorScheme.fromSeed</code>.")}`},
+    w_p3: { t: "Práctica 3: paisesgui (pantallas)", ic: "🧪", resumen: "Qué piden las 4 pantallas, estructura y mejoras opcionales.",
+      html: `
+<p>Diseño de pantallas (sin funcionalidad real todavía) para una futura app de países. Los datos vienen de <code>PaisesEjemplo</code> (JSON en local) a través de <code>PaisesRepository</code>.</p>
+${code(`lib/
+  main.dart
+  data/{repository/paises_repository.dart, services/paises_ejemplo.dart}
+  domain/entities/{continente.dart, pais.dart}
+  ui/screens/{launcher, continentes_screen, paises_screen, infopais_general, infopais_detalle}.dart
+  ui/widgets/my_weather_info.dart
+assets/{fonts, icons, img}        ← hay que registrarlos en pubspec.yaml`, "text")}
+<table><tr><th>Pantalla</th><th>Qué hacer</th></tr>
+<tr><td><b>ContinentesScreen</b></td><td>5 continentes con <code>CircleAvatar</code> (imagen + nombre). Solo implementar <code>build</code> de <code>ContinenteRoundButton</code></td></tr>
+<tr><td><b>PaisesScreen</b></td><td>Lista de <code>Card</code> con imagen y nombre. Implementar <code>PaisesRepository.getPaises()</code> y completar los TO-DO</td></tr>
+<tr><td><b>InfoPaisGeneral</b></td><td>Información básica: capital, población, imagen, descripción, coordenadas</td></tr>
+<tr><td><b>InfoPaisDetalle</b></td><td>Información ampliada + <code>MyWeatherInfo</code> (imagen del tiempo fija, temperatura y viento)</td></tr></table>
+<h4>Mejoras opcionales</h4>
+<ul><li>Arreglar que la parte superior se «monte» sobre la barra de estado de Android → envolver en <b>SafeArea</b> (o usar Scaffold con AppBar).</li>
+<li>Botón nuevo + pantalla que muestre los países en un <b>GridView</b>.</li></ul>
+<h4>Entrega</h4>
+<ol><li><code>flutter clean</code> (para que pese poco).</li><li>PDF breve: clases/widgets usados en lo nuevo + <b>dificultades encontradas</b>.</li><li>Comprimir carpeta raíz + PDF en <b>.zip o .rar</b>.</li></ol>`},
+  },
+};
+
+const NOMBRES = [
+  ["ad", "AD", "Acceso a datos", "🗄️", "#e0884a", ["accés a dades", "acceso a datos"]],
+  ["di", "DI", "Desarrollo de interfaces", "🎨", "#d6458e", ["interfícies", "interficies", "interfaces"]],
+  ["dig", "DIG", "Digitalización aplicada al sistema productivo", "🏭", "#5b7f95", ["digitalitz"]],
+  ["nube", "NUBE", "Introducción a la nube pública", "☁️", "#3d8bd9", ["núvol", "nuvol", "nube"]],
+  ["pim", "PIM", "Proyecto intermodular 2 de DAM", "🧩", "#2f9e6f", ["intermodular"]],
+  ["sge", "SGE", "Sistemas de gestión empresarial", "📊", "#a1873a", ["gestió empresarial", "gestión empresarial", "empresarial"]],
+  ["sos", "SOS", "Sostenibilidad aplicada al sistema productivo", "🌱", "#58a64a", ["sostenibilitat", "sostenibilidad"]],
+];
+// Asignaturas todavía sin apuntes: solo aparecen en la lista. Añade semanas/temas/ejercicios cuando tengas contenido.
+const VACIAS = NOMBRES.map(([id, corto, nombre, emoji, color, claves]) => ({ id, corto, nombre, emoji, color, claves, profesor: "", semanas: [], temas: {}, ejercicios: {} }));
+const ASIGNATURAS = [PSP, PMDM, ...VACIAS];
