@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --fondo: #eef2f4;
+  --panel: #ffffff;
+  --texto: #14232b;
+  --suave: #5d6e78;
+  --linea: #d6dee3;
+  --vencida: #c62f3b;
+  --hoy: #d9631e;
+  --pronto: #b88a00;
+  --normal: #1f7a72;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fondo: #0f1a20;
+    --panel: #172830;
+    --texto: #e6eef2;
+    --suave: #93a6b0;
+    --linea: #2a3f49;
+    --vencida: #ff6b76;
+    --hoy: #ff9a52;
+    --pronto: #e8bd3a;
+    --normal: #4fc4b8;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  padding: env(safe-area-inset-top, 0) 0 env(safe-area-inset-bottom, 0);
+}
+main { max-width: 46rem; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+header { margin-bottom: 1.5rem; }
+h1 { font-size: clamp(1.8rem, 6vw, 2.6rem); font-weight: 800; margin: 0; letter-spacing: -0.02em; }
+.estado { color: var(--suave); margin: 0.25rem 0 0; font-size: 0.95rem; }
+.estado.aviso { color: var(--hoy); }
+ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.6rem; }
+li {
+  background: var(--panel);
+  border: 1px solid var(--linea);
+  border-left: 6px solid var(--color, var(--normal));
+  border-radius: 6px;
+  display: grid;
+  grid-template-columns: 6.5rem 1fr;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.8rem 1rem;
+}
+.tiempo { color: var(--color, var(--normal)); font-weight: 800; font-size: 1.7rem; line-height: 1.05; letter-spacing: -0.02em; }
+.tiempo small { display: block; font-size: 0.8rem; font-weight: 600; color: var(--suave); letter-spacing: 0; }
+.nombre { font-weight: 600; font-size: 1.05rem; margin: 0; overflow-wrap: anywhere; }
+.nombre a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.nombre a:hover { color: var(--color, var(--normal)); }
+.detalle { margin: 0.2rem 0 0; color: var(--suave); font-size: 0.9rem; }
+.plan { background: var(--panel); border: 1px solid var(--linea); border-left: 6px solid var(--normal); border-radius: 6px; padding: 0.9rem 1rem; margin-bottom: 1.2rem; }
+.plan h2 { font-size: 1.15rem; margin: 0; }
+.plan .estado { margin: 0.1rem 0 0.6rem; }
+.plan pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; }
+li.vacio { display: block; border-left-style: dashed; text-align: center; color: var(--suave); padding: 1.5rem; }
+.pie { margin-top: 2rem; }
+button {
+  font: inherit; font-weight: 600; cursor: pointer;
+  border-radius: 6px; border: 1px solid var(--linea);
+  background: var(--panel); color: var(--texto); padding: 0.55rem 1rem;
+}
+button:hover { border-color: var(--normal); }
+button:disabled { opacity: 0.6; cursor: wait; }
+a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid var(--normal); outline-offset: 2px; }
+
+#acceso { max-width: 24rem; margin: 18vh auto 0; }
+#acceso form { display: grid; gap: 0.8rem; }
+#acceso label { font-weight: 600; }
+#acceso input {
+  font: inherit; width: 100%; padding: 0.65rem 0.8rem;
+  border-radius: 6px; border: 1px solid var(--linea);
+  background: var(--panel); color: var(--texto);
+}
+#acceso button { background: var(--normal); border-color: var(--normal); color: #fff; padding: 0.7rem 1rem; }
+#mensaje { min-height: 1.4em; margin: 0; color: var(--vencida); font-size: 0.95rem; }
+
+@media (max-width: 30rem) {
+  li { grid-template-columns: 1fr; gap: 0.3rem; }
+  .tiempo { font-size: 1.4rem; }
+  .tiempo small { display: inline; margin-left: 0.4rem; }
+}
+</style>
+</head>
+<body>
+<main>
+  <p class="estado" id="cargando">Cargando…</p>
+
+  <section id="acceso" hidden>
+    <form id="formulario">
+      <label for="clave">Contraseña</label>
+      <input id="clave" type="password" autocomplete="current-password" required>
+      <button type="submit" id="entrar">Entrar</button>
+      <p id="mensaje" role="alert"></p>
+    </form>
+  </section>
+
+  <section id="panel" hidden>
+    <header>
+      <h1 id="titulo"></h1>
+      <p class="estado" id="estado"></p>
+    </header>
+    <section class="plan" id="plan" hidden>
+      <h2>Plan de hoy</h2>
+      <p class="estado" id="planInfo"></p>
+      <pre id="planTexto"></pre>
+    </section>
+    <ul id="lista"></ul>
+    <p class="pie"><button type="button" id="salir">Cerrar sesión en este dispositivo</button></p>
+  </section>
+</main>
+<script>
+// Estos dos valores tienen que ser iguales que en aules.py
+const SAL = new TextEncoder().encode("aules-dashboard-v1");
+const ITERACIONES = 600000;
+
+const $ = (id) => document.getElementById(id);
+let clave = null;   // clave de descifrado (nunca se puede leer ni copiar desde fuera)
+let datos = null;
+let paquete = null;
+let plan = null;   // plan escrito por la IA local (puede no existir todavía)
+
+const deBase64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+
+async function derivarClave(contrasena) {
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(contrasena), "PBKDF2", false, ["deriveKey"]);
+  return crypto.subtle.deriveKey(
+    { name: "PBKDF2", salt: SAL, iterations: ITERACIONES, hash: "SHA-256" },
+    base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]
+  );
+}
+
+async function descifrar(k, p) {
+  const claro = await crypto.subtle.decrypt({ name: "AES-GCM", iv: deBase64(p.iv) }, k, deBase64(p.datos));
+  return JSON.parse(new TextDecoder().decode(claro));
+}
+
+// --- Guardar la clave en este dispositivo (sobrevive a cerrar el navegador y apagar el PC) ---
+function abrirBD() {
+  return new Promise((ok, mal) => {
+    const r = indexedDB.open("panel", 1);
+    r.onupgradeneeded = () => r.result.createObjectStore("k");
+    r.onsuccess = () => ok(r.result);
+    r.onerror = () => mal(r.error);
+  });
+}
+async function operacionBD(modo, accion) {
+  const bd = await abrirBD();
+  return new Promise((ok, mal) => {
+    const t = bd.transaction("k", modo);
+    const pedido = accion(t.objectStore("k"));
+    t.oncomplete = () => ok(pedido && pedido.result);
+    t.onerror = () => mal(t.error);
+  });
+}
+const guardarClave = (k) => operacionBD("readwrite", (s) => s.put(k, "clave"));
+const leerClave = () => operacionBD("readonly", (s) => s.get("clave"));
+const borrarClave = () => operacionBD("readwrite", (s) => s.delete("clave"));
+
+// --- Pantallas ---
+function mostrar(cual) {
+  $("cargando").hidden = cual !== "cargando";
+  $("acceso").hidden = cual !== "acceso";
+  $("panel").hidden = cual !== "panel";
+  if (cual === "acceso") $("clave").focus();
+}
+
+async function traer(nombre, obligatorio) {
+  const r = await fetch(nombre + "?t=" + Date.now(), { cache: "no-store" });
+  if (r.status === 404 && !obligatorio) return null;
+  if (!r.ok) throw new Error("red");
+  return r.json();
+}
+
+async function cargarPlan(k) {
+  try {
+    const p = await traer("plan.enc", false);
+    return p ? await descifrar(k, p) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+// --- Dibujar las tareas ---
+function formatoRestante(ms) {
+  const min = Math.floor(Math.abs(ms) / 60000);
+  const horas = Math.floor(min / 60);
+  const dias = Math.floor(horas / 24);
+  let valor;
+  if (dias >= 2) valor = dias + " días";
+  else if (horas >= 1) valor = horas + (horas === 1 ? " hora" : " horas");
+  else valor = Math.max(min, 1) + " min";
+  return { valor, pasada: ms < 0 };
+}
+
+function colorDe(ms) {
+  if (ms < 0) return "var(--vencida)";
+  if (ms < 24 * 3600e3) return "var(--hoy)";
+  if (ms < 3 * 24 * 3600e3) return "var(--pronto)";
+  return "var(--normal)";
+}
+
+function pintarPlan() {
+  const caja = $("plan");
+  if (!plan) { caja.hidden = true; return; }
+  caja.hidden = false;
+  $("planTexto").textContent = plan.texto;
+  const horas = Math.round((Date.now() - plan.actualizado * 1000) / 3600e3);
+  $("planInfo").textContent = "Escrito por la IA de tu PC · " + (horas < 1 ? "hace menos de 1 h" : "hace " + horas + " h");
+  $("planInfo").classList.toggle("aviso", horas > 24);
+}
+
+function pintar() {
+  if (!datos) return;
+  pintarPlan();
+  const ahora = Date.now();
+  const lista = $("lista");
+  lista.replaceChildren();
+  $("titulo").textContent = "Entregas pendientes";
+
+  if (datos.tareas.length === 0) {
+    const vacio = document.createElement("li");
+    vacio.className = "vacio";
+    vacio.textContent = "No tienes entregas pendientes.";
+    lista.append(vacio);
+  }
+
+  for (const t of datos.tareas) {
+    const ms = t.vence * 1000 - ahora;
+    const { valor, pasada } = formatoRestante(ms);
+
+    const li = document.createElement("li");
+    li.style.setProperty("--color", colorDe(ms));
+
+    const tiempo = document.createElement("div");
+    tiempo.className = "tiempo";
+    tiempo.textContent = valor;
+    const sub = document.createElement("small");
+    sub.textContent = pasada ? "de retraso" : "restantes";
+    tiempo.append(sub);
+
+    const cuerpo = document.createElement("div");
+    const nombre = document.createElement("p");
+    nombre.className = "nombre";
+    if ((t.url || "").startsWith("https://aules.edu.gva.es/")) {
+      const a = document.createElement("a");
+      a.href = t.url;
+      a.textContent = t.nombre;
+      nombre.append(a);
+    } else {
+      nombre.textContent = t.nombre;
+    }
+    const detalle = document.createElement("p");
+    detalle.className = "detalle";
+    const fecha = new Date(t.vence * 1000).toLocaleString("es-ES", {
+      weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
+    });
+    detalle.textContent = (t.asignatura ? t.asignatura + " – " : "") + fecha;
+    cuerpo.append(nombre, detalle);
+
+    li.append(tiempo, cuerpo);
+    lista.append(li);
+  }
+
+  const edad = Math.round((ahora - datos.actualizado * 1000) / 60000);
+  const cuando = edad < 2 ? "ahora mismo" : edad < 120 ? "hace " + edad + " min" : "hace " + Math.round(edad / 60) + " h";
+  const n = datos.tareas.length;
+  $("estado").textContent = n + (n === 1 ? " tarea" : " tareas") + " · actualizado " + cuando;
+  $("estado").classList.toggle("aviso", edad > 180);
+}
+
+async function entrar(k, p) {
+  datos = await descifrar(k, p);   // si la clave no vale, lanza un error
+  clave = k;
+  plan = await cargarPlan(k);
+  mostrar("panel");
+  pintar();
+}
+
+async function cerrarSesion() {
+  try { await borrarClave(); } catch (e) {}
+  clave = null;
+  datos = null;
+  location.reload();
+}
+
+// --- Arranque ---
+async function iniciar() {
+  try {
+    paquete = await traer("tareas.enc", true);
+  } catch (e) {
+    $("cargando").textContent = "No se pudo cargar el panel. Recarga la página en un momento.";
+    return;
+  }
+  let guardada = null;
+  try { guardada = await leerClave(); } catch (e) {}
+  if (guardada) {
+    try { await entrar(guardada, paquete); return; }
+    catch (e) { try { await borrarClave(); } catch (e2) {} }   // contraseña cambiada: hay que volver a entrar
+  }
+  mostrar("acceso");
+}
+
+$("formulario").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const campo = $("clave");
+  if (!campo.value) return;
+  $("entrar").disabled = true;
+  $("mensaje").textContent = "Comprobando…";
+  try {
+    const k = await derivarClave(campo.value);
+    await entrar(k, paquete);
+    try { await guardarClave(k); } catch (e2) {}   // recordar este dispositivo
+    campo.value = "";
+    $("mensaje").textContent = "";
+  } catch (e3) {
+    $("mensaje").textContent = "Contraseña incorrecta.";
+  }
+  $("entrar").disabled = false;
+});
+
+$("salir").addEventListener("click", cerrarSesion);
+
+// Cada 5 minutos pide datos nuevos; cada minuto actualiza las cuentas atrás.
+setInterval(async () => {
+  if (!clave) return;
+  let nuevo;
+  try { nuevo = await traer("tareas.enc", true); } catch (e) { return; }
+  try {
+    datos = await descifrar(clave, nuevo);
+    paquete = nuevo;
+    plan = await cargarPlan(clave);
+    pintar();
+  } catch (e) { cerrarSesion(); }   // la contraseña cambió
+}, 5 * 60 * 1000);
+setInterval(pintar, 60 * 1000);
+
+iniciar();
+</script>
+</body>
+</html>
