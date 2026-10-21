@@ -1,360 +1,212 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex">
-<title>Panel</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex"><title>Panel de estudio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
 <style>
-:root {
-  --fondo: #eef2f4;
-  --panel: #ffffff;
-  --texto: #14232b;
-  --suave: #5d6e78;
-  --linea: #d6dee3;
-  --vencida: #c62f3b;
-  --hoy: #d9631e;
-  --pronto: #b88a00;
-  --normal: #1f7a72;
-  color-scheme: light;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --fondo: #0f1a20;
-    --panel: #172830;
-    --texto: #e6eef2;
-    --suave: #93a6b0;
-    --linea: #2a3f49;
-    --vencida: #ff6b76;
-    --hoy: #ff9a52;
-    --pronto: #e8bd3a;
-    --normal: #4fc4b8;
-    color-scheme: dark;
-  }
-}
-* { box-sizing: border-box; }
-[hidden] { display: none !important; }
-body {
-  margin: 0;
-  background: var(--fondo);
-  color: var(--texto);
-  font-family: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", sans-serif;
-  line-height: 1.4;
-  padding: env(safe-area-inset-top, 0) 0 env(safe-area-inset-bottom, 0);
-}
-main { max-width: 46rem; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
-header { margin-bottom: 1.5rem; }
-h1 { font-size: clamp(1.8rem, 6vw, 2.6rem); font-weight: 800; margin: 0; letter-spacing: -0.02em; }
-.estado { color: var(--suave); margin: 0.25rem 0 0; font-size: 0.95rem; }
-.estado.aviso { color: var(--hoy); }
-ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.6rem; }
-li {
-  background: var(--panel);
-  border: 1px solid var(--linea);
-  border-left: 6px solid var(--color, var(--normal));
-  border-radius: 6px;
-  display: grid;
-  grid-template-columns: 6.5rem 1fr;
-  gap: 1rem;
-  align-items: center;
-  padding: 0.8rem 1rem;
-}
-.tiempo { color: var(--color, var(--normal)); font-weight: 800; font-size: 1.7rem; line-height: 1.05; letter-spacing: -0.02em; }
-.tiempo small { display: block; font-size: 0.8rem; font-weight: 600; color: var(--suave); letter-spacing: 0; }
-.nombre { font-weight: 600; font-size: 1.05rem; margin: 0; overflow-wrap: anywhere; }
-.nombre a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; }
-.nombre a:hover { color: var(--color, var(--normal)); }
-.detalle { margin: 0.2rem 0 0; color: var(--suave); font-size: 0.9rem; }
-.plan { background: var(--panel); border: 1px solid var(--linea); border-left: 6px solid var(--normal); border-radius: 6px; padding: 0.9rem 1rem; margin-bottom: 1.2rem; }
-.plan h2 { font-size: 1.15rem; margin: 0; }
-.plan .estado { margin: 0.1rem 0 0.6rem; }
-.plan pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; }
-li.vacio { display: block; border-left-style: dashed; text-align: center; color: var(--suave); padding: 1.5rem; }
-.pie { margin-top: 2rem; }
-button {
-  font: inherit; font-weight: 600; cursor: pointer;
-  border-radius: 6px; border: 1px solid var(--linea);
-  background: var(--panel); color: var(--texto); padding: 0.55rem 1rem;
-}
-button:hover { border-color: var(--normal); }
-button:disabled { opacity: 0.6; cursor: wait; }
-a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid var(--normal); outline-offset: 2px; }
+:root{--fondo:#eef2f6;--panel:#fff;--texto:#14232b;--suave:#5d6e78;--linea:#d6dee3;--vencida:#c62f3b;--hoy:#d9631e;--pronto:#b88a00;--normal:#1f7a72;--acento:#7c5cff;--codigo:#0f1a20;--codigotxt:#e6eef2;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--fondo:#0f1a20;--panel:#172830;--texto:#e6eef2;--suave:#93a6b0;--linea:#2a3f49;--vencida:#ff6b76;--hoy:#ff9a52;--pronto:#e8bd3a;--normal:#4fc4b8;--acento:#a08cff;--codigo:#0a1216;color-scheme:dark}}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--fondo);color:var(--texto);font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.45;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+main{max-width:62rem;margin:0 auto;padding:0 1rem 4rem}
+h1{font-size:clamp(1.7rem,5vw,2.4rem);font-weight:800;margin:.2rem 0;letter-spacing:-.02em}
+h2{font-size:1.25rem;margin:1.6rem 0 .6rem;font-weight:800}h3{margin:.2rem 0;font-size:1.05rem}
+h4{margin:1.1rem 0 .4rem;color:var(--acento)}
+.estado{color:var(--suave);margin:.15rem 0;font-size:.92rem}.estado.aviso{color:var(--hoy)}
+nav#menu{position:sticky;top:0;z-index:5;background:var(--fondo);display:flex;gap:.4rem;overflow-x:auto;padding:.7rem 0;border-bottom:1px solid var(--linea);margin-bottom:1rem}
+nav button{white-space:nowrap}nav button.on{background:var(--acento);border-color:var(--acento);color:#fff}
+button,.btn{font:inherit;font-weight:600;cursor:pointer;border-radius:8px;border:1px solid var(--linea);background:var(--panel);color:var(--texto);padding:.5rem .9rem}
+button:hover{border-color:var(--acento)}button.peq{padding:.25rem .6rem;font-size:.85rem}button.rojo{color:var(--vencida)}
+input,select,textarea{font:inherit;width:100%;padding:.55rem .7rem;border-radius:8px;border:1px solid var(--linea);background:var(--panel);color:var(--texto)}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--acento);outline-offset:2px}
+.rejilla{display:grid;gap:.9rem;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr))}
+.card{background:var(--panel);border:1px solid var(--linea);border-radius:12px;padding:1rem;border-top:5px solid var(--color,var(--normal))}
+.card.ancha{grid-column:1/-1}
+.card .rot{font-size:.78rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--suave)}
+.grande{font-size:2.4rem;font-weight:800;line-height:1.05;color:var(--color,var(--normal));letter-spacing:-.03em;margin:.3rem 0 .1rem}
+.grande small{font-size:1rem;font-weight:600;color:var(--suave)}
+.fila{display:flex;gap:.7rem;align-items:center;justify-content:space-between;padding:.55rem .8rem;background:var(--panel);border:1px solid var(--linea);border-left:6px solid var(--color,var(--normal));border-radius:8px;margin:.45rem 0}
+.fila .t{font-weight:600;overflow-wrap:anywhere}.fila .t a{color:inherit}.fila .s{color:var(--suave);font-size:.88rem}
+.fila .cuenta{font-weight:800;color:var(--color);white-space:nowrap;text-align:right}
+.vacio{border:1px dashed var(--linea);border-radius:8px;padding:1.2rem;text-align:center;color:var(--suave)}
+.barra{height:10px;background:var(--linea);border-radius:99px;overflow:hidden;margin:.5rem 0}.barra i{display:block;height:100%;background:var(--acento);border-radius:99px}
+.chip{display:inline-block;font-size:.78rem;font-weight:700;padding:.1rem .55rem;border-radius:99px;background:var(--acento);color:#fff;margin-right:.3rem}
+.chip.gris{background:var(--linea);color:var(--texto)}
+label.chk{display:flex;gap:.6rem;align-items:flex-start;padding:.5rem .1rem;cursor:pointer}label.chk input{width:1.15rem;height:1.15rem;margin-top:.2rem;accent-color:var(--acento);flex:none}
+label.chk.hecho span{text-decoration:line-through;color:var(--suave)}
+.plan pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;margin:0}
+form.f{display:grid;gap:.6rem;grid-template-columns:repeat(auto-fit,minmax(12rem,1fr));align-items:end}form.f .ancho{grid-column:1/-1}form.f label{font-weight:600;font-size:.9rem}
+.semanas{display:flex;gap:.4rem;overflow-x:auto;padding-bottom:.4rem}.semanas button{min-width:3.4rem;text-align:center;line-height:1.15}
+.semanas button small{display:block;font-weight:500;font-size:.7rem;color:var(--suave)}.semanas button.on{background:var(--acento);color:#fff;border-color:var(--acento)}.semanas button.on small{color:#eee}
+.semanas button.actual{border:2px solid var(--hoy)}
+.tema{background:var(--panel);border:1px solid var(--linea);border-radius:10px;margin:.5rem 0}
+.tema>summary{cursor:pointer;padding:.8rem 1rem;font-weight:700;list-style:none;display:flex;gap:.6rem;align-items:center}.tema>summary::-webkit-details-marker{display:none}
+.tema>summary .r{font-weight:400;color:var(--suave);font-size:.88rem;display:block}.tema[open]>summary{border-bottom:1px solid var(--linea)}
+.cuerpo{padding:.2rem 1.1rem 1rem;overflow-x:auto}.cuerpo table{border-collapse:collapse;width:100%;margin:.6rem 0;font-size:.92rem}.cuerpo th,.cuerpo td{border:1px solid var(--linea);padding:.35rem .6rem;text-align:left}.cuerpo th{background:var(--fondo)}
+.cuerpo code{background:var(--fondo);padding:.05rem .35rem;border-radius:4px;font-size:.88em}
+.cuerpo pre{background:var(--codigo);color:var(--codigotxt);padding:.9rem;border-radius:8px;overflow-x:auto;position:relative;margin:.7rem 0}.cuerpo pre code{background:none;padding:0;color:inherit;font-size:.85rem}
+.cuerpo pre::before{content:attr(data-lang);position:absolute;top:.25rem;right:.6rem;font-size:.68rem;color:#8aa;text-transform:uppercase}
+.nota{background:color-mix(in srgb,var(--normal) 14%,transparent);border-left:4px solid var(--normal);padding:.5rem .8rem;border-radius:6px;margin:.7rem 0}.nota.aviso{background:color-mix(in srgb,var(--hoy) 14%,transparent);border-color:var(--hoy)}
+#acceso{max-width:24rem;margin:18vh auto 0}#acceso form{display:grid;gap:.8rem}#acceso button{background:var(--acento);border-color:var(--acento);color:#fff}#mensaje{min-height:1.4em;margin:0;color:var(--vencida)}
+.cab{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;flex-wrap:wrap;padding-top:1rem}
+@media(max-width:30rem){.grande{font-size:2rem}.fila{flex-direction:column;align-items:flex-start}.fila .cuenta{text-align:left}}
+</style></head>
+<body><main>
+<p class="estado" id="cargando">Cargando…</p>
+<section id="acceso" hidden><form id="formulario">
+<h1>Panel</h1><label for="clave">Contraseña</label>
+<input id="clave" type="password" autocomplete="current-password" required>
+<button type="submit" id="entrar">Entrar</button><p id="mensaje" role="alert"></p></form></section>
 
-#acceso { max-width: 24rem; margin: 18vh auto 0; }
-#acceso form { display: grid; gap: 0.8rem; }
-#acceso label { font-weight: 600; }
-#acceso input {
-  font: inherit; width: 100%; padding: 0.65rem 0.8rem;
-  border-radius: 6px; border: 1px solid var(--linea);
-  background: var(--panel); color: var(--texto);
-}
-#acceso button { background: var(--normal); border-color: var(--normal); color: #fff; padding: 0.7rem 1rem; }
-#mensaje { min-height: 1.4em; margin: 0; color: var(--vencida); font-size: 0.95rem; }
-
-@media (max-width: 30rem) {
-  li { grid-template-columns: 1fr; gap: 0.3rem; }
-  .tiempo { font-size: 1.4rem; }
-  .tiempo small { display: inline; margin-left: 0.4rem; }
-}
-</style>
-</head>
-<body>
-<main>
-  <p class="estado" id="cargando">Cargando…</p>
-
-  <section id="acceso" hidden>
-    <form id="formulario">
-      <label for="clave">Contraseña</label>
-      <input id="clave" type="password" autocomplete="current-password" required>
-      <button type="submit" id="entrar">Entrar</button>
-      <p id="mensaje" role="alert"></p>
-    </form>
-  </section>
-
-  <section id="panel" hidden>
-    <header>
-      <h1 id="titulo"></h1>
-      <p class="estado" id="estado"></p>
-    </header>
-    <section class="plan" id="plan" hidden>
-      <h2>Plan de hoy</h2>
-      <p class="estado" id="planInfo"></p>
-      <pre id="planTexto"></pre>
-    </section>
-    <ul id="lista"></ul>
-    <p class="pie"><button type="button" id="salir">Cerrar sesión en este dispositivo</button></p>
-  </section>
-</main>
+<section id="panel" hidden>
+<div class="cab"><div><h1 id="saludo"></h1><p class="estado" id="fechaHoy"></p></div><p class="estado" id="estado"></p></div>
+<nav id="menu">
+<button data-v="inicio">🏠 Inicio</button><button data-v="tareas">✅ Tareas</button>
+<button data-v="examenes">📝 Exámenes</button><button data-v="asignaturas">📚 Asignaturas</button>
+<button id="salir" style="margin-left:auto">Salir</button></nav>
+<div id="vista"></div>
+</section></main>
+<script src="apuntes.js"></script>
 <script>
-// Estos dos valores tienen que ser iguales que en aules.py
-const SAL = new TextEncoder().encode("aules-dashboard-v1");
-const ITERACIONES = 600000;
+const SAL=new TextEncoder().encode("aules-dashboard-v1"),ITERACIONES=600000;
+const $=(id)=>document.getElementById(id);
+let clave=null,datos=null,paquete=null,plan=null,vista="inicio";
+const deBase64=(s)=>Uint8Array.from(atob(s),(c)=>c.charCodeAt(0));
+async function derivarClave(p){const b=await crypto.subtle.importKey("raw",new TextEncoder().encode(p),"PBKDF2",false,["deriveKey"]);return crypto.subtle.deriveKey({name:"PBKDF2",salt:SAL,iterations:ITERACIONES,hash:"SHA-256"},b,{name:"AES-GCM",length:256},false,["decrypt"])}
+async function descifrar(k,p){const c=await crypto.subtle.decrypt({name:"AES-GCM",iv:deBase64(p.iv)},k,deBase64(p.datos));return JSON.parse(new TextDecoder().decode(c))}
+function abrirBD(){return new Promise((ok,mal)=>{const r=indexedDB.open("panel",1);r.onupgradeneeded=()=>r.result.createObjectStore("k");r.onsuccess=()=>ok(r.result);r.onerror=()=>mal(r.error)})}
+async function opBD(m,a){const bd=await abrirBD();return new Promise((ok,mal)=>{const t=bd.transaction("k",m);const p=a(t.objectStore("k"));t.oncomplete=()=>ok(p&&p.result);t.onerror=()=>mal(t.error)})}
+const guardarClave=(k)=>opBD("readwrite",(s)=>s.put(k,"clave")),leerClave=()=>opBD("readonly",(s)=>s.get("clave")),borrarClave=()=>opBD("readwrite",(s)=>s.delete("clave"));
+function mostrar(c){$("cargando").hidden=c!=="cargando";$("acceso").hidden=c!=="acceso";$("panel").hidden=c!=="panel";if(c==="acceso")$("clave").focus()}
+async function traer(n,obl){const r=await fetch(n+"?t="+Date.now(),{cache:"no-store"});if(r.status===404&&!obl)return null;if(!r.ok)throw new Error("red");return r.json()}
+async function cargarPlan(k){try{const p=await traer("plan.enc",false);return p?await descifrar(k,p):null}catch(e){return null}}
 
-const $ = (id) => document.getElementById(id);
-let clave = null;   // clave de descifrado (nunca se puede leer ni copiar desde fuera)
-let datos = null;
-let paquete = null;
-let plan = null;   // plan escrito por la IA local (puede no existir todavía)
+// ---------- Datos guardados en este dispositivo ----------
+const LS={get(k,d){try{const v=localStorage.getItem("panel_"+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem("panel_"+k,JSON.stringify(v))}catch(e){}}};
+const SEMILLA=[{id:"psp-u1",asig:"psp",titulo:"Examen Unidad 1 · Programación concurrente",fecha:"2026-11-09T09:00",aprox:true,notas:"Semana 9 (09–15/11). Día y hora exactos por confirmar: pulsa Editar."}];
+let examenes=LS.get("examenes",null)||SEMILLA.map((e)=>({...e}));
+let hechos=LS.get("hechos",{});
+const guardarEx=()=>LS.set("examenes",examenes),guardarHechos=()=>LS.set("hechos",hechos);
 
-const deBase64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+// ---------- Utilidades ----------
+const esc=(s)=>String(s??"").replace(/[&<>"]/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const DIA=864e5;
+const f0=(s)=>new Date(s+"T00:00:00"),f1=(s)=>new Date(s+"T23:59:59");
+const asig=(id)=>ASIGNATURAS.find((a)=>a.id===id);
+function restante(ms){const min=Math.floor(Math.abs(ms)/6e4),h=Math.floor(min/60),d=Math.floor(h/24);
+ let v,u;if(d>=2){v=d;u="días"}else if(h>=1){v=h;u=h===1?"hora":"horas"}else{v=Math.max(min,1);u="min"}return{v,u,pasada:ms<0,texto:v+" "+u}}
+function color(ms){if(ms<0)return"var(--vencida)";if(ms<DIA)return"var(--hoy)";if(ms<3*DIA)return"var(--pronto)";return"var(--normal)"}
+const fechaLarga=(d)=>d.toLocaleDateString("es-ES",{weekday:"long",day:"numeric",month:"long"});
+const fechaCorta=(d)=>d.toLocaleDateString("es-ES",{day:"numeric",month:"short"});
+function semanaActual(a){const ahora=new Date();
+ for(const s of a.semanas)if(ahora>=f0(s.ini)&&ahora<=f1(s.fin))return{s,estado:"en curso"};
+ if(ahora<f0(a.semanas[0].ini))return{s:a.semanas[0],estado:"aún no empieza"};
+ return{s:a.semanas[a.semanas.length-1],estado:"terminado"}}
+const etiquetaSem=(s)=>"Semana "+s.n;
+function ejerciciosPendientes(a){const ahora=new Date(),r=[];
+ for(const s of a.semanas)if(s.ejercicios&&f0(s.ini)<=ahora)for(const n of s.ejercicios)if(!hechos["ej_"+a.id+"_"+n])r.push({n,s});return r}
+function tituloEj(a,n){return(a.ejercicios[n]||["Ejercicio "+n])[0]}
+function chkEj(a,n,s){const h=!!hechos["ej_"+a.id+"_"+n];const [t,d]=a.ejercicios[n]||["Ejercicio "+n,""];
+ return `<label class="chk ${h?"hecho":""}"><input type="checkbox" data-ej="${a.id}_${n}" ${h?"checked":""}><span><b>Ej. ${n}</b> · ${esc(t)}<br><small class="estado">${esc(d)}</small></span></label>`}
 
-async function derivarClave(contrasena) {
-  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(contrasena), "PBKDF2", false, ["deriveKey"]);
-  return crypto.subtle.deriveKey(
-    { name: "PBKDF2", salt: SAL, iterations: ITERACIONES, hash: "SHA-256" },
-    base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]
-  );
-}
+// ---------- Vistas ----------
+function proximosExamenes(){const ahora=Date.now();return examenes.map((e)=>({...e,ms:new Date(e.fecha).getTime()-ahora})).filter((e)=>e.ms>-3*3600e3).sort((a,b)=>a.ms-b.ms)}
+function tarjetaCuenta(rot,titulo,sub,ms,extra=""){const r=restante(ms);
+ return `<div class="card" style="--color:${color(ms)}"><div class="rot">${rot}</div><div class="grande">${r.v} <small>${r.u}${r.pasada?" de retraso":""}</small></div><h3>${titulo}</h3><p class="estado">${sub}</p>${extra}</div>`}
 
-async function descifrar(k, p) {
-  const claro = await crypto.subtle.decrypt({ name: "AES-GCM", iv: deBase64(p.iv) }, k, deBase64(p.datos));
-  return JSON.parse(new TextDecoder().decode(claro));
-}
+function vInicio(){const ahora=Date.now(),ex=proximosExamenes()[0];let h='<div class="rejilla">';
+ if(ex){const a=asig(ex.asig);h+=tarjetaCuenta("📝 Próximo examen",esc(ex.titulo),(a?a.corto+" · ":"")+(ex.aprox?"semana del "+fechaCorta(new Date(ex.fecha))+" (día por confirmar)":fechaLarga(new Date(ex.fecha))+" · "+new Date(ex.fecha).toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"})),ex.ms)}
+ else h+='<div class="card" style="--color:var(--suave)"><div class="rot">📝 Próximo examen</div><h3>Sin exámenes</h3><p class="estado">Añade uno en la pestaña Exámenes.</p></div>';
+ const t=(datos&&datos.tareas||[]).filter((x)=>x.vence*1000>ahora-14*DIA)[0];
+ if(t)h+=tarjetaCuenta("📬 Próxima entrega en Aules",esc(t.nombre),esc(t.asignatura||"")+" · "+fechaCorta(new Date(t.vence*1000)),t.vence*1000-ahora);
+ else h+='<div class="card"><div class="rot">📬 Próxima entrega</div><h3>Nada pendiente 🎉</h3></div>';
+ const n=(datos?datos.tareas.length:0);let pend=0;for(const a of ASIGNATURAS)pend+=ejerciciosPendientes(a).length;
+ h+=`<div class="card" style="--color:var(--acento)"><div class="rot">📋 Por hacer</div><div class="grande">${n+pend} <small>cosas</small></div><p class="estado">${n} entregas Aules · ${pend} ejercicios sin marcar</p></div></div>`;
+ if(plan)h+=`<h2>🤖 Plan de hoy</h2><div class="card plan"><p class="estado ${(Date.now()-plan.actualizado*1000)>864e5?"aviso":""}">Escrito por la IA de tu PC · hace ${Math.max(1,Math.round((Date.now()-plan.actualizado*1000)/36e5))} h</p><pre>${esc(plan.texto)}</pre></div>`;
+ for(const a of ASIGNATURAS){const {s,estado}=semanaActual(a);const ini=f0(s.ini),dias=Math.min(7,Math.max(0,Math.floor((new Date()-ini)/DIA)+1));
+  h+=`<h2>${a.emoji} ${a.corto} · esta semana</h2><div class="card" style="--color:${a.color}"><span class="chip">${etiquetaSem(s)}</span><span class="chip gris">${fechaCorta(ini)} – ${fechaCorta(f0(s.fin))}</span><span class="chip gris">${estado}</span>
+  <h3 style="margin-top:.6rem">${esc(s.titulo)}</h3>`;
+  if(estado==="en curso")h+=`<div class="barra"><i style="width:${dias/7*100}%"></i></div><p class="estado">Día ${dias} de 7 de la semana</p>`;
+  if(s.examen)h+=`<div class="nota aviso">¡Semana de examen! Repasa los apuntes de las semanas anteriores.</div>`;
+  if(s.temas.length)h+=`<h4>Temario</h4>`+s.temas.map((id)=>`<div><a href="#${a.id}/${s.n}/${id}">${a.temas[id].ic} ${esc(a.temas[id].t)}</a> <span class="estado">— ${esc(a.temas[id].resumen)}</span></div>`).join("");
+  if(s.ejercicios)h+=`<h4>Ejercicios de la semana</h4>`+s.ejercicios.map((n)=>chkEj(a,n,s)).join("");
+  h+=`<p><button class="peq" onclick="location.hash='#${a.id}/${s.n}'">Abrir apuntes de esta semana →</button></p></div>`;
+  const atras=ejerciciosPendientes(a).filter((p)=>p.s!==s);
+  if(atras.length)h+=`<h3>⏳ Ejercicios atrasados</h3><div class="card" style="--color:var(--hoy)">`+atras.map((p)=>chkEj(a,p.n,p.s)).join("")+`</div>`}
+ return h}
 
-// --- Guardar la clave en este dispositivo (sobrevive a cerrar el navegador y apagar el PC) ---
-function abrirBD() {
-  return new Promise((ok, mal) => {
-    const r = indexedDB.open("panel", 1);
-    r.onupgradeneeded = () => r.result.createObjectStore("k");
-    r.onsuccess = () => ok(r.result);
-    r.onerror = () => mal(r.error);
-  });
-}
-async function operacionBD(modo, accion) {
-  const bd = await abrirBD();
-  return new Promise((ok, mal) => {
-    const t = bd.transaction("k", modo);
-    const pedido = accion(t.objectStore("k"));
-    t.oncomplete = () => ok(pedido && pedido.result);
-    t.onerror = () => mal(t.error);
-  });
-}
-const guardarClave = (k) => operacionBD("readwrite", (s) => s.put(k, "clave"));
-const leerClave = () => operacionBD("readonly", (s) => s.get("clave"));
-const borrarClave = () => operacionBD("readwrite", (s) => s.delete("clave"));
+function vTareas(){const ahora=Date.now();let h="<h2>📬 Entregas de Aules</h2>";
+ const ts=datos?datos.tareas:[];
+ h+=ts.length?ts.map((t)=>{const ms=t.vence*1000-ahora,r=restante(ms);const nom=(t.url||"").startsWith("https://aules.edu.gva.es/")?`<a href="${esc(t.url)}">${esc(t.nombre)}</a>`:esc(t.nombre);
+  return `<div class="fila" style="--color:${color(ms)}"><div><div class="t">${nom}</div><div class="s">${esc(t.asignatura||"")} · ${new Date(t.vence*1000).toLocaleString("es-ES",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}</div></div><div class="cuenta">${r.texto}<div class="s">${r.pasada?"de retraso":"restantes"}</div></div></div>`}).join(""):'<div class="vacio">No tienes entregas pendientes.</div>';
+ for(const a of ASIGNATURAS){const p=ejerciciosPendientes(a);h+=`<h2>${a.emoji} Ejercicios de ${a.corto} sin marcar (${p.length})</h2>`;
+  h+=p.length?'<div class="card" style="--color:'+a.color+'">'+p.map((x)=>chkEj(a,x.n,x.s)+`<span class="chip gris" style="margin-left:1.8rem">${etiquetaSem(x.s)}</span>`).join("")+"</div>":'<div class="vacio">Todo al día ✅</div>'}
+ return h}
 
-// --- Pantallas ---
-function mostrar(cual) {
-  $("cargando").hidden = cual !== "cargando";
-  $("acceso").hidden = cual !== "acceso";
-  $("panel").hidden = cual !== "panel";
-  if (cual === "acceso") $("clave").focus();
-}
+let editando=null;
+function vExamenes(){const ahora=Date.now();const lista=examenes.map((e)=>({...e,ms:new Date(e.fecha).getTime()-ahora})).sort((a,b)=>a.ms-b.ms);
+ const e=editando?examenes.find((x)=>x.id===editando):null;
+ let h=`<h2>${e?"✏️ Editar examen":"➕ Añadir examen"}</h2><div class="card"><form class="f" id="fEx">
+ <div><label>Asignatura</label><select id="exAsig">${ASIGNATURAS.map((a)=>`<option value="${a.id}" ${e&&e.asig===a.id?"selected":""}>${a.nombre}</option>`).join("")}<option value="otra" ${e&&e.asig==="otra"?"selected":""}>Otra</option></select></div>
+ <div><label>Título</label><input id="exTit" required value="${esc(e?e.titulo:"")}" placeholder="Examen Unidad 2"></div>
+ <div><label>Fecha y hora</label><input id="exFecha" type="datetime-local" required value="${e?e.fecha:""}"></div>
+ <div class="ancho"><label>Temas / notas</label><input id="exNotas" value="${esc(e?e.notas||"":"")}" placeholder="Hilos, sincronización…"></div>
+ <div class="ancho"><button type="submit" style="background:var(--acento);color:#fff;border-color:var(--acento)">${e?"Guardar cambios":"Añadir"}</button> ${e?'<button type="button" id="exCancel">Cancelar</button>':""}</div></form>
+ <p class="estado">Se guardan en este navegador. Para llevarlos a otro dispositivo usa Exportar/Importar.</p></div>
+ <h2>📝 Próximos exámenes</h2>`;
+ h+=lista.length?lista.map((x)=>{const a=asig(x.asig),r=restante(x.ms);const d=new Date(x.fecha);
+  return `<div class="fila" style="--color:${x.ms<0?"var(--suave)":color(x.ms)}"><div><div class="t">${esc(x.titulo)}</div><div class="s">${a?a.emoji+" "+a.corto:"Otra"} · ${x.aprox?"semana del "+fechaCorta(d)+" (por confirmar)":fechaLarga(d)+" "+d.toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"})}${x.notas?" · "+esc(x.notas):""}</div></div>
+  <div class="cuenta">${x.ms<0?"Pasado":r.texto}<div><button class="peq" data-edit="${x.id}">Editar</button> <button class="peq rojo" data-del="${x.id}">Borrar</button></div></div></div>`}).join(""):'<div class="vacio">No hay exámenes guardados.</div>';
+ h+=`<p style="margin-top:1rem"><button id="exExp">⬇ Exportar</button> <button id="exImp">⬆ Importar</button><input type="file" id="exFile" accept=".json" hidden></p>`;return h}
 
-async function traer(nombre, obligatorio) {
-  const r = await fetch(nombre + "?t=" + Date.now(), { cache: "no-store" });
-  if (r.status === 404 && !obligatorio) return null;
-  if (!r.ok) throw new Error("red");
-  return r.json();
-}
+function vAsignaturas(){return `<h2>📚 Asignaturas</h2><div class="rejilla">`+ASIGNATURAS.map((a)=>{const{s}=semanaActual(a);const tot=Object.keys(a.ejercicios).length,ok=Object.keys(a.ejercicios).filter((n)=>hechos["ej_"+a.id+"_"+n]).length;
+ return `<a href="#${a.id}" style="text-decoration:none;color:inherit"><div class="card" style="--color:${a.color}"><div class="grande" style="color:${a.color}">${a.emoji}</div><h3>${a.nombre}</h3><p class="estado">${a.profesor} · ${etiquetaSem(s)}: ${esc(s.titulo)}</p><div class="barra"><i style="width:${ok/tot*100}%;background:${a.color}"></i></div><p class="estado">${ok}/${tot} ejercicios hechos</p></div></a>`}).join("")+`<div class="card" style="--color:var(--suave);border-style:dashed"><h3>＋ Más asignaturas</h3><p class="estado">Cuando subas más contenido, añádelo en <code>docs/apuntes.js</code> y aparecerá aquí.</p></div></div>`}
 
-async function cargarPlan(k) {
-  try {
-    const p = await traer("plan.enc", false);
-    return p ? await descifrar(k, p) : null;
-  } catch (e) {
-    return null;
-  }
-}
+function vAsignatura(a,semN,temaId){const act=semanaActual(a).s;const sel=a.semanas.find((s)=>String(s.n)===String(semN))||act;
+ let h=`<p><a href="#asignaturas">← Asignaturas</a></p><h1>${a.emoji} ${a.nombre}</h1><div class="semanas">`+a.semanas.map((s)=>`<button data-sem="${s.n}" class="${s===sel?"on":""} ${s===act?"actual":""}">S${s.n}<small>${fechaCorta(f0(s.ini))}</small></button>`).join("")+`</div>
+ <p class="estado">El borde naranja marca la semana actual.</p>
+ <div class="card" style="--color:${a.color}"><span class="chip">${etiquetaSem(sel)}</span><span class="chip gris">${fechaCorta(f0(sel.ini))} – ${fechaCorta(f0(sel.fin))}</span><h3 style="margin-top:.5rem">${esc(sel.titulo)}</h3></div>`;
+ if(sel.examen)h+='<div class="nota aviso">Semana de examen.</div>';
+ if(sel.ejercicios)h+=`<h2>✍️ Ejercicios</h2><div class="card">`+sel.ejercicios.map((n)=>chkEj(a,n,sel)).join("")+`</div>`;
+ if(sel.temas.length){h+=`<h2>📖 Apuntes</h2><input id="busca" placeholder="Buscar en los apuntes de esta semana…" style="margin-bottom:.5rem">`;
+  h+=sel.temas.map((id)=>{const t=a.temas[id];return `<details class="tema" id="t_${id}" ${temaId===id?"open":""}><summary><span style="font-size:1.4rem">${t.ic}</span><span>${esc(t.t)}<span class="r">${esc(t.resumen)}</span></span></summary><div class="cuerpo">${t.html}</div></details>`}).join("")}
+ else h+='<div class="vacio" style="margin-top:1rem">Esta semana no hay temario nuevo.</div>';
+ h+=`<h2>🗂️ Todo el temario</h2><div>`+a.semanas.filter((s)=>s.temas.length).map((s)=>`<p class="estado"><b>${etiquetaSem(s)}</b>: `+s.temas.map((id)=>`<a href="#${a.id}/${s.n}/${id}">${esc(a.temas[id].t)}</a>`).join(" · ")+"</p>").join("")+"</div>";return h}
 
-// --- Dibujar las tareas ---
-function formatoRestante(ms) {
-  const min = Math.floor(Math.abs(ms) / 60000);
-  const horas = Math.floor(min / 60);
-  const dias = Math.floor(horas / 24);
-  let valor;
-  if (dias >= 2) valor = dias + " días";
-  else if (horas >= 1) valor = horas + (horas === 1 ? " hora" : " horas");
-  else valor = Math.max(min, 1) + " min";
-  return { valor, pasada: ms < 0 };
-}
+function pintar(){if(!datos)return;const ruta=location.hash.slice(1).split("/");let v=ruta[0]||"inicio",html;
+ const a=asig(v);document.querySelectorAll("#menu [data-v]").forEach((b)=>b.classList.toggle("on",b.dataset.v===(a?"asignaturas":v)));
+ if(a)html=vAsignatura(a,ruta[1],ruta[2]);else if(v==="tareas")html=vTareas();else if(v==="examenes")html=vExamenes();else if(v==="asignaturas")html=vAsignaturas();else html=vInicio();
+ const y=scrollY;$("vista").innerHTML=html;enlazar(a,ruta);
+ const h=new Date().getHours();$("saludo").textContent=(h<7?"Buenas noches":h<14?"Buenos días":h<21?"Buenas tardes":"Buenas noches")+" 👋";
+ $("fechaHoy").textContent=fechaLarga(new Date()).replace(/^./,(c)=>c.toUpperCase());
+ const edad=Math.round((Date.now()-datos.actualizado*1000)/6e4);$("estado").textContent="Aules actualizado "+(edad<2?"ahora mismo":edad<120?"hace "+edad+" min":"hace "+Math.round(edad/60)+" h");$("estado").classList.toggle("aviso",edad>180);
+ if(ruta[2]){const el=$("t_"+ruta[2]);if(el)el.scrollIntoView()}else scrollTo(0,y)}
 
-function colorDe(ms) {
-  if (ms < 0) return "var(--vencida)";
-  if (ms < 24 * 3600e3) return "var(--hoy)";
-  if (ms < 3 * 24 * 3600e3) return "var(--pronto)";
-  return "var(--normal)";
-}
+function enlazar(a,ruta){
+ document.querySelectorAll("[data-ej]").forEach((c)=>c.addEventListener("change",()=>{hechos["ej_"+c.dataset.ej]=c.checked;guardarHechos();pintar()}));
+ document.querySelectorAll("[data-sem]").forEach((b)=>b.addEventListener("click",()=>{location.hash="#"+a.id+"/"+b.dataset.sem}));
+ const bu=$("busca");if(bu)bu.addEventListener("input",()=>{const q=bu.value.toLowerCase();document.querySelectorAll(".tema").forEach((d)=>{const ok=!q||d.textContent.toLowerCase().includes(q);d.hidden=!ok;if(q&&ok)d.open=true})});
+ const f=$("fEx");if(f){f.addEventListener("submit",(e)=>{e.preventDefault();const o={id:editando||"ex"+Date.now(),asig:$("exAsig").value,titulo:$("exTit").value.trim(),fecha:$("exFecha").value,aprox:false,notas:$("exNotas").value.trim()};
+  examenes=editando?examenes.map((x)=>x.id===editando?o:x):[...examenes,o];editando=null;guardarEx();pintar()});
+  const c=$("exCancel");if(c)c.onclick=()=>{editando=null;pintar()};
+  document.querySelectorAll("[data-del]").forEach((b)=>b.onclick=()=>{if(confirm("¿Borrar este examen?")){examenes=examenes.filter((x)=>x.id!==b.dataset.del);guardarEx();pintar()}});
+  document.querySelectorAll("[data-edit]").forEach((b)=>b.onclick=()=>{editando=b.dataset.edit;pintar();scrollTo(0,0)});
+  $("exExp").onclick=()=>{const l=document.createElement("a");l.href=URL.createObjectURL(new Blob([JSON.stringify({examenes,hechos},null,1)],{type:"application/json"}));l.download="panel-datos.json";l.click()};
+  $("exImp").onclick=()=>$("exFile").click();
+  $("exFile").onchange=async(e)=>{try{const j=JSON.parse(await e.target.files[0].text());if(j.examenes){examenes=j.examenes;guardarEx()}if(j.hechos){hechos=j.hechos;guardarHechos()}pintar()}catch(x){alert("Archivo no válido")}}}}
 
-function pintarPlan() {
-  const caja = $("plan");
-  if (!plan) { caja.hidden = true; return; }
-  caja.hidden = false;
-  $("planTexto").textContent = plan.texto;
-  const horas = Math.round((Date.now() - plan.actualizado * 1000) / 3600e3);
-  $("planInfo").textContent = "Escrito por la IA de tu PC · " + (horas < 1 ? "hace menos de 1 h" : "hace " + horas + " h");
-  $("planInfo").classList.toggle("aviso", horas > 24);
-}
-
-function pintar() {
-  if (!datos) return;
-  pintarPlan();
-  const ahora = Date.now();
-  const lista = $("lista");
-  lista.replaceChildren();
-  $("titulo").textContent = "Entregas pendientes";
-
-  if (datos.tareas.length === 0) {
-    const vacio = document.createElement("li");
-    vacio.className = "vacio";
-    vacio.textContent = "No tienes entregas pendientes.";
-    lista.append(vacio);
-  }
-
-  for (const t of datos.tareas) {
-    const ms = t.vence * 1000 - ahora;
-    const { valor, pasada } = formatoRestante(ms);
-
-    const li = document.createElement("li");
-    li.style.setProperty("--color", colorDe(ms));
-
-    const tiempo = document.createElement("div");
-    tiempo.className = "tiempo";
-    tiempo.textContent = valor;
-    const sub = document.createElement("small");
-    sub.textContent = pasada ? "de retraso" : "restantes";
-    tiempo.append(sub);
-
-    const cuerpo = document.createElement("div");
-    const nombre = document.createElement("p");
-    nombre.className = "nombre";
-    if ((t.url || "").startsWith("https://aules.edu.gva.es/")) {
-      const a = document.createElement("a");
-      a.href = t.url;
-      a.textContent = t.nombre;
-      nombre.append(a);
-    } else {
-      nombre.textContent = t.nombre;
-    }
-    const detalle = document.createElement("p");
-    detalle.className = "detalle";
-    const fecha = new Date(t.vence * 1000).toLocaleString("es-ES", {
-      weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
-    });
-    detalle.textContent = (t.asignatura ? t.asignatura + " – " : "") + fecha;
-    cuerpo.append(nombre, detalle);
-
-    li.append(tiempo, cuerpo);
-    lista.append(li);
-  }
-
-  const edad = Math.round((ahora - datos.actualizado * 1000) / 60000);
-  const cuando = edad < 2 ? "ahora mismo" : edad < 120 ? "hace " + edad + " min" : "hace " + Math.round(edad / 60) + " h";
-  const n = datos.tareas.length;
-  $("estado").textContent = n + (n === 1 ? " tarea" : " tareas") + " · actualizado " + cuando;
-  $("estado").classList.toggle("aviso", edad > 180);
-}
-
-async function entrar(k, p) {
-  datos = await descifrar(k, p);   // si la clave no vale, lanza un error
-  clave = k;
-  plan = await cargarPlan(k);
-  mostrar("panel");
-  pintar();
-}
-
-async function cerrarSesion() {
-  try { await borrarClave(); } catch (e) {}
-  clave = null;
-  datos = null;
-  location.reload();
-}
-
-// --- Arranque ---
-async function iniciar() {
-  try {
-    paquete = await traer("tareas.enc", true);
-  } catch (e) {
-    $("cargando").textContent = "No se pudo cargar el panel. Recarga la página en un momento.";
-    return;
-  }
-  let guardada = null;
-  try { guardada = await leerClave(); } catch (e) {}
-  if (guardada) {
-    try { await entrar(guardada, paquete); return; }
-    catch (e) { try { await borrarClave(); } catch (e2) {} }   // contraseña cambiada: hay que volver a entrar
-  }
-  mostrar("acceso");
-}
-
-$("formulario").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const campo = $("clave");
-  if (!campo.value) return;
-  $("entrar").disabled = true;
-  $("mensaje").textContent = "Comprobando…";
-  try {
-    const k = await derivarClave(campo.value);
-    await entrar(k, paquete);
-    try { await guardarClave(k); } catch (e2) {}   // recordar este dispositivo
-    campo.value = "";
-    $("mensaje").textContent = "";
-  } catch (e3) {
-    $("mensaje").textContent = "Contraseña incorrecta.";
-  }
-  $("entrar").disabled = false;
-});
-
-$("salir").addEventListener("click", cerrarSesion);
-
-// Cada 5 minutos pide datos nuevos; cada minuto actualiza las cuentas atrás.
-setInterval(async () => {
-  if (!clave) return;
-  let nuevo;
-  try { nuevo = await traer("tareas.enc", true); } catch (e) { return; }
-  try {
-    datos = await descifrar(clave, nuevo);
-    paquete = nuevo;
-    plan = await cargarPlan(clave);
-    pintar();
-  } catch (e) { cerrarSesion(); }   // la contraseña cambió
-}, 5 * 60 * 1000);
-setInterval(pintar, 60 * 1000);
-
+async function entrar(k,p){datos=await descifrar(k,p);clave=k;plan=await cargarPlan(k);mostrar("panel");pintar()}
+async function cerrarSesion(){try{await borrarClave()}catch(e){}clave=null;datos=null;location.reload()}
+async function iniciar(){try{paquete=await traer("tareas.enc",true)}catch(e){$("cargando").textContent="No se pudo cargar el panel. Recarga en un momento.";return}
+ let g=null;try{g=await leerClave()}catch(e){}
+ if(g){try{await entrar(g,paquete);return}catch(e){try{await borrarClave()}catch(e2){}}}mostrar("acceso")}
+$("formulario").addEventListener("submit",async(e)=>{e.preventDefault();const c=$("clave");if(!c.value)return;$("entrar").disabled=true;$("mensaje").textContent="Comprobando…";
+ try{const k=await derivarClave(c.value);await entrar(k,paquete);try{await guardarClave(k)}catch(e2){}c.value="";$("mensaje").textContent=""}catch(e3){$("mensaje").textContent="Contraseña incorrecta."}$("entrar").disabled=false});
+$("salir").addEventListener("click",cerrarSesion);
+document.querySelectorAll("#menu [data-v]").forEach((b)=>b.addEventListener("click",()=>{if(location.hash==="#"+b.dataset.v)pintar();else location.hash="#"+b.dataset.v}));
+addEventListener("hashchange",()=>{if(clave){pintar();if(!location.hash.split("/")[2])scrollTo(0,0)}});
+setInterval(async()=>{if(!clave)return;let n;try{n=await traer("tareas.enc",true)}catch(e){return}try{datos=await descifrar(clave,n);paquete=n;plan=await cargarPlan(clave);if(!document.activeElement||!/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName))pintar()}catch(e){cerrarSesion()}},5*60*1000);
+setInterval(()=>{if(clave&&!(document.activeElement&&/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)))pintar()},60*1000);
 iniciar();
-</script>
-</body>
-</html>
+</script></body></html>
