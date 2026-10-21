@@ -1,6 +1,6 @@
 // Apuntes de PSP. Para añadir otra asignatura, añade un objeto más a ASIGNATURAS.
-const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-const code = (s, lang = "java") => `<pre data-lang="${lang}"><code>${esc(s.trim())}</code></pre>`;
+const escCodigo = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const code = (s, lang = "java") => `<pre data-lang="${lang}"><code>${escCodigo(s.trim())}</code></pre>`;
 const tip = (t) => `<div class="nota">💡 ${t}</div>`;
 const warn = (t) => `<div class="nota aviso">⚠️ ${t}</div>`;
 
