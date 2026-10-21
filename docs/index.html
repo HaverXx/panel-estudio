@@ -41,9 +41,9 @@ html{-webkit-text-size-adjust:100%;scroll-padding-top:5.5rem}
 body{margin:0;min-height:100vh;background:#1c1c28;color:var(--txt);font-family:var(--fuente);font-size:16px;line-height:1.5;
  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-feature-settings:"cv11","ss01"}
 /* Fondo y velo */
-#fondo{position:fixed;inset:0;z-index:-2;background-size:cover}
+#fondo{position:fixed;inset:-4rem;z-index:-2;background-size:cover}
 #velo{position:fixed;inset:0;z-index:-1;background:rgb(var(--velo-rgb)/var(--velo));pointer-events:none}
-main{max-width:64rem;margin:0 auto;padding:max(1rem,env(safe-area-inset-top)) 1.1rem calc(6.5rem + env(safe-area-inset-bottom))}
+main{max-width:68rem;margin:0 auto;padding:max(1rem,env(safe-area-inset-top)) 1.1rem calc(6.5rem + env(safe-area-inset-bottom))}
 @media(min-width:44rem){main{padding-bottom:4rem}}
 
 /* Tipografía */
@@ -91,7 +91,7 @@ nav#menu button.on{background:var(--acento);color:#fff;box-shadow:0 2px 10px col
 .ic{width:1.15rem;height:1.15rem;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}
 @media(max-width:44rem){
  nav#menu{position:fixed;top:auto;bottom:max(.7rem,env(safe-area-inset-bottom));left:.7rem;right:.7rem;width:auto;justify-content:space-between;border-radius:26px;margin:0;padding:.35rem;overflow:visible}
- nav#menu button{flex:1;flex-direction:column;gap:.15rem;padding:.45rem .2rem;font-size:.68rem;border-radius:20px}
+ nav#menu button{flex:1;flex-direction:column;gap:.15rem;padding:.45rem .1rem;font-size:.6rem;letter-spacing:-.02em;border-radius:20px;min-width:0}
  .ic{width:1.35rem;height:1.35rem}}
 
 /* Controles */
@@ -125,9 +125,9 @@ form.f label,.lbl{display:block;font-weight:600;font-size:.85rem;color:var(--sua
 .barra{height:7px;background:var(--capa2);border-radius:99px;overflow:hidden;margin:.7rem 0 .4rem}.barra i{display:block;height:100%;background:var(--acento);border-radius:99px;transition:width .4s}
 label.chk{display:flex;gap:.8rem;align-items:flex-start;padding:.6rem .2rem;cursor:pointer;border-bottom:1px solid var(--linea)}
 label.chk:last-child{border-bottom:0}
-label.chk input{appearance:none;-webkit-appearance:none;width:1.45rem;height:1.45rem;padding:0;margin:.12rem 0 0;border-radius:50%;border:2px solid var(--tenue);background:transparent;flex:none;position:relative;cursor:pointer;transition:background .15s,border-color .15s}
-label.chk input:checked{background:var(--acento);border-color:var(--acento)}
-label.chk input:checked::after{content:"";position:absolute;left:.4rem;top:.15rem;width:.32rem;height:.62rem;border:solid #fff;border-width:0 2.2px 2.2px 0;transform:rotate(45deg)}
+label.chk input,.it input[type=checkbox]{appearance:none;-webkit-appearance:none;width:1.45rem;height:1.45rem;padding:0;margin:.12rem 0 0;border-radius:50%;border:2px solid var(--tenue);background:transparent;flex:none;position:relative;cursor:pointer;transition:background .15s,border-color .15s}
+label.chk input:checked,.it input[type=checkbox]:checked{background:var(--acento);border-color:var(--acento)}
+label.chk input:checked::after,.it input[type=checkbox]:checked::after{content:"";position:absolute;left:.4rem;top:.15rem;width:.32rem;height:.62rem;border:solid #fff;border-width:0 2.2px 2.2px 0;transform:rotate(45deg)}
 label.chk.hecho span{color:var(--suave)}label.chk.hecho span b,label.chk.hecho .tit{text-decoration:line-through}
 .plan pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;margin:.4rem 0 0;line-height:1.6}
 
@@ -171,6 +171,50 @@ label.chk.hecho span{color:var(--suave)}label.chk.hecho span b,label.chk.hecho .
 .nota .nl{display:inline-block;font-size:.68rem;font-weight:750;letter-spacing:.08em;text-transform:uppercase;color:var(--acento);margin-right:.6rem}
 .nota.aviso .nl{color:var(--hoy)}
 
+/* Bento / inicio */
+.bento{display:grid;grid-template-columns:repeat(12,1fr);gap:1rem}
+.bento>.c5{grid-column:span 5}.bento>.c7{grid-column:span 7}.bento>.c6{grid-column:span 6}.bento>.c12{grid-column:1/-1}
+@media(max-width:52rem){.bento>*{grid-column:1/-1!important}}
+.card .rot{margin-bottom:.2rem}
+.mini{display:flex;justify-content:space-between;gap:1rem;align-items:center;padding:.75rem 0;border-bottom:1px solid var(--linea)}
+.mini:last-of-type{border-bottom:0}
+.mini .t{font-weight:600;overflow-wrap:anywhere}.mini .t a{color:inherit}.mini .s{font-size:.85rem;color:var(--suave)}
+.mini .cuenta{font-weight:750;color:var(--color);white-space:nowrap;font-variant-numeric:tabular-nums;text-align:right}
+.mini::before{content:"";width:4px;align-self:stretch;border-radius:4px;background:var(--color);flex:none;margin-right:-.3rem}
+.mini>div:first-of-type{flex:1}
+.cl{display:flex;gap:.8rem;align-items:center;padding:.55rem .6rem;border-radius:14px}
+.cl .b{width:4px;align-self:stretch;min-height:2rem;border-radius:4px;background:var(--color);flex:none}
+.cl .h{width:6.4rem;font-size:.82rem;color:var(--suave);font-variant-numeric:tabular-nums;flex:none}
+.cl.pasada{opacity:.45}.cl.ahora{background:color-mix(in srgb,var(--color) 18%,transparent)}
+.etq{font-size:.66rem;font-weight:750;text-transform:uppercase;letter-spacing:.07em;color:var(--acento);margin-left:.4rem}
+.enl{display:inline-block;margin-top:.7rem;font-size:.88rem;font-weight:600}
+/* Semana */
+.cabSec{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;flex-wrap:wrap;margin:.4rem .2rem 1rem}
+.cabSec h2{margin:0 0 .2rem}
+.diasgrid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(15rem,1fr))}
+.dia{padding:1rem 1.1rem}.dia.hoy{box-shadow:var(--sombra),0 0 0 2px var(--acento)}
+.dia .dn{display:flex;justify-content:space-between;align-items:baseline;font-weight:700;margin-bottom:.4rem}
+.dia .dn small{font-weight:500}
+.it{display:flex;gap:.65rem;align-items:flex-start;padding:.5rem 0;border-bottom:1px solid var(--linea)}
+.it:last-of-type{border-bottom:0}
+.it .txt{flex:1;cursor:text;overflow-wrap:anywhere}.it.hecho .txt{text-decoration:line-through;color:var(--suave)}
+.it input.edit{flex:1;padding:.3rem .55rem}
+.it .x{padding:0 .45rem;background:transparent;font-size:1.2rem;color:var(--tenue);line-height:1.3}
+.it .x:hover{color:var(--vencida);background:transparent}
+.it input[type=checkbox]{margin-top:.1rem}
+.addps{display:flex;gap:.4rem;margin-top:.7rem}.addps input{padding:.5rem .75rem;font-size:.9rem}
+.vacioit{color:var(--tenue);font-size:.88rem;margin:.2rem 0}
+/* Horario */
+.tabla{overflow-x:auto;padding:.7rem}
+table.horario{border-collapse:separate;border-spacing:.4rem;width:100%;min-width:42rem}
+.horario th{font-size:.75rem;letter-spacing:.07em;text-transform:uppercase;color:var(--suave);padding:.5rem;text-align:center}
+.horario th.hoy{color:var(--acento)}
+.horario td{border-radius:14px;padding:.85rem .5rem;text-align:center;vertical-align:middle;font-size:.9rem;font-weight:600;line-height:1.3}
+.horario td.h{color:var(--suave);font-weight:500;font-size:.78rem;white-space:nowrap;text-align:left;width:5.8rem;padding:.5rem}
+.horario td.c{background:color-mix(in srgb,var(--color) 22%,transparent);border:1px solid color-mix(in srgb,var(--color) 45%,transparent)}
+.horario td.c.hoy{background:color-mix(in srgb,var(--color) 40%,transparent)}
+.horario td.rec{color:var(--tenue);font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;padding:.2rem;font-weight:600;background:var(--capa)}
+.horario tr.ahora td.h{color:var(--acento);font-weight:700}
 /* Acceso */
 #acceso{max-width:24rem;margin:16vh auto 0}#acceso form{display:grid;gap:.9rem;padding:2rem;border-radius:26px}
 #acceso button{width:100%;padding:.8rem}#mensaje{min-height:1.4em;margin:0;color:var(--vencida);font-size:.9rem}
@@ -214,6 +258,8 @@ ol{line-height:1.7}
 <button id="salir" class="peq">Salir</button></div>
 <nav id="menu" aria-label="Secciones">
 <button data-v="inicio"><svg class="ic" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span>Inicio</span></button>
+<button data-v="semana"><svg class="ic" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/></svg><span>Semana</span></button>
+<button data-v="horario"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Horario</span></button>
 <button data-v="tareas"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg><span>Tareas</span></button>
 <button data-v="examenes"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>Exámenes</span></button>
 <button data-v="asignaturas"><svg class="ic" viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/></svg><span>Asignaturas</span></button>
@@ -240,7 +286,7 @@ async function cargarPlan(k){try{const p=await traer("plan.enc",false);return p?
 const LS={get(k,d){try{const v=localStorage.getItem("panel_"+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem("panel_"+k,JSON.stringify(v))}catch(e){}}};
 
 // ---------- Aspecto: tema, fondo de pantalla, cristal ----------
-const AP_DEF={tema:"auto",fondo:"aurora",url:"",op:.58,blur:28,velo:0,acento:"#0a84ff"};
+const AP_DEF={tema:"auto",fondo:"aurora",url:"",op:.58,blur:28,velo:0,fblur:0,acento:"#0a84ff"};
 let ap={...AP_DEF,...LS.get("ap",{})},imgFondo=null;
 const ACENTOS=[["#0a84ff","Azul"],["#5e5ce6","Índigo"],["#bf5af2","Violeta"],["#ff375f","Rosa"],["#ff9f0a","Naranja"],["#30b45a","Verde"],["#00b5c4","Turquesa"]];
 const PRESETS={
@@ -258,6 +304,7 @@ function aplicar(){const r=document.documentElement;
  if(ap.tema==="auto")r.removeAttribute("data-tema");else r.dataset.tema=ap.tema;
  r.style.setProperty("--op",ap.op);r.style.setProperty("--blur",ap.blur+"px");r.style.setProperty("--velo",ap.velo/100);r.style.setProperty("--acento",ap.acento);
  const f=$("fondo"),src=ap.fondo==="img"?imgFondo:ap.fondo==="url"?ap.url:null;
+ f.style.filter=ap.fblur?`blur(${ap.fblur}px)`:"";
  f.style.background=src?`center/cover no-repeat url(${JSON.stringify(src)})`:fondoPreset(ap.fondo,oscuro())}
 function guardarAp(){LS.set("ap",ap);aplicar()}
 matchMedia("(prefers-color-scheme:dark)").addEventListener("change",aplicar);
@@ -269,6 +316,7 @@ async function reducirImagen(file){const url=URL.createObjectURL(file);try{const
 const SEMILLA=[{id:"psp-u1",asig:"psp",titulo:"Examen Unidad 1 · Programación concurrente",fecha:"2026-11-09T09:00",aprox:true,notas:"Semana 9 (09–15/11). Día y hora exactos por confirmar: pulsa Editar."}];
 let examenes=LS.get("examenes",null)||SEMILLA.map((e)=>({...e}));
 let hechos=LS.get("hechos",{});
+let plansem=LS.get("plansem",{}),editandoPi=null;
 
 // ---------- Sincronización entre dispositivos (estado.enc en GitHub) ----------
 let mod=LS.get("mod",0),token=LS.get("token",""),repo=LS.get("repo","HaverXx/panel-estudio"),sha=null,pendiente=false,timer=null,ocupado=false;
@@ -277,9 +325,9 @@ const cabGH=()=>({Authorization:"Bearer "+token,Accept:"application/vnd.github+j
 const b64=(u)=>{let t="";for(let i=0;i<u.length;i+=8192)t+=String.fromCharCode(...u.subarray(i,i+8192));return btoa(t)};
 async function cifrarEstado(o){const iv=crypto.getRandomValues(new Uint8Array(12));const c=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv},clave,new TextEncoder().encode(JSON.stringify(o))));return{v:1,iv:b64(iv),datos:b64(c)}}
 function estadoSync(e,extra){const t={ok:"Sincronizado entre dispositivos",local:"Solo en este dispositivo · activa la sincronización en Ajustes",guardando:"Guardando…",error:"Error de sincronización"+(extra?": "+extra:"")+" (se reintentará)"}[e];const el=$("syncInfo");el.textContent=t;el.classList.toggle("aviso",e==="error");el.classList.toggle("local",e==="local")}
-function guardarLocal(){LS.set("examenes",examenes);LS.set("hechos",hechos);LS.set("mod",mod)}
+function guardarLocal(){const ks=Object.keys(plansem).sort();while(ks.length>8)delete plansem[ks.shift()];LS.set("plansem",plansem);LS.set("examenes",examenes);LS.set("hechos",hechos);LS.set("mod",mod)}
 function cambio(){mod=Date.now();guardarLocal();pendiente=true;if(!token){estadoSync("local");return}estadoSync("guardando");clearTimeout(timer);timer=setTimeout(sincronizar,1500)}
-const guardarEx=cambio,guardarHechos=cambio;
+const guardarEx=cambio,guardarHechos=cambio,guardarPs=cambio;
 async function traerEstado(){
  if(token){const r=await fetch(API()+"?ref=main&t="+Date.now(),{headers:cabGH(),cache:"no-store"});
   if(r.status===404){sha=null;return null}
@@ -288,7 +336,7 @@ async function traerEstado(){
   const j=await r.json();sha=j.sha;return JSON.parse(atob(j.content.replace(/\s/g,"")))}
  return traer("estado.enc",false)}
 async function subir(){
- const cuerpo={message:"Estado del panel",content:btoa(JSON.stringify(await cifrarEstado({mod,examenes,hechos}))),branch:"main"};if(sha)cuerpo.sha=sha;
+ const cuerpo={message:"Estado del panel",content:btoa(JSON.stringify(await cifrarEstado({mod,examenes,hechos,plansem}))),branch:"main"};if(sha)cuerpo.sha=sha;
  const r=await fetch(API(),{method:"PUT",headers:{...cabGH(),"Content-Type":"application/json"},body:JSON.stringify(cuerpo)});
  if(r.status===409||r.status===422)return false;
  if(r.status===401||r.status===403||r.status===404)throw new Error("token sin permiso sobre "+repo);
@@ -298,7 +346,7 @@ async function sincronizar(reintento){
  if(!clave||ocupado)return;ocupado=true;
  try{
   const p=await traerEstado();const remoto=p?await descifrar(clave,p):null;
-  if(remoto&&remoto.mod>mod){examenes=remoto.examenes||examenes;hechos=remoto.hechos||hechos;mod=remoto.mod;guardarLocal();pendiente=false;
+  if(remoto&&remoto.mod>mod){examenes=remoto.examenes||examenes;hechos=remoto.hechos||hechos;plansem=remoto.plansem||plansem;mod=remoto.mod;guardarLocal();pendiente=false;
    if(!document.activeElement||!/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName))pintar()}
   else if(token&&mod>0&&(pendiente||!remoto||mod>remoto.mod)){if(!(await subir())&&!reintento){ocupado=false;return sincronizar(true)}}
   estadoSync(token?"ok":"local")
@@ -329,31 +377,74 @@ function tituloEj(a,n){return(a.ejercicios[n]||["Ejercicio "+n])[0]}
 function chkEj(a,n,s){const h=!!hechos["ej_"+a.id+"_"+n];const [t,d]=a.ejercicios[n]||["Ejercicio "+n,""];
  return `<label class="chk ${h?"hecho":""}"><input type="checkbox" data-ej="${a.id}_${n}" ${h?"checked":""}><span><b>${isNaN(n)?esc(n):"Ej. "+n}</b> · <span class="tit">${esc(t)}</span><br><small class="estado">${esc(d)}</small></span></label>`}
 
+// ---------- Semana y horario ----------
+const DIAS=["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
+const lunes=(d=new Date())=>{const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());x.setDate(x.getDate()-((x.getDay()+6)%7));return x};
+const clavSem=(d)=>{const x=lunes(d);return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0")};
+const itemsSem=(k=clavSem())=>plansem[k]||(plansem[k]=[]);
+const idxHoy=()=>(new Date().getDay()+6)%7;
+const hm=(t)=>{const [h,m]=t.split(":").map(Number);return h*60+m};
+const HORAS=[["15:00","15:55"],["15:55","16:50"],["16:50","17:45"],["17:45","18:05"],["18:05","19:00"],["19:00","19:55"],["19:55","20:50"]];
+const HORARIO=[ // columnas: lunes a viernes; null = recreo
+ ["ad","pim","pmdm","nube","sge"],
+ ["ad","nube","pmdm","nube","sge"],
+ ["sos","pmdm","pim","di",""],
+ null,
+ ["pim","pmdm","dig","",""],
+ ["di","ad","sge","sge","psp"],
+ ["di","ad","di","sge","psp"]];
+function bloquesDia(d){const out=[];if(d>4)return out;
+ for(let r=0;r<HORAS.length;r++){const row=HORARIO[r];if(!row||!row[d])continue;const id=row[d],u=out[out.length-1];
+  if(u&&u.id===id&&u.r===r-1){u.fin=HORAS[r][1];u.r=r}else out.push({id,ini:HORAS[r][0],fin:HORAS[r][1],r})}return out}
+function htmlClases(d){const bl=bloquesDia(d),n=new Date(),min=n.getHours()*60+n.getMinutes();
+ if(!bl.length)return `<p class="estado">${d>4?"Fin de semana: no hay clases.":"Hoy no tienes clases."}</p>`;
+ return bl.map((b)=>{const a=asig(b.id),est=min>=hm(b.fin)?"pasada":min>=hm(b.ini)?"ahora":"";
+  return `<div class="cl ${est}" style="--color:${a.color}"><span class="b"></span><span class="h">${b.ini} – ${b.fin}</span><span><b>${esc(a.nombre)}</b>${est==="ahora"?'<span class="etq">Ahora</span>':""}</span></div>`}).join("")}
+function itemHtml(i){return `<div class="it ${i.hecho?"hecho":""}"><input type="checkbox" data-pi="${i.id}" ${i.hecho?"checked":""} aria-label="Hecho">${editandoPi===i.id?`<input class="edit" id="editPi" value="${esc(i.texto)}" maxlength="120">`:`<span class="txt" data-epi="${i.id}" title="Pulsa para editar">${esc(i.texto)}</span>`}<button class="x" data-xpi="${i.id}" aria-label="Borrar">×</button></div>`}
+const formAdd=(d)=>`<form class="addps" data-dia="${d}"><input placeholder="Añadir tarea…" maxlength="120" aria-label="Nueva tarea"><button class="peq pri">Añadir</button></form>`;
+function htmlDia(d){const its=itemsSem().filter((i)=>i.dia===d);return (its.length?its.map(itemHtml).join(""):'<p class="vacioit">Nada planificado.</p>')+formAdd(d)}
+
 // ---------- Vistas ----------
 function proximosExamenes(){const ahora=Date.now();return examenes.map((e)=>({...e,ms:new Date(e.fecha).getTime()-ahora})).filter((e)=>e.ms>-3*3600e3).sort((a,b)=>a.ms-b.ms)}
 function tarjetaCuenta(rot,titulo,sub,ms,extra=""){const r=restante(ms);
  return `<div class="card" style="--color:${color(ms)}"><div class="rot"><span class="pto"></span>${rot}</div><div class="grande">${r.v}<small>${r.u}${r.pasada?" de retraso":""}</small></div><h3>${titulo}</h3><p class="estado">${sub}</p>${extra}</div>`}
 
-function vInicio(){const ahora=Date.now(),ex=proximosExamenes()[0];let h='<div class="rejilla">';
- if(ex){const a=asig(ex.asig);h+=tarjetaCuenta("Próximo examen",esc(ex.titulo),(a?a.corto+" · ":"")+(ex.aprox?"semana del "+fechaCorta(new Date(ex.fecha))+" (día por confirmar)":fechaLarga(new Date(ex.fecha))+" · "+new Date(ex.fecha).toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"})),ex.ms)}
- else h+='<div class="card" style="--color:var(--tenue)"><div class="rot"><span class="pto"></span>Próximo examen</div><div class="grande" style="color:var(--txt)">Libre</div><h3>Sin exámenes</h3><p class="estado">Añade uno en la pestaña Exámenes.</p></div>';
- const t=(datos&&datos.tareas||[]).filter((x)=>x.vence*1000>ahora-14*DIA)[0];
- if(t)h+=tarjetaCuenta("Próxima entrega en Aules",esc(t.nombre),esc(nombreAsig(t.asignatura))+" · "+fechaCorta(new Date(t.vence*1000)),t.vence*1000-ahora);
- else h+='<div class="card" style="--color:var(--normal)"><div class="rot"><span class="pto"></span>Próxima entrega</div><div class="grande">Al día</div><h3>Nada pendiente</h3><p class="estado">No hay entregas abiertas en Aules.</p></div>';
- const n=(datos?datos.tareas.length:0);let pend=0;for(const a of ASIGNATURAS)pend+=ejerciciosPendientes(a).length;
- h+=`<div class="card" style="--color:var(--acento)"><div class="rot"><span class="pto"></span>Por hacer</div><div class="grande">${n+pend}<small>cosas</small></div><h3>Resumen</h3><p class="estado">${n} entregas Aules · ${pend} ejercicios sin marcar</p></div></div>`;
- if(plan)h+=`<h2>Plan de hoy</h2><div class="card plan"><p class="estado ${(Date.now()-plan.actualizado*1000)>864e5?"aviso":""}">Escrito por la IA de tu PC · hace ${Math.max(1,Math.round((Date.now()-plan.actualizado*1000)/36e5))} h</p><pre>${esc(plan.texto)}</pre></div>`;
+function vInicio(){const ahora=Date.now(),ex=proximosExamenes()[0],hoy=idxHoy();let h='<div class="bento">';
+ if(ex){const a=asig(ex.asig),r=restante(ex.ms);h+=`<div class="card c5" style="--color:${color(ex.ms)}"><div class="rot"><span class="pto"></span>Próximo examen</div><div class="grande">${r.v}<small>${r.u}${r.pasada?" de retraso":""}</small></div><h3>${esc(ex.titulo)}</h3><p class="estado">${a?esc(a.corto)+" · ":""}${ex.aprox?"semana del "+fechaCorta(new Date(ex.fecha))+" (día por confirmar)":fechaLarga(new Date(ex.fecha))+" · "+new Date(ex.fecha).toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"})}</p></div>`}
+ else h+='<div class="card c5" style="--color:var(--tenue)"><div class="rot"><span class="pto"></span>Próximo examen</div><div class="grande" style="color:var(--txt)">Libre</div><h3>Sin exámenes</h3><p class="estado">Añade uno en la pestaña Exámenes.</p></div>';
+ const ts=(datos&&datos.tareas||[]).filter((x)=>x.vence*1000>ahora-14*DIA).sort((a,b)=>a.vence-b.vence).slice(0,3);
+ h+=`<div class="card c7"><div class="rot"><span class="pto" style="background:var(--acento)"></span>Próximas entregas</div>`+(ts.length?ts.map((t)=>{const ms=t.vence*1000-ahora,r=restante(ms);const nom=(t.url||"").startsWith("https://aules.edu.gva.es/")?`<a href="${esc(t.url)}">${esc(t.nombre)}</a>`:esc(t.nombre);
+  return `<div class="mini" style="--color:${color(ms)}"><div><div class="t">${nom}</div><div class="s">${esc(nombreAsig(t.asignatura))} · ${fechaCorta(new Date(t.vence*1000))}</div></div><div class="cuenta">${r.texto}<div class="s">${r.pasada?"de retraso":"restantes"}</div></div></div>`}).join(""):'<p class="estado" style="margin-top:.6rem">No hay entregas abiertas en Aules.</p>')+`<a class="enl" href="#tareas">Ver todas las tareas</a></div>`;
+ h+=`<div class="card c6"><div class="rot"><span class="pto" style="background:var(--acento)"></span>Clases de hoy</div><div style="margin-top:.5rem">${htmlClases(hoy)}</div><a class="enl" href="#horario">Ver horario completo</a></div>`;
+ h+=`<div class="card c6"><div class="rot"><span class="pto" style="background:var(--acento)"></span>Para hoy · ${DIAS[hoy]}</div><div style="margin-top:.3rem">${htmlDia(hoy)}</div><a class="enl" href="#semana">Ver organización semanal</a></div>`;
  for(const a of ASIGNATURAS){if(!a.semanas.some((s)=>s.ini))continue;const {s,estado}=semanaActual(a);const ini=f0(s.ini),dias=Math.min(7,Math.max(0,Math.floor((new Date()-ini)/DIA)+1));
-  h+=`<h2>${esc(a.corto)} · esta semana</h2><div class="card" style="--color:${a.color}"><div style="display:flex;gap:.9rem;align-items:center;margin-bottom:.7rem">${logo(a)}<div><div><span class="chip">${etiquetaSem(s)}</span><span class="chip gris">${fechaCorta(ini)} – ${fechaCorta(f0(s.fin))}</span><span class="chip gris">${estado}</span></div>
-  <h3>${esc(s.titulo)}</h3></div></div>`;
-  if(estado==="en curso")h+=`<div class="barra"><i style="width:${dias/7*100}%"></i></div><p class="estado">Día ${dias} de 7 de la semana</p>`;
+  if(estado!=="en curso")continue;
+  h+=`<div class="card c12" style="--color:${a.color}"><div style="display:flex;gap:.9rem;align-items:center;margin-bottom:.7rem">${logo(a)}<div><div><span class="chip">${etiquetaSem(s)}</span><span class="chip gris">${fechaCorta(ini)} – ${fechaCorta(f0(s.fin))}</span></div><h3>${esc(a.corto)} · ${esc(s.titulo)}</h3></div></div>
+  <div class="barra"><i style="width:${dias/7*100}%;background:${a.color}"></i></div><p class="estado">Día ${dias} de 7 de la semana</p>`;
   if(s.examen)h+=`<div class="nota aviso"><span class="nl">Examen</span>Semana de examen. Repasa los apuntes de las semanas anteriores.</div>`;
-  if(s.temas.length)h+=`<h4>Temario</h4>`+s.temas.map((id)=>`<div style="padding:.2rem 0"><a href="#${a.id}/${s.n}/${id}"><b>${esc(a.temas[id].t)}</b></a> <span class="estado">· ${esc(a.temas[id].resumen)}</span></div>`).join("");
   if(s.ejercicios)h+=`<h4>Ejercicios de la semana</h4>`+s.ejercicios.map((n)=>chkEj(a,n,s)).join("");
+  if(s.temas.length)h+=`<h4>Temario</h4>`+s.temas.map((id)=>`<div style="padding:.2rem 0"><a href="#${a.id}/${s.n}/${id}"><b>${esc(a.temas[id].t)}</b></a> <span class="estado">· ${esc(a.temas[id].resumen)}</span></div>`).join("");
   h+=`<p style="margin-top:1rem"><button class="peq pri" onclick="location.hash='#${a.id}/${s.n}'">Abrir apuntes de esta semana</button></p></div>`;
   const atras=ejerciciosPendientes(a).filter((p)=>p.s!==s);
-  if(atras.length)h+=`<h2>Ejercicios atrasados</h2><div class="card" style="--color:var(--hoy)">`+atras.map((p)=>chkEj(a,p.n,p.s)).join("")+`</div>`}
- return h}
+  if(atras.length)h+=`<details class="card c12" style="--color:var(--hoy)"><summary class="rot" style="cursor:pointer;list-style:none"><span class="pto"></span>Ejercicios atrasados de ${esc(a.corto)} · ${atras.length} sin marcar · pulsa para ver</summary><div style="margin-top:.6rem">`+atras.map((p)=>chkEj(a,p.n,p.s)).join("")+`</div></details>`}
+ return h+"</div>"}
+
+function vSemana(){const ini=lunes(),fin=new Date(ini);fin.setDate(fin.getDate()+6);const hoy=idxHoy();
+ let h=`<div class="cabSec"><div><h2>Organización semanal</h2><p class="estado">Semana del ${fechaCorta(ini)} al ${fechaCorta(fin)} · empieza en blanco cada lunes</p></div><div class="botones"><button class="peq" id="psCopiar">Copiar semana anterior</button><button class="peq rojo" id="psVaciar">Vaciar semana</button></div></div><div class="diasgrid">`;
+ for(let d=0;d<7;d++){const f=new Date(ini);f.setDate(ini.getDate()+d);const its=itemsSem().filter((i)=>i.dia===d),ok=its.filter((i)=>i.hecho).length;
+  h+=`<div class="card dia ${d===hoy?"hoy":""}"><div class="dn"><span>${DIAS[d]} <small>${f.getDate()}</small></span><small>${its.length?ok+"/"+its.length:""}</small></div>${htmlDia(d)}</div>`}
+ return h+"</div>"}
+
+function vHorario(){const hoy=idxHoy(),n=new Date(),min=n.getHours()*60+n.getMinutes(),skip=[0,0,0,0,0];
+ let h=`<div class="cabSec"><div><h2>Horario de clase</h2><p class="estado">Hoy: ${DIAS[hoy]}${hoy>4?" (sin clases)":""}</p></div></div><div class="card tabla"><table class="horario"><thead><tr><th></th>${DIAS.slice(0,5).map((d,i)=>`<th class="${i===hoy?"hoy":""}">${d}</th>`).join("")}</tr></thead><tbody>`;
+ for(let r=0;r<HORAS.length;r++){const act=min>=hm(HORAS[r][0])&&min<hm(HORAS[r][1])&&hoy<5;
+  h+=`<tr class="${act?"ahora":""}"><td class="h">${HORAS[r][0]} – ${HORAS[r][1]}</td>`;
+  if(!HORARIO[r]){h+='<td class="rec" colspan="5">Recreo</td></tr>';continue}
+  for(let c=0;c<5;c++){if(skip[c]>0){skip[c]--;continue}const id=HORARIO[r][c];if(!id){h+="<td></td>";continue}
+   let k=1;while(r+k<HORAS.length&&HORARIO[r+k]&&HORARIO[r+k][c]===id)k++;skip[c]=k-1;const a=asig(id);
+   h+=`<td class="c ${c===hoy?"hoy":""}" rowspan="${k}" style="--color:${a.color}">${esc(a.nombre)}</td>`}
+  h+="</tr>"}
+ return h+"</tbody></table></div>"}
 
 function vTareas(){const ahora=Date.now();let h="<h2 style='margin-top:.4rem'>Entregas de Aules</h2>";
  const ts=datos?datos.tareas:[];
@@ -406,8 +497,8 @@ function vAjustes(){
   <div class="botones" style="margin-top:.9rem"><button type="button" id="apSubir">Subir imagen propia</button>${imgFondo?'<button type="button" class="rojo" id="apQuitarImg">Quitar imagen</button>':""}<input type="file" id="apFile" accept="image/*"></div>
   <div style="margin-top:.9rem"><label class="lbl" for="apUrl">O pega la dirección de una imagen</label><div class="botones" style="flex-wrap:nowrap"><input id="apUrl" type="url" placeholder="https://…/fondo.jpg" value="${esc(ap.url)}"><button type="button" id="apUsarUrl">Usar</button></div></div>
   <p class="estado">La imagen propia se guarda solo en este dispositivo, no se sube a GitHub.</p></div>
- <div class="bloque"><span class="lbl">Cristal de los paneles</span>
-  ${rng("op","Opacidad",.2,.95,.01,(v)=>Math.round(v*100)+"%")}${rng("blur","Desenfoque",0,50,1,(v)=>v+" px")}${rng("velo","Oscurecer o aclarar fondo",0,70,1,(v)=>v+"%")}
+ <div class="bloque"><span class="lbl">Fondo y cristal</span>
+  ${rng("fblur","Desenfoque de la foto de fondo",0,40,1,(v)=>v+" px")}${rng("velo","Oscurecer o aclarar fondo",0,70,1,(v)=>v+"%")}${rng("op","Opacidad de los paneles",.2,.95,.01,(v)=>Math.round(v*100)+"%")}${rng("blur","Desenfoque del cristal",0,50,1,(v)=>v+" px")}
   <p class="estado">Si el fondo tiene mucho contraste y cuesta leer, sube la opacidad o el velo.</p></div>
  <div class="bloque"><span class="lbl">Color de acento</span><div class="acentos">${ACENTOS.map(([c,n])=>`<button type="button" data-acento="${c}" style="background:${c}" aria-label="${n}" title="${n}" aria-pressed="${ap.acento===c}"></button>`).join("")}</div></div>
  <div class="bloque"><button type="button" id="apReset">Restablecer apariencia</button></div></div>
@@ -424,7 +515,7 @@ function vAjustes(){
 
 function pintar(){if(!datos)return;const ruta=location.hash.slice(1).split("/");let v=ruta[0]||"inicio",html;
  const a=asig(v);document.querySelectorAll("#menu [data-v]").forEach((b)=>{const on=b.dataset.v===(a?"asignaturas":v)||(!v&&b.dataset.v==="inicio");b.classList.toggle("on",on);if(on)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
- if(a)html=vAsignatura(a,ruta[1],ruta[2]);else if(v==="tareas")html=vTareas();else if(v==="examenes")html=vExamenes();else if(v==="asignaturas")html=vAsignaturas();else if(v==="ajustes")html=vAjustes();else html=vInicio();
+ if(a)html=vAsignatura(a,ruta[1],ruta[2]);else if(v==="semana")html=vSemana();else if(v==="horario")html=vHorario();else if(v==="tareas")html=vTareas();else if(v==="examenes")html=vExamenes();else if(v==="asignaturas")html=vAsignaturas();else if(v==="ajustes")html=vAjustes();else html=vInicio();
  const y=scrollY;$("vista").innerHTML=html;enlazar(a,ruta);
  const h=new Date().getHours();$("saludo").textContent=h<7?"Buenas noches":h<14?"Buenos días":h<21?"Buenas tardes":"Buenas noches";
  $("fechaHoy").textContent=fechaLarga(new Date());
@@ -437,11 +528,23 @@ function enlazar(a,ruta){
  document.querySelectorAll(".cuerpo pre").forEach((p)=>{const b=document.createElement("button");b.type="button";b.className="copiar";b.textContent="Copiar";
   b.onclick=async()=>{try{await navigator.clipboard.writeText(p.querySelector("code").textContent);b.textContent="Copiado"}catch(e){b.textContent="Error"}setTimeout(()=>b.textContent="Copiar",1500)};p.appendChild(b)});
  const bu=$("busca");if(bu)bu.addEventListener("input",()=>{const q=bu.value.toLowerCase();document.querySelectorAll(".tema").forEach((d)=>{const ok=!q||d.textContent.toLowerCase().includes(q);d.hidden=!ok;if(q&&ok)d.open=true})});
+ // Organización semanal
+ const ps=(id)=>itemsSem().find((i)=>i.id===id);
+ document.querySelectorAll("[data-pi]").forEach((c)=>c.addEventListener("change",()=>{const i=ps(c.dataset.pi);if(i){i.hecho=c.checked;guardarPs();pintar()}}));
+ document.querySelectorAll("[data-xpi]").forEach((b)=>b.onclick=()=>{plansem[clavSem()]=itemsSem().filter((i)=>i.id!==b.dataset.xpi);guardarPs();pintar()});
+ document.querySelectorAll("[data-epi]").forEach((b)=>b.onclick=()=>{editandoPi=b.dataset.epi;pintar()});
+ const ed=$("editPi");if(ed){ed.focus();ed.select();const fin=(ok)=>{if(editandoPi===null)return;const i=ps(editandoPi);if(ok&&i&&ed.value.trim()){i.texto=ed.value.trim();guardarPs()}editandoPi=null;pintar()};
+  ed.addEventListener("keydown",(e)=>{if(e.key==="Enter")fin(true);else if(e.key==="Escape")fin(false)});ed.addEventListener("blur",()=>fin(true))}
+ document.querySelectorAll(".addps").forEach((f)=>f.addEventListener("submit",(e)=>{e.preventDefault();const t=f.querySelector("input").value.trim();if(!t)return;
+  itemsSem().push({id:"p"+Date.now()+Math.random().toString(36).slice(2,6),dia:+f.dataset.dia,texto:t,hecho:false});guardarPs();pintar()}));
+ const pc=$("psCopiar");if(pc){pc.onclick=()=>{const d=new Date();d.setDate(d.getDate()-7);const prev=plansem[clavSem(d)]||[];if(!prev.length){alert("La semana anterior no tiene tareas.");return}
+  prev.forEach((i)=>itemsSem().push({...i,id:"p"+Date.now()+Math.random().toString(36).slice(2,6),hecho:false}));guardarPs();pintar()};
+  $("psVaciar").onclick=()=>{if(confirm("¿Vaciar la organización de esta semana?")){plansem[clavSem()]=[];guardarPs();pintar()}}}
  // Apariencia
  document.querySelectorAll("[data-ap]").forEach((b)=>b.onclick=()=>{ap[b.dataset.ap]=b.dataset.v;guardarAp();pintar()});
  document.querySelectorAll("[data-fondo]").forEach((b)=>b.onclick=()=>{ap.fondo=b.dataset.fondo;guardarAp();pintar()});
  document.querySelectorAll("[data-acento]").forEach((b)=>b.onclick=()=>{ap.acento=b.dataset.acento;guardarAp();pintar()});
- document.querySelectorAll("[data-rng]").forEach((r)=>r.addEventListener("input",()=>{const k=r.dataset.rng,v=parseFloat(r.value);ap[k]=v;guardarAp();$("o_"+k).textContent=k==="op"?Math.round(v*100)+"%":k==="blur"?v+" px":v+"%"}));
+ document.querySelectorAll("[data-rng]").forEach((r)=>r.addEventListener("input",()=>{const k=r.dataset.rng,v=parseFloat(r.value);ap[k]=v;guardarAp();$("o_"+k).textContent=k==="op"?Math.round(v*100)+"%":(k==="blur"||k==="fblur")?v+" px":v+"%"}));
  const sub=$("apSubir");if(sub){sub.onclick=()=>$("apFile").click();
   $("apFile").onchange=async(e)=>{const f=e.target.files[0];if(!f)return;try{const d=await reducirImagen(f);await opBD("readwrite",(s)=>s.put(d,"fondo"));imgFondo=d;ap.fondo="img";guardarAp();pintar()}catch(x){alert("No se pudo usar esa imagen")}};
   const q=$("apQuitarImg");if(q)q.onclick=async()=>{try{await opBD("readwrite",(s)=>s.delete("fondo"))}catch(e){}imgFondo=null;if(ap.fondo==="img")ap.fondo="aurora";guardarAp();pintar()};
@@ -454,9 +557,9 @@ function enlazar(a,ruta){
   const c=$("exCancel");if(c)c.onclick=()=>{editando=null;pintar()};
   document.querySelectorAll("[data-del]").forEach((b)=>b.onclick=()=>{if(confirm("¿Borrar este examen?")){examenes=examenes.filter((x)=>x.id!==b.dataset.del);guardarEx();pintar()}});
   document.querySelectorAll("[data-edit]").forEach((b)=>b.onclick=()=>{editando=b.dataset.edit;pintar();scrollTo(0,document.body.scrollHeight)});
-  $("exExp").onclick=()=>{const l=document.createElement("a");l.href=URL.createObjectURL(new Blob([JSON.stringify({examenes,hechos},null,1)],{type:"application/json"}));l.download="panel-datos.json";l.click()};
+  $("exExp").onclick=()=>{const l=document.createElement("a");l.href=URL.createObjectURL(new Blob([JSON.stringify({examenes,hechos,plansem},null,1)],{type:"application/json"}));l.download="panel-datos.json";l.click()};
   $("exImp").onclick=()=>$("exFile").click();
-  $("exFile").onchange=async(e)=>{try{const j=JSON.parse(await e.target.files[0].text());if(j.examenes){examenes=j.examenes;guardarEx()}if(j.hechos){hechos=j.hechos;guardarHechos()}pintar()}catch(x){alert("Archivo no válido")}}}}
+  $("exFile").onchange=async(e)=>{try{const j=JSON.parse(await e.target.files[0].text());if(j.examenes){examenes=j.examenes;guardarEx()}if(j.hechos){hechos=j.hechos;guardarHechos()}if(j.plansem){plansem=j.plansem;guardarPs()}pintar()}catch(x){alert("Archivo no válido")}}}}
 
 async function entrar(k,p){datos=await descifrar(k,p);clave=k;plan=await cargarPlan(k);mostrar("panel");pintar();estadoSync(token?"guardando":"local");sincronizar()}
 async function cerrarSesion(){try{await borrarClave()}catch(e){}clave=null;datos=null;location.reload()}
