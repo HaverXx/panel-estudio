@@ -60,11 +60,11 @@ form.f{display:grid;gap:.6rem;grid-template-columns:repeat(auto-fit,minmax(12rem
 <button type="submit" id="entrar">Entrar</button><p id="mensaje" role="alert"></p></form></section>
 
 <section id="panel" hidden>
-<div class="cab"><div><h1 id="saludo"></h1><p class="estado" id="fechaHoy"></p></div><p class="estado" id="estado"></p></div>
+<div class="cab"><div><h1 id="saludo"></h1><p class="estado" id="fechaHoy"></p><p class="estado" id="syncInfo"></p></div><p class="estado" id="estado"></p></div>
 <nav id="menu">
 <button data-v="inicio">🏠 Inicio</button><button data-v="tareas">✅ Tareas</button>
 <button data-v="examenes">📝 Exámenes</button><button data-v="asignaturas">📚 Asignaturas</button>
-<button id="salir" style="margin-left:auto">Salir</button></nav>
+<button data-v="ajustes">⚙️ Ajustes</button><button id="salir" style="margin-left:auto">Salir</button></nav>
 <div id="vista"></div>
 </section></main>
 <script src="apuntes.js"></script>
@@ -73,7 +73,7 @@ const SAL=new TextEncoder().encode("aules-dashboard-v1"),ITERACIONES=600000;
 const $=(id)=>document.getElementById(id);
 let clave=null,datos=null,paquete=null,plan=null,vista="inicio";
 const deBase64=(s)=>Uint8Array.from(atob(s),(c)=>c.charCodeAt(0));
-async function derivarClave(p){const b=await crypto.subtle.importKey("raw",new TextEncoder().encode(p),"PBKDF2",false,["deriveKey"]);return crypto.subtle.deriveKey({name:"PBKDF2",salt:SAL,iterations:ITERACIONES,hash:"SHA-256"},b,{name:"AES-GCM",length:256},false,["decrypt"])}
+async function derivarClave(p){const b=await crypto.subtle.importKey("raw",new TextEncoder().encode(p),"PBKDF2",false,["deriveKey"]);return crypto.subtle.deriveKey({name:"PBKDF2",salt:SAL,iterations:ITERACIONES,hash:"SHA-256"},b,{name:"AES-GCM",length:256},false,["encrypt","decrypt"])}
 async function descifrar(k,p){const c=await crypto.subtle.decrypt({name:"AES-GCM",iv:deBase64(p.iv)},k,deBase64(p.datos));return JSON.parse(new TextDecoder().decode(c))}
 function abrirBD(){return new Promise((ok,mal)=>{const r=indexedDB.open("panel",1);r.onupgradeneeded=()=>r.result.createObjectStore("k");r.onsuccess=()=>ok(r.result);r.onerror=()=>mal(r.error)})}
 async function opBD(m,a){const bd=await abrirBD();return new Promise((ok,mal)=>{const t=bd.transaction("k",m);const p=a(t.objectStore("k"));t.oncomplete=()=>ok(p&&p.result);t.onerror=()=>mal(t.error)})}
@@ -87,7 +87,42 @@ const LS={get(k,d){try{const v=localStorage.getItem("panel_"+k);return v?JSON.pa
 const SEMILLA=[{id:"psp-u1",asig:"psp",titulo:"Examen Unidad 1 · Programación concurrente",fecha:"2026-11-09T09:00",aprox:true,notas:"Semana 9 (09–15/11). Día y hora exactos por confirmar: pulsa Editar."}];
 let examenes=LS.get("examenes",null)||SEMILLA.map((e)=>({...e}));
 let hechos=LS.get("hechos",{});
-const guardarEx=()=>LS.set("examenes",examenes),guardarHechos=()=>LS.set("hechos",hechos);
+
+// ---------- Sincronización entre dispositivos (estado.enc en GitHub) ----------
+let mod=LS.get("mod",0),token=LS.get("token",""),repo=LS.get("repo","HaverXx/panel-estudio"),sha=null,pendiente=false,timer=null,ocupado=false;
+const API=()=>"https://api.github.com/repos/"+repo+"/contents/docs/estado.enc";
+const cabGH=()=>({Authorization:"Bearer "+token,Accept:"application/vnd.github+json"});
+const b64=(u)=>{let t="";for(let i=0;i<u.length;i+=8192)t+=String.fromCharCode(...u.subarray(i,i+8192));return btoa(t)};
+async function cifrarEstado(o){const iv=crypto.getRandomValues(new Uint8Array(12));const c=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv},clave,new TextEncoder().encode(JSON.stringify(o))));return{v:1,iv:b64(iv),datos:b64(c)}}
+function estadoSync(e,extra){const t={ok:"☁️ Sincronizado entre dispositivos",local:"📱 Solo en este dispositivo · activa la sincronización en Ajustes",guardando:"☁️ Guardando…",error:"⚠️ Error de sincronización"+(extra?": "+extra:"")+" (se reintentará)"}[e];const el=$("syncInfo");el.textContent=t;el.classList.toggle("aviso",e==="error")}
+function guardarLocal(){LS.set("examenes",examenes);LS.set("hechos",hechos);LS.set("mod",mod)}
+function cambio(){mod=Date.now();guardarLocal();pendiente=true;if(!token){estadoSync("local");return}estadoSync("guardando");clearTimeout(timer);timer=setTimeout(sincronizar,1500)}
+const guardarEx=cambio,guardarHechos=cambio;
+async function traerEstado(){
+ if(token){const r=await fetch(API()+"?ref=main&t="+Date.now(),{headers:cabGH(),cache:"no-store"});
+  if(r.status===404){sha=null;return null}
+  if(r.status===401||r.status===403)throw new Error("token sin permiso");
+  if(!r.ok)throw new Error("GitHub "+r.status);
+  const j=await r.json();sha=j.sha;return JSON.parse(atob(j.content.replace(/\s/g,"")))}
+ return traer("estado.enc",false)}
+async function subir(){
+ const cuerpo={message:"Estado del panel",content:btoa(JSON.stringify(await cifrarEstado({mod,examenes,hechos}))),branch:"main"};if(sha)cuerpo.sha=sha;
+ const r=await fetch(API(),{method:"PUT",headers:{...cabGH(),"Content-Type":"application/json"},body:JSON.stringify(cuerpo)});
+ if(r.status===409||r.status===422)return false;
+ if(r.status===401||r.status===403||r.status===404)throw new Error("token sin permiso sobre "+repo);
+ if(!r.ok)throw new Error("GitHub "+r.status);
+ sha=(await r.json()).content.sha;pendiente=false;return true}
+async function sincronizar(reintento){
+ if(!clave||ocupado)return;ocupado=true;
+ try{
+  const p=await traerEstado();const remoto=p?await descifrar(clave,p):null;
+  if(remoto&&remoto.mod>mod){examenes=remoto.examenes||examenes;hechos=remoto.hechos||hechos;mod=remoto.mod;guardarLocal();pendiente=false;
+   if(!document.activeElement||!/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName))pintar()}
+  else if(token&&mod>0&&(pendiente||!remoto||mod>remoto.mod)){if(!(await subir())&&!reintento){ocupado=false;return sincronizar(true)}}
+  estadoSync(token?"ok":"local")
+ }catch(e){estadoSync(token?"error":"local",token?e.message:"")}
+ ocupado=false}
+
 
 // ---------- Utilidades ----------
 const esc=(s)=>String(s??"").replace(/[&<>"]/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -174,9 +209,21 @@ function vAsignatura(a,semN,temaId){const act=semanaActual(a).s;const sel=a.sema
  else h+='<div class="vacio" style="margin-top:1rem">Esta semana no hay temario nuevo.</div>';
  h+=`<h2>🗂️ Todo el temario</h2><div>`+a.semanas.filter((s)=>s.temas.length).map((s)=>`<p class="estado"><b>${etiquetaSem(s)}</b>: `+s.temas.map((id)=>`<a href="#${a.id}/${s.n}/${id}">${esc(a.temas[id].t)}</a>`).join(" · ")+"</p>").join("")+"</div>";return h}
 
+
+function vAjustes(){return `<h2>⚙️ Sincronización</h2><div class="card"><p>Para ver los mismos exámenes y ejercicios marcados en el PC y en el móvil, pega un <b>token de GitHub</b> en cada dispositivo (solo una vez).</p>
+<h4>Cómo crear el token</h4><ol>
+<li>GitHub → tu foto → <b>Settings</b> → <b>Developer settings</b> → <b>Personal access tokens</b> → <b>Fine-grained tokens</b> → <b>Generate new token</b>.</li>
+<li><b>Expiration</b>: 1 año. <b>Repository access</b>: <i>Only select repositories</i> → <code>panel-estudio</code>.</li>
+<li><b>Permissions → Repository permissions → Contents: Read and write</b>. Nada más.</li>
+<li>Genera el token, cópialo (empieza por <code>github_pat_</code>) y pégalo aquí.</li></ol>
+<form class="f" id="fAj"><div class="ancho"><label>Repositorio (usuario/nombre)</label><input id="ajRepo" value="${esc(repo)}"></div>
+<div class="ancho"><label>Token</label><input id="ajTok" type="password" placeholder="${token?"Ya hay un token guardado (deja vacío para mantenerlo)":"github_pat_…"}" autocomplete="off"></div>
+<div class="ancho"><button type="submit" style="background:var(--acento);color:#fff;border-color:var(--acento)">Guardar y sincronizar</button> ${token?'<button type="button" class="rojo" id="ajQuitar">Quitar token de este dispositivo</button>':""}</div></form>
+<p class="estado">El token se guarda solo en este navegador. Los datos se cifran con tu contraseña antes de subirse, igual que las tareas. Si lo pierdes o se filtra, bórralo en GitHub y crea otro.</p></div>`}
+
 function pintar(){if(!datos)return;const ruta=location.hash.slice(1).split("/");let v=ruta[0]||"inicio",html;
  const a=asig(v);document.querySelectorAll("#menu [data-v]").forEach((b)=>b.classList.toggle("on",b.dataset.v===(a?"asignaturas":v)));
- if(a)html=vAsignatura(a,ruta[1],ruta[2]);else if(v==="tareas")html=vTareas();else if(v==="examenes")html=vExamenes();else if(v==="asignaturas")html=vAsignaturas();else html=vInicio();
+ if(a)html=vAsignatura(a,ruta[1],ruta[2]);else if(v==="tareas")html=vTareas();else if(v==="examenes")html=vExamenes();else if(v==="asignaturas")html=vAsignaturas();else if(v==="ajustes")html=vAjustes();else html=vInicio();
  const y=scrollY;$("vista").innerHTML=html;enlazar(a,ruta);
  const h=new Date().getHours();$("saludo").textContent=(h<7?"Buenas noches":h<14?"Buenos días":h<21?"Buenas tardes":"Buenas noches")+" 👋";
  $("fechaHoy").textContent=fechaLarga(new Date()).replace(/^./,(c)=>c.toUpperCase());
@@ -187,6 +234,8 @@ function enlazar(a,ruta){
  document.querySelectorAll("[data-ej]").forEach((c)=>c.addEventListener("change",()=>{hechos["ej_"+c.dataset.ej]=c.checked;guardarHechos();pintar()}));
  document.querySelectorAll("[data-sem]").forEach((b)=>b.addEventListener("click",()=>{location.hash="#"+a.id+"/"+b.dataset.sem}));
  const bu=$("busca");if(bu)bu.addEventListener("input",()=>{const q=bu.value.toLowerCase();document.querySelectorAll(".tema").forEach((d)=>{const ok=!q||d.textContent.toLowerCase().includes(q);d.hidden=!ok;if(q&&ok)d.open=true})});
+ const aj=$("fAj");if(aj){aj.addEventListener("submit",(e)=>{e.preventDefault();repo=$("ajRepo").value.trim()||repo;const t=$("ajTok").value.trim();if(t)token=t;LS.set("repo",repo);LS.set("token",token);if(token&&mod===0){mod=Date.now();guardarLocal();pendiente=true}sha=null;estadoSync("guardando");sincronizar().then(()=>{location.hash="#inicio"})});
+  const q=$("ajQuitar");if(q)q.onclick=()=>{token="";LS.set("token","");estadoSync("local");pintar()}}
  const f=$("fEx");if(f){f.addEventListener("submit",(e)=>{e.preventDefault();const o={id:editando||"ex"+Date.now(),asig:$("exAsig").value,titulo:$("exTit").value.trim(),fecha:$("exFecha").value,aprox:false,notas:$("exNotas").value.trim()};
   examenes=editando?examenes.map((x)=>x.id===editando?o:x):[...examenes,o];editando=null;guardarEx();pintar()});
   const c=$("exCancel");if(c)c.onclick=()=>{editando=null;pintar()};
@@ -196,10 +245,11 @@ function enlazar(a,ruta){
   $("exImp").onclick=()=>$("exFile").click();
   $("exFile").onchange=async(e)=>{try{const j=JSON.parse(await e.target.files[0].text());if(j.examenes){examenes=j.examenes;guardarEx()}if(j.hechos){hechos=j.hechos;guardarHechos()}pintar()}catch(x){alert("Archivo no válido")}}}}
 
-async function entrar(k,p){datos=await descifrar(k,p);clave=k;plan=await cargarPlan(k);mostrar("panel");pintar()}
+async function entrar(k,p){datos=await descifrar(k,p);clave=k;plan=await cargarPlan(k);mostrar("panel");pintar();estadoSync(token?"guardando":"local");sincronizar()}
 async function cerrarSesion(){try{await borrarClave()}catch(e){}clave=null;datos=null;location.reload()}
 async function iniciar(){try{paquete=await traer("tareas.enc",true)}catch(e){$("cargando").textContent="No se pudo cargar el panel. Recarga en un momento.";return}
  let g=null;try{g=await leerClave()}catch(e){}
+ if(g&&!(g.usages||[]).includes("encrypt")){try{await borrarClave()}catch(e){}g=null}
  if(g){try{await entrar(g,paquete);return}catch(e){try{await borrarClave()}catch(e2){}}}mostrar("acceso")}
 $("formulario").addEventListener("submit",async(e)=>{e.preventDefault();const c=$("clave");if(!c.value)return;$("entrar").disabled=true;$("mensaje").textContent="Comprobando…";
  try{const k=await derivarClave(c.value);await entrar(k,paquete);try{await guardarClave(k)}catch(e2){}c.value="";$("mensaje").textContent=""}catch(e3){$("mensaje").textContent="Contraseña incorrecta."}$("entrar").disabled=false});
@@ -208,5 +258,7 @@ document.querySelectorAll("#menu [data-v]").forEach((b)=>b.addEventListener("cli
 addEventListener("hashchange",()=>{if(clave){pintar();if(!location.hash.split("/")[2])scrollTo(0,0)}});
 setInterval(async()=>{if(!clave)return;let n;try{n=await traer("tareas.enc",true)}catch(e){return}try{datos=await descifrar(clave,n);paquete=n;plan=await cargarPlan(clave);if(!document.activeElement||!/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName))pintar()}catch(e){cerrarSesion()}},5*60*1000);
 setInterval(()=>{if(clave&&!(document.activeElement&&/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)))pintar()},60*1000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)sincronizar()});
+setInterval(()=>sincronizar(),5*60*1000);
 iniciar();
 </script></body></html>
