@@ -4,6 +4,9 @@ Dos formas de ejecutarlo:
   python ia_diaria.py            -> tareas de Aules + plan escrito por qwen (al iniciar sesión)
   python ia_diaria.py tareas     -> solo las tareas de Aules (rápido, cada hora)
 
+Cuentas (el panel tiene dos): AULES_TOKEN = Julen (FP presencial) y, si quieres, AULES_TOKEN_MIREIA = Mireia
+(FP semipresencial). Solo es necesario si la web no puede conectarse sola a Aules (Ajustes > Aules).
+
 Necesita en este PC:
   - Ollama con el modelo descargado (ollama pull qwen3:8b)   [solo para el plan]
   - Git instalado, y esta carpeta es el repositorio de GitHub
@@ -28,7 +31,10 @@ from cifrado import cifrar
 
 MODELO = "qwen3:8b"
 OLLAMA = "http://127.0.0.1:11434"
-AULES = "https://aules.edu.gva.es/fp/webservice/rest/server.php"
+CUENTAS = [  # (archivo publicado, variable de entorno con el token, aula virtual)
+    ("tareas", "AULES_TOKEN", "https://aules.edu.gva.es/fp"),
+    ("tareas-mireia", "AULES_TOKEN_MIREIA", "https://aules.edu.gva.es/semipresencial"),
+]
 REPO = pathlib.Path(__file__).resolve().parent  # la carpeta donde está este archivo
 BLOQUEO = REPO / ".bloqueo"                     # evita que dos ejecuciones se pisen
 REGISTRO = REPO / "registro.txt"
@@ -72,7 +78,7 @@ def ollama_listo():
     return True
 
 
-def pedir_aules(token):
+def pedir_aules(token, base):
     datos = {
         "wstoken": token,
         "wsfunction": "core_calendar_get_action_events_by_timesort",
@@ -80,7 +86,7 @@ def pedir_aules(token):
         "timesortfrom": int(time.time()) - 14 * 86400,
         "limitnum": 50,
     }
-    peticion = urllib.request.Request(AULES, data=urllib.parse.urlencode(datos).encode())
+    peticion = urllib.request.Request(base + "/webservice/rest/server.php", data=urllib.parse.urlencode(datos).encode())
     with urllib.request.urlopen(peticion, timeout=30) as r:
         respuesta = json.load(r)
     if "exception" in respuesta:
@@ -182,9 +188,9 @@ def hay_bloqueo():
 
 
 def main(modo):
-    token = os.environ.get("AULES_TOKEN", "").strip()
     contrasena = os.environ.get("DASH_PASSWORD", "")
-    if not token:
+    cuentas = [(f, os.environ.get(v, "").strip(), base) for f, v, base in CUENTAS]
+    if not cuentas[0][1]:
         sys.exit("Falta la variable de entorno AULES_TOKEN.")
     if len(contrasena) < 12:
         sys.exit("Falta la variable de entorno DASH_PASSWORD (mínimo 12 caracteres).")
@@ -202,15 +208,21 @@ def main(modo):
 
     BLOQUEO.write_text(str(os.getpid()))
     try:
-        eventos = esperar(lambda: pedir_aules(token), 12, 10, "no se pudo conectar con Aules")
-        tareas = construir_tareas(eventos)
-        publicar({"tareas": tareas}, contrasena, "Actualizar tareas")
-        registrar(f"Tareas publicadas: {len(tareas['tareas'])}")
-        print(f"Tareas publicadas: {len(tareas['tareas'])}")
+        archivos, eventos_julen = {}, []
+        for archivo, token, base in cuentas:
+            if not token:
+                continue
+            eventos = esperar(lambda: pedir_aules(token, base), 12, 10, f"no se pudo conectar con Aules ({archivo})")
+            archivos[archivo] = construir_tareas(eventos)
+            if archivo == "tareas":
+                eventos_julen = eventos
+        publicar(archivos, contrasena, "Actualizar tareas")
+        registrar("Tareas publicadas: " + ", ".join(f"{a}={len(d['tareas'])}" for a, d in archivos.items()))
+        print("Tareas publicadas:", {a: len(d["tareas"]) for a, d in archivos.items()})
 
         if modo != "tareas":
             esperar(ollama_listo, 60, 5, "Ollama no arrancó")
-            plan = preguntar_a_qwen(preparar_mensaje(eventos))
+            plan = preguntar_a_qwen(preparar_mensaje(eventos_julen))
             print(plan)
             publicar({"plan": {"actualizado": int(time.time()), "texto": plan}}, contrasena, "Plan diario")
             registrar("Plan publicado.")
