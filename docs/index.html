@@ -264,6 +264,21 @@ ol{line-height:1.7}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 @media(prefers-contrast:more){:root{--op:.9!important}}
 
+
+/* Elegir perfil (estilo Netflix) */
+body.eligiendo #velo{background:#141414;opacity:1}
+#perfiles{--txt:#f5f5f7;--suave:#9a9aa2;color:#f5f5f7}
+.netf{min-height:78vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;animation:aparece .45s ease both}
+.netf h1{font-weight:500;font-size:clamp(2rem,6.5vw,3.5rem);letter-spacing:-.02em;margin:0 0 2.2rem}
+.netfLista{display:flex;gap:clamp(1rem,3.5vw,2.2rem);justify-content:center;flex-wrap:wrap}
+.perfNet{background:transparent;border:0;padding:0;display:flex;flex-direction:column;align-items:center;gap:.8rem;color:var(--suave);width:clamp(6.8rem,26vw,10.5rem);font-size:clamp(1rem,3.4vw,1.2rem);font-weight:500;transition:color .15s}
+.perfNet .logo{width:100%;height:auto;min-width:0;aspect-ratio:1;border-radius:8px;font-size:clamp(2.6rem,10vw,4rem);border:3px solid transparent;box-shadow:none;transition:transform .15s,border-color .15s}
+.perfNet:hover,.perfNet:focus-visible{color:#fff;background:transparent;filter:none}
+.perfNet:hover .logo,.perfNet:focus-visible .logo{border-color:#fff;transform:scale(1.05)}
+.netf .pie{color:var(--suave);font-size:.85rem;margin-top:2.4rem}
+@keyframes aparece{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.netf{animation:none}}
+
 /* Calendario */
 .calCab{display:flex;align-items:center;gap:.5rem;margin-bottom:.7rem}
 .calCab h3{flex:1;text-align:center;text-transform:capitalize;margin:0}
@@ -294,7 +309,7 @@ ol{line-height:1.7}
 <input id="clave" type="password" autocomplete="current-password" required></div>
 <button type="submit" class="pri" id="entrar">Entrar</button><p id="mensaje" role="alert"></p></form></section>
 
-<section id="perfiles" hidden><div style="max-width:34rem;margin:12vh auto 0;text-align:center"><h1>¿Quién eres?</h1><p class="estado" style="margin-bottom:1.6rem">Elige tu cuenta. El navegador la recordará y no volverá a preguntártelo.</p><div class="rejilla" id="listaPerfiles"></div></div></section>
+<section id="perfiles" hidden><div class="netf"><h1>¿Quién eres?</h1><div class="netfLista" id="listaPerfiles"></div><p class="pie">Se te preguntará solo la primera vez en este dispositivo.</p></div></section>
 
 <section id="panel" hidden>
 <div class="cab"><div style="display:flex;gap:1.1rem;align-items:center"><span id="avatarCab"></span><div><div class="fecha" id="fechaHoy"></div><h1 id="saludo"></h1>
@@ -322,7 +337,7 @@ async function descifrar(k,p){const c=await crypto.subtle.decrypt({name:"AES-GCM
 function abrirBD(){return new Promise((ok,mal)=>{const r=indexedDB.open("panel",1);r.onupgradeneeded=()=>r.result.createObjectStore("k");r.onsuccess=()=>ok(r.result);r.onerror=()=>mal(r.error)})}
 async function opBD(m,a){const bd=await abrirBD();return new Promise((ok,mal)=>{const t=bd.transaction("k",m);const p=a(t.objectStore("k"));t.oncomplete=()=>ok(p&&p.result);t.onerror=()=>mal(t.error)})}
 const guardarClave=(k)=>opBD("readwrite",(s)=>s.put(k,"clave")),leerClave=()=>opBD("readonly",(s)=>s.get("clave")),borrarClave=()=>opBD("readwrite",(s)=>s.delete("clave"));
-function mostrar(c){$("perfiles").hidden=c!=="perfiles";$("cargando").hidden=c!=="cargando";$("acceso").hidden=c!=="acceso";$("panel").hidden=c!=="panel";if(c==="acceso")$("clave").focus()}
+function mostrar(c){document.body.classList.toggle("eligiendo",c==="perfiles");$("perfiles").hidden=c!=="perfiles";$("cargando").hidden=c!=="cargando";$("acceso").hidden=c!=="acceso";$("panel").hidden=c!=="panel";if(c==="acceso")$("clave").focus()}
 async function traer(n,obl){const r=await fetch(n+"?t="+Date.now(),{cache:"no-store"});if(r.status===404&&!obl)return null;if(!r.ok)throw new Error("red");return r.json()}
 async function cargarPlan(k){try{const p=await traer("plan.enc",false);return p?await descifrar(k,p):null}catch(e){return null}}
 
@@ -338,7 +353,7 @@ const LS=mkLS(P.base?"panel_":"panel_"+P.id+"_");
 let nombres={...Object.fromEntries(PERFILES.map((x)=>[x.id,x.defecto])),...LSG.get("perfiles",{})};
 const nombrePerfil=(id)=>nombres[id]||PERFILES.find((x)=>x.id===id).defecto;
 let fotos=LSG.get("fotos",{});
-const avatar=(id,extra="")=>{const x=PERFILES.find((y)=>y.id===id);return fotos[id]?`<span class="logo av ${extra}" style="background-image:url(${JSON.stringify(fotos[id])})" role="img" aria-label="${nombrePerfil(id)}"></span>`:`<span class="logo ${extra}" style="--color:${x.color}">${nombrePerfil(id).charAt(0).toUpperCase()}</span>`};
+const avatar=(id,extra="")=>{const x=PERFILES.find((y)=>y.id===id);return fotos[id]?`<span class="logo av ${extra}" style="background-image:url(${esc(JSON.stringify(fotos[id]))})" role="img" aria-label="${nombrePerfil(id)}"></span>`:`<span class="logo ${extra}" style="--color:${x.color}">${nombrePerfil(id).charAt(0).toUpperCase()}</span>`};
 const KFONDO=P.base?"fondo":"fondo_"+P.id;
 const FEST=P.base?"estado.enc":"estado-"+P.id+".enc";
 
@@ -684,7 +699,7 @@ function vAsignatura(a,semN,temaId){let h=`<a class="atras" href="#asignaturas">
 
 function vAjustes(){
  const m=(id)=>{const p=PRESETS[id];return `<button type="button" class="muestra" data-fondo="${id}" aria-pressed="${ap.fondo===id}"><i style="background:linear-gradient(135deg,${(oscuro()?p.d:p.l)[1].slice(0,3).join(",")})"></i>${p.n}</button>`};
- const prop=ap.fondo==="img"&&imgFondo?`<button type="button" class="muestra" data-fondo="img" aria-pressed="true"><i style="background:center/cover url(${JSON.stringify(imgFondo)})"></i>Tu imagen</button>`:"";
+ const prop=ap.fondo==="img"&&imgFondo?`<button type="button" class="muestra" data-fondo="img" aria-pressed="true"><i style="background:center/cover url(${esc(JSON.stringify(imgFondo))})"></i>Tu imagen</button>`:"";
  const seg=(k,vals)=>`<div class="seg" role="group">`+vals.map(([v,t])=>`<button type="button" data-ap="${k}" data-v="${v}" aria-pressed="${ap[k]===v}">${t}</button>`).join("")+`</div>`;
  const rng=(k,t,min,max,paso,fmt)=>`<div class="ctl"><label class="lbl" for="r_${k}" style="margin:0">${t}</label><input type="range" id="r_${k}" data-rng="${k}" min="${min}" max="${max}" step="${paso}" value="${ap[k]}"><output id="o_${k}">${fmt(ap[k])}</output></div>`;
  return `<h2 style="margin-top:.4rem">Apariencia</h2><div class="card">
@@ -981,7 +996,7 @@ function enlazarGoogle(){const f=$("fGo");if(!f)return;
   try{await gPedir("select_account");gReiniciar();gCals=null;cambioG();gMsg="";await gCargarCals().catch(()=>{});pintar();gSync()}catch(x){gMsg=x.message;pintar()}};
  const d=$("goDes");if(d)d.onclick=()=>{const t=gToken();if(t&&window.google&&google.accounts)google.accounts.oauth2.revoke(t,()=>{});try{localStorage.removeItem(GTK)}catch(x){}gMsg="";gCals=null;pintar();gPintarBoton()}}
 
-function pintarPerfiles(){$("listaPerfiles").innerHTML=PERFILES.map((x)=>`<button type="button" class="card perfilBtn" data-perfil="${x.id}">${avatar(x.id)}<h3>${esc(nombrePerfil(x.id))}</h3><span class="sub">${esc(x.tipo)}</span></button>`).join("");
+function pintarPerfiles(){$("listaPerfiles").innerHTML=PERFILES.map((x)=>`<button type="button" class="perfNet" data-perfil="${x.id}">${avatar(x.id)}<span>${esc(nombrePerfil(x.id))}</span></button>`).join("");
  document.querySelectorAll("[data-perfil]").forEach((b)=>b.onclick=()=>{LSG.set("perfil",b.dataset.perfil);location.reload()})}
 async function leerRemoto(f){if(token){const r=await fetch(GH+repo+"/contents/docs/"+f+"?ref=main&t="+Date.now(),{headers:{...cabGH(),Accept:"application/vnd.github.raw+json"},cache:"no-store"});if(r.status===404)return null;if(r.ok)return JSON.parse(await r.text())}return traer(f,false)}
 async function cargarCuentas(){try{const pb=await leerRemoto("cuentas.enc");if(!pb)return;const o=await descifrar(clave,pb);if((o.mod||0)>(MODS.cuentas||0)){PAQ[0].set(o);MODS.cuentas=o.mod;guardarLocal()}}catch(e){}}
@@ -991,7 +1006,7 @@ async function entrar(k,p){const gate=await descifrar(k,p);clave=k;await cargarC
  mostrar("panel");pintar();estadoSync(token?"guardando":"local");
  sincronizar().then(()=>{refrescarAules();gIniciar()}).catch(()=>{})}
 async function cerrarSesion(){try{await borrarClave()}catch(e){}clave=null;datos=null;location.reload()}
-async function iniciar(){try{paquete=await traer("tareas.enc",true)}catch(e){$("cargando").textContent="No se pudo cargar el panel. Recarga en un momento.";return}
+async function iniciar(){try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}try{paquete=await traer("tareas.enc",true)}catch(e){$("cargando").textContent="No se pudo cargar el panel. Recarga en un momento.";return}
  let g=null;try{g=await leerClave()}catch(e){}
  if(g&&!(g.usages||[]).includes("encrypt")){try{await borrarClave()}catch(e){}g=null}
  if(g){try{await entrar(g,paquete);return}catch(e){try{await borrarClave()}catch(e2){}}}mostrar("acceso")}
