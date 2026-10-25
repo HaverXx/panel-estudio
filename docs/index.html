@@ -3,7 +3,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
 <meta name="robots" content="noindex"><title>Panel de estudio</title>
-<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0a84ff"><link rel="icon" href="icon-192.png">
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0a84ff"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -107,6 +107,15 @@ button:hover{filter:brightness(1.08);background:color-mix(in srgb,var(--capa2) 8
 button.pri{background:var(--acento);color:#fff}button.pri:hover{background:var(--acento);filter:brightness(1.1)}
 button.peq{padding:.32rem .75rem;font-size:.82rem;border-radius:9px}
 button.rojo{color:var(--vencida)}
+/* Efecto burbujas al pasar el ratón (o pulsar) sobre los botones. Se activa/desactiva en Ajustes > Apariencia. */
+@keyframes burbujas{to{background-position:0 0,220px 220px}}
+html[data-burb=on] button:not(.muestra):not(.on):not(.acentos *):is(:hover,:active){
+ background-image:linear-gradient(color-mix(in srgb,var(--ov,var(--capa2)) var(--ovp,50%),transparent),color-mix(in srgb,var(--ov,var(--capa2)) var(--ovp,50%),transparent)),url(burbujas.jpg);
+ background-size:auto,220px 220px;background-position:0 0,0 0;filter:none;
+ box-shadow:inset 0 0 0 1px rgba(255,255,255,.4),0 3px 14px rgba(120,140,255,.28);animation:burbujas 8s linear infinite}
+html[data-burb=on] button.pri{--ov:var(--acento);--ovp:62%}
+@media (prefers-reduced-motion:reduce){html[data-burb=on] button:is(:hover,:active){animation:none}}
+
 input,select,textarea{font:inherit;width:100%;padding:.65rem .85rem;border-radius:12px;border:1px solid var(--linea);background:rgb(var(--vid)/.45);color:var(--txt)}
 input::placeholder{color:var(--tenue)}
 a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid color-mix(in srgb,var(--acento) 70%,transparent);outline-offset:2px}
@@ -323,7 +332,7 @@ const KFONDO=P.base?"fondo":"fondo_"+P.id;
 const FEST=P.base?"estado.enc":"estado-"+P.id+".enc";
 
 // ---------- Aspecto: tema, fondo de pantalla, cristal ----------
-const AP_DEF={tema:"auto",fondo:"aurora",url:"",op:.58,blur:28,velo:0,fblur:0,escala:100,ancho:68,radio:22,acento:"#0a84ff"};
+const AP_DEF={tema:"auto",fondo:"aurora",url:"",op:.58,blur:28,velo:0,fblur:0,escala:100,ancho:68,radio:22,acento:"#0a84ff",burbujas:"on"};
 let ap={...AP_DEF,...LS.get("ap",{})},imgFondo=null;
 const FMT={op:(v)=>Math.round(v*100)+"%",blur:(v)=>v+" px",fblur:(v)=>v+" px",velo:(v)=>v+"%",escala:(v)=>v+"%",ancho:(v)=>v+" rem",radio:(v)=>v+" px"};
 const ACENTOS=[["#0a84ff","Azul"],["#5e5ce6","Índigo"],["#bf5af2","Violeta"],["#ff375f","Rosa"],["#ff9f0a","Naranja"],["#30b45a","Verde"],["#00b5c4","Turquesa"]];
@@ -338,7 +347,7 @@ const PRESETS={
 const oscuro=()=>ap.tema==="oscuro"||(ap.tema==="auto"&&matchMedia("(prefers-color-scheme:dark)").matches);
 const mesh=(b,c)=>`radial-gradient(48rem 36rem at 8% 0%,${c[0]}d0,transparent 62%),radial-gradient(46rem 34rem at 95% 8%,${c[1]}b8,transparent 60%),radial-gradient(56rem 44rem at 78% 100%,${c[2]}c8,transparent 62%),radial-gradient(44rem 34rem at 0% 95%,${c[3]}a8,transparent 60%),${b}`;
 const fondoPreset=(id,oscu)=>{const p=PRESETS[id]||PRESETS.aurora,v=oscu?p.d:p.l;return mesh(v[0],v[1])};
-function aplicar(){const r=document.documentElement;
+function aplicar(){const r=document.documentElement;r.dataset.burb=ap.burbujas==="off"?"off":"on";
  if(ap.tema==="auto")r.removeAttribute("data-tema");else r.dataset.tema=ap.tema;
  r.style.setProperty("--op",ap.op);r.style.setProperty("--blur",ap.blur+"px");r.style.setProperty("--velo",ap.velo/100);r.style.setProperty("--acento",ap.acento);r.style.setProperty("--esc",ap.escala/100);r.style.setProperty("--ancho",ap.ancho+"rem");r.style.setProperty("--r",ap.radio+"px");
  const f=$("fondo"),src=ap.fondo==="img"?imgFondo:ap.fondo==="url"?ap.url:null;
@@ -720,6 +729,7 @@ function vAjustes(){
  <div class="bloque"><span class="lbl">Tamaño y forma</span>
   ${rng("escala","Tamaño del texto",80,130,1,FMT.escala)}${rng("ancho","Ancho de la página",50,90,1,FMT.ancho)}${rng("radio","Redondeo de los paneles",4,34,1,FMT.radio)}</div>
  <div class="bloque"><span class="lbl">Color de acento</span><div class="botones" style="align-items:center"><input type="color" class="cp" id="apColor" value="${/^#[0-9a-f]{6}$/i.test(ap.acento)?ap.acento:"#0a84ff"}" aria-label="Elegir color de acento"><span class="estado">Elige cualquier color, o uno rápido:</span></div><div class="acentos" style="margin-top:.7rem">${ACENTOS.map(([c,n])=>`<button type="button" data-acento="${c}" style="background:${c}" aria-label="${n}" title="${n}" aria-pressed="${ap.acento===c}"></button>`).join("")}</div></div>
+ <div class="bloque"><span class="lbl">Efecto de burbujas en los botones</span>${seg("burbujas",[["on","Activado"],["off","Desactivado"]])}<p class="estado">Al pasar el ratón por un botón (o pulsarlo en el móvil), se llena de burbujas de colores.</p></div>
  <div class="bloque"><button type="button" id="apReset">Restablecer apariencia</button></div></div>
  <h2>Cuenta</h2><div class="card"><div style="display:flex;gap:1.1rem;align-items:center;margin-bottom:.8rem">${avatar(P.id,"pp")}<div><b>${esc(nombrePerfil(P.id))}</b><div class="estado">${esc(P.tipo)}</div></div></div>
  <div class="botones"><button id="cuFoto">Cambiar foto de perfil</button>${fotos[P.id]?'<button class="rojo" id="cuQuitarFoto">Quitar foto</button>':""}<input type="file" id="cuFile" accept="image/*"></div>
