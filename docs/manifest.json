@@ -1,7 +1,7 @@
 {
-  "name": "Panel de estudio",
-  "short_name": "Panel",
-  "description": "Tus entregas de Aules y apuntes",
+  "name": "Organizador",
+  "short_name": "Organizador",
+  "description": "Tus entregas, exámenes, eventos y apuntes en un solo sitio",
   "lang": "es",
   "start_url": "./",
   "scope": "./",
@@ -9,8 +9,23 @@
   "background_color": "#000000",
   "theme_color": "#0a84ff",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }

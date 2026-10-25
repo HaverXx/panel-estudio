@@ -2,8 +2,13 @@
 <html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
-<meta name="robots" content="noindex"><title>Panel de estudio</title>
-<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0a84ff"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-512.png">
+<meta name="robots" content="noindex"><title>Organizador</title>
+<meta name="application-name" content="Organizador">
+<meta name="apple-mobile-web-app-title" content="Organizador">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0a84ff"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -107,14 +112,20 @@ button:hover{filter:brightness(1.08);background:color-mix(in srgb,var(--capa2) 8
 button.pri{background:var(--acento);color:#fff}button.pri:hover{background:var(--acento);filter:brightness(1.1)}
 button.peq{padding:.32rem .75rem;font-size:.82rem;border-radius:9px}
 button.rojo{color:var(--vencida)}
-/* Efecto burbujas al pasar el ratón (o pulsar) sobre los botones. Se activa/desactiva en Ajustes > Apariencia. */
-@keyframes burbujas{to{background-position:0 0,220px 220px}}
-html[data-burb=on] button:not(.muestra):not(.on):not(.acentos *):is(:hover,:active){
- background-image:linear-gradient(color-mix(in srgb,var(--ov,var(--capa2)) var(--ovp,50%),transparent),color-mix(in srgb,var(--ov,var(--capa2)) var(--ovp,50%),transparent)),url(burbujas.jpg);
- background-size:auto,220px 220px;background-position:0 0,0 0;filter:none;
- box-shadow:inset 0 0 0 1px rgba(255,255,255,.4),0 3px 14px rgba(120,140,255,.28);animation:burbujas 8s linear infinite}
-html[data-burb=on] button.pri{--ov:var(--acento);--ovp:62%}
-@media (prefers-reduced-motion:reduce){html[data-burb=on] button:is(:hover,:active){animation:none}}
+/* Calendario de la Agenda */
+.calcab{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-bottom:.9rem}
+.calcab h3{margin:0;text-transform:capitalize;font-size:1.1rem}
+.calsem,.calrej{display:grid;grid-template-columns:repeat(7,1fr);gap:.25rem}
+.calsem span{font-size:.72rem;font-weight:700;text-align:center;color:var(--tenue);letter-spacing:.06em;padding:.2rem 0}
+.cv{min-height:3rem}
+button.cd{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.25rem;min-height:3rem;padding:.3rem 0;border-radius:12px;background:transparent;color:var(--txt);font-weight:600;font-variant-numeric:tabular-nums}
+button.cd:hover{background:var(--capa)}
+button.cd.hoy{box-shadow:inset 0 0 0 2px var(--acento)}
+button.cd.sel,button.cd.sel:hover{background:var(--acento);color:#fff}
+.pts{display:flex;gap:3px;height:6px;font-style:normal}.pts b{width:6px;height:6px;border-radius:50%;display:block}
+button.cd.sel .pts b{box-shadow:0 0 0 1.5px #fff}
+.leyenda{display:flex;flex-wrap:wrap;gap:.3rem 1rem;margin-top:.9rem;font-size:.8rem;color:var(--suave)}
+.leyenda i{display:inline-block;width:.6rem;height:.6rem;border-radius:50%;margin-right:.35rem;vertical-align:baseline}
 
 input,select,textarea{font:inherit;width:100%;padding:.65rem .85rem;border-radius:12px;border:1px solid var(--linea);background:rgb(var(--vid)/.45);color:var(--txt)}
 input::placeholder{color:var(--tenue)}
@@ -279,7 +290,7 @@ ol{line-height:1.7}
 <main>
 <p class="estado" id="cargando">Cargando…</p>
 <section id="acceso" hidden><form id="formulario">
-<h1>Panel</h1><div><label class="lbl" for="clave">Contraseña</label>
+<h1>Organizador</h1><div><label class="lbl" for="clave">Contraseña</label>
 <input id="clave" type="password" autocomplete="current-password" required></div>
 <button type="submit" class="pri" id="entrar">Entrar</button><p id="mensaje" role="alert"></p></form></section>
 
@@ -332,8 +343,8 @@ const KFONDO=P.base?"fondo":"fondo_"+P.id;
 const FEST=P.base?"estado.enc":"estado-"+P.id+".enc";
 
 // ---------- Aspecto: tema, fondo de pantalla, cristal ----------
-const AP_DEF={tema:"auto",fondo:"aurora",url:"",op:.58,blur:28,velo:0,fblur:0,escala:100,ancho:68,radio:22,acento:"#0a84ff",burbujas:"on"};
-let ap={...AP_DEF,...LS.get("ap",{})},imgFondo=null;
+const AP_DEF={tema:"auto",fondo:"aurora",url:"",op:.58,blur:28,velo:0,fblur:0,escala:100,ancho:68,radio:22,acento:"#0a84ff"};
+let ap={...AP_DEF,...LS.get("ap",{})},imgFondo=null;delete ap.burbujas;
 const FMT={op:(v)=>Math.round(v*100)+"%",blur:(v)=>v+" px",fblur:(v)=>v+" px",velo:(v)=>v+"%",escala:(v)=>v+"%",ancho:(v)=>v+" rem",radio:(v)=>v+" px"};
 const ACENTOS=[["#0a84ff","Azul"],["#5e5ce6","Índigo"],["#bf5af2","Violeta"],["#ff375f","Rosa"],["#ff9f0a","Naranja"],["#30b45a","Verde"],["#00b5c4","Turquesa"]];
 const PRESETS={
@@ -347,7 +358,7 @@ const PRESETS={
 const oscuro=()=>ap.tema==="oscuro"||(ap.tema==="auto"&&matchMedia("(prefers-color-scheme:dark)").matches);
 const mesh=(b,c)=>`radial-gradient(48rem 36rem at 8% 0%,${c[0]}d0,transparent 62%),radial-gradient(46rem 34rem at 95% 8%,${c[1]}b8,transparent 60%),radial-gradient(56rem 44rem at 78% 100%,${c[2]}c8,transparent 62%),radial-gradient(44rem 34rem at 0% 95%,${c[3]}a8,transparent 60%),${b}`;
 const fondoPreset=(id,oscu)=>{const p=PRESETS[id]||PRESETS.aurora,v=oscu?p.d:p.l;return mesh(v[0],v[1])};
-function aplicar(){const r=document.documentElement;r.dataset.burb=ap.burbujas==="off"?"off":"on";
+function aplicar(){const r=document.documentElement;
  if(ap.tema==="auto")r.removeAttribute("data-tema");else r.dataset.tema=ap.tema;
  r.style.setProperty("--op",ap.op);r.style.setProperty("--blur",ap.blur+"px");r.style.setProperty("--velo",ap.velo/100);r.style.setProperty("--acento",ap.acento);r.style.setProperty("--esc",ap.escala/100);r.style.setProperty("--ancho",ap.ancho+"rem");r.style.setProperty("--r",ap.radio+"px");
  const f=$("fondo"),src=ap.fondo==="img"?imgFondo:ap.fondo==="url"?ap.url:null;
@@ -373,7 +384,7 @@ const MI_DISP=(()=>{let v=LSG.get("dispId","");if(!v){v="d"+Math.random().toStri
 let misTareas=LS.get("misTareas",[]),horario=LS.get("horario",null),cfgAsig=LS.get("cfgAsig",{}),extraAsig=LS.get("extraAsig",[]),ocultas=LS.get("ocultas",[]),layout=LS.get("layout",{orden:[],ocultos:[],ancho:{}});
 let notas=LS.get("notas",{ov:{},borrados:{},extra:{}}),edNota=null,editandoT=null,modoLay=false,modoAsig=false,editHor=false,ordenActual=[];
 const estadoObj=()=>({mod:MODS.estado,examenes,eventos,hechos,plansem,misTareas,horario,cfgAsig,extraAsig,ocultas,layout,ap,aules});
-function volcar(r){if(r.examenes)examenes=r.examenes;if(r.hechos)hechos=r.hechos;if(r.plansem)plansem=r.plansem;if(r.misTareas)misTareas=r.misTareas;if(r.horario)horario=r.horario;if(r.cfgAsig)cfgAsig=r.cfgAsig;if(r.extraAsig)extraAsig=r.extraAsig;if(r.ocultas)ocultas=r.ocultas;if(r.layout)layout=r.layout;if(r.eventos)eventos=r.eventos;if(r.aules)aules=r.aules;if(r.ap){ap={...AP_DEF,...r.ap};LS.set("ap",ap)}aplicarAsig()}
+function volcar(r){if(r.examenes)examenes=r.examenes;if(r.hechos)hechos=r.hechos;if(r.plansem)plansem=r.plansem;if(r.misTareas)misTareas=r.misTareas;if(r.horario)horario=r.horario;if(r.cfgAsig)cfgAsig=r.cfgAsig;if(r.extraAsig)extraAsig=r.extraAsig;if(r.ocultas)ocultas=r.ocultas;if(r.layout)layout=r.layout;if(r.eventos)eventos=r.eventos;if(r.aules)aules=r.aules;if(r.ap){ap={...AP_DEF,...r.ap};delete ap.burbujas;LS.set("ap",ap)}aplicarAsig()}
 const enEdicion=()=>{const e=document.activeElement;return !!edNota||!!(e&&(/INPUT|SELECT|TEXTAREA/.test(e.tagName)||e.isContentEditable))};
 function limpiar(html){const d=new DOMParser().parseFromString("<body>"+html,"text/html");d.querySelectorAll("script,iframe,object,embed,style,link,meta").forEach((n)=>n.remove());d.body.querySelectorAll("*").forEach((n)=>[...n.attributes].forEach((at)=>{if(/^on/i.test(at.name)||/^\s*javascript:/i.test(at.value))n.removeAttribute(at.name)}));return d.body.innerHTML}
 
@@ -598,11 +609,39 @@ let editandoE=null;
 function filaEv(x){const d=new Date(x.fecha),ms=d.getTime()-Date.now(),r=restante(ms),a=asig(x.asig);
  return `<div class="fila" style="--color:${ms<0?"var(--tenue)":color(ms)}"><div><div class="t">${esc(x.titulo)}</div><div class="s">${fechaLarga(d)} · ${d.toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"})}${x.fin?" – "+esc(x.fin):""}${a?" · "+esc(a.corto):""}${x.lugar?" · "+esc(x.lugar):""}${x.notas?" · "+esc(x.notas):""}</div></div>
  <div class="cuenta">${ms<0?"Pasado":r.texto}<div class="acciones"><button class="peq" data-eev="${x.id}">Editar</button><button class="peq rojo" data-dev="${x.id}">Borrar</button></div></div></div>`}
+// ---------- Calendario de la Agenda ----------
+const MESES=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+const pad2=(n)=>String(n).padStart(2,"0");
+const ymd=(d)=>d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate());
+const TIPOS_CAL={ex:["Examen","var(--vencida)"],ev:["Evento","var(--acento)"],mi:["Tarea","var(--normal)"],au:["Aules","#bf5af2"]};
+let calMes=(()=>{const n=new Date();return new Date(n.getFullYear(),n.getMonth(),1)})(),calDia=ymd(new Date());
+const horaDe=(d)=>pad2(d.getHours())+":"+pad2(d.getMinutes());
+function itemsCalendario(){const r=[],ok=(d)=>d instanceof Date&&!isNaN(d);
+ for(const e of examenes){const d=new Date(e.fecha);if(!ok(d))continue;const a=asig(e.asig);r.push({t:"ex",d,titulo:e.titulo||"Examen",sub:(a?a.corto:"")+(e.aprox?(a?" · ":"")+"fecha por confirmar":""),hora:e.aprox?"":horaDe(d)})}
+ for(const e of eventos){const d=new Date(e.fecha);if(!ok(d))continue;const a=asig(e.asig);r.push({t:"ev",d,titulo:e.titulo||"Evento",sub:[a?a.corto:"",e.lugar||""].filter(Boolean).join(" · "),hora:horaDe(d)+(e.fin?" – "+e.fin:"")})}
+ for(const t of todasTareas()){const d=new Date(t.ms);if(!ok(d))continue;r.push({t:t.origen==="Aules"?"au":"mi",d,titulo:t.nombre,sub:t.asigTxt||"",hora:horaDe(d),hecha:t.hecha})}
+ return r}
+function htmlCalendario(){
+ const y=calMes.getFullYear(),m=calMes.getMonth(),off=(new Date(y,m,1).getDay()+6)%7,dias=new Date(y,m+1,0).getDate(),hoy=ymd(new Date());
+ const porDia={};for(const it of itemsCalendario()){const k=ymd(it.d);(porDia[k]=porDia[k]||[]).push(it)}
+ let celdas="";for(let i=0;i<off;i++)celdas+='<span class="cv"></span>';
+ for(let d=1;d<=dias;d++){const k=y+"-"+pad2(m+1)+"-"+pad2(d),its=porDia[k]||[],tipos=[...new Set(its.filter((i)=>!i.hecha).map((i)=>i.t))];
+  celdas+=`<button type="button" class="cd${k===hoy?" hoy":""}${k===calDia?" sel":""}" data-cdia="${k}" aria-pressed="${k===calDia}" aria-label="${d} de ${MESES[m]}${its.length?": "+its.length+(its.length===1?" elemento":" elementos"):""}"><span>${d}</span><i class="pts">${tipos.map((t)=>`<b style="background:${TIPOS_CAL[t][1]}"></b>`).join("")}</i></button>`}
+ const delDia=(porDia[calDia]||[]).sort((a,b)=>a.d-b.d),enMes=calDia.slice(0,7)===y+"-"+pad2(m+1);
+ const f=new Date(calDia+"T00:00:00"),tit=enMes?fechaLarga(f):"";
+ const filas=delDia.map((i)=>`<div class="fila" style="--color:${TIPOS_CAL[i.t][1]};${i.hecha?"opacity:.6":""}"><div><div class="t" ${i.hecha?'style="text-decoration:line-through"':""}>${esc(i.titulo)}</div><div class="s">${esc(i.hora)}${i.hora&&i.sub?" · ":""}${esc(i.sub)}${i.hora||i.sub?" · ":""}${TIPOS_CAL[i.t][0]}${i.hecha?" · hecha":""}</div></div></div>`).join("");
+ const hayMes=Object.keys(porDia).some((k)=>k.slice(0,7)===y+"-"+pad2(m+1));
+ return `<div class="card cal"><div class="calcab"><button type="button" class="peq" id="calPrev" aria-label="Mes anterior">‹</button><h3>${MESES[m]} ${y}</h3><div class="botones" style="gap:.4rem"><button type="button" class="peq" id="calHoy">Hoy</button><button type="button" class="peq" id="calSig" aria-label="Mes siguiente">›</button></div></div>
+ <div class="calsem">${["L","M","X","J","V","S","D"].map((x)=>`<span>${x}</span>`).join("")}</div><div class="calrej">${celdas}</div>
+ <div class="leyenda">${Object.values(TIPOS_CAL).map(([n,c])=>`<span><i style="background:${c}"></i>${n}</span>`).join("")}</div>
+ ${hayMes?"":'<p class="estado" style="margin-top:.8rem">No hay nada apuntado este mes.</p>'}
+ <div style="margin-top:1rem">${enMes?`<div class="rot" style="margin-bottom:.4rem">${esc(tit)}</div>`+(filas||'<p class="vacioit">Nada este día.</p>'):'<p class="vacioit">Elige un día del mes.</p>'}</div></div>`}
+
 function vExamenes(){const ahora=Date.now();const lista=examenes.map((e)=>({...e,ms:new Date(e.fecha).getTime()-ahora})).sort((a,b)=>a.ms-b.ms);
  const e=editando?examenes.find((x)=>x.id===editando):null,ee=editandoE?eventos.find((x)=>x.id===editandoE):null;
  const evs=[...eventos].sort((a,b)=>new Date(a.fecha)-new Date(b.fecha)),evF=evs.filter((x)=>new Date(x.fecha)>=ahora),evP=evs.filter((x)=>new Date(x.fecha)<ahora).reverse();
  const optAs=(sel)=>ASIGNATURAS.map((a)=>`<option value="${a.id}" ${sel===a.id?"selected":""}>${esc(a.nombre)}</option>`).join("");
- let h=`<h2 style="margin-top:.4rem">Exámenes</h2>`;
+ let h=`<h2 style="margin-top:.4rem">Calendario</h2>`+htmlCalendario()+`<h2>Exámenes</h2>`;
  h+=lista.length?lista.map((x)=>{const a=asig(x.asig),r=restante(x.ms);const d=new Date(x.fecha);
   return `<div class="fila" style="--color:${x.ms<0?"var(--tenue)":color(x.ms)}"><div><div class="t">${esc(x.titulo)}</div><div class="s">${a?esc(a.corto):"Otra"} · ${x.aprox?"semana del "+fechaCorta(d)+" (por confirmar)":fechaLarga(d)+" "+d.toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"})}${x.notas?" · "+esc(x.notas):""}</div></div>
   <div class="cuenta">${x.ms<0?"Pasado":r.texto}<div class="acciones"><button class="peq" data-edit="${x.id}">Editar</button><button class="peq rojo" data-del="${x.id}">Borrar</button></div></div></div>`}).join(""):'<div class="vacio">No hay exámenes guardados.</div>';
@@ -669,48 +708,74 @@ function vAsignatura(a,semN,temaId){let h=`<a class="atras" href="#asignaturas">
 // Los avisos los envía GitHub (cada ~15 min) según lo que elijas aquí. La configuración se guarda cifrada
 // en docs/avisos.enc, igual que el resto de tus datos. Solo la cuenta principal tiene avisos.
 const urlB64=(s)=>{const p="=".repeat((4-s.length%4)%4),r=atob((s+p).replace(/-/g,"+").replace(/_/g,"/"));return Uint8Array.from(r,(c)=>c.charCodeAt(0))};
-const nombreDisp=()=>/Android/i.test(navigator.userAgent)?"Android":/iPhone|iPad/i.test(navigator.userAgent)?"iPhone":"Ordenador";
+const UA=navigator.userAgent;
+const esIOS=/iPhone|iPad|iPod/i.test(UA)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+const esApp=()=>(window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone===true;
+const nombreDisp=()=>/Android/i.test(UA)?"Android":/iPad/i.test(UA)?"iPad":esIOS?"iPhone":"Ordenador";
 const avSoporte=()=>"serviceWorker" in navigator&&"PushManager" in window&&"Notification" in window;
 const ANTES=[[10080,"1 semana antes"],[2880,"2 días antes"],[1440,"1 día antes"],[720,"12 horas antes"],[180,"3 horas antes"],[60,"1 hora antes"],[30,"30 minutos antes"]];
 let avMsg="";
+const mismaClave=(a,b)=>a&&b&&a.length===b.length&&a.every((x,i)=>x===b[i]);
 async function activarAvisos(){
  if(!token)throw new Error("Primero guarda el token de GitHub en «Sincronización» (más abajo): sin él los avisos no pueden funcionar.");
- if(await Notification.requestPermission()!=="granted")throw new Error("Las notificaciones están bloqueadas. Actívalas en los ajustes del navegador para esta web y vuelve a intentarlo.");
+ if(esIOS&&!esApp())throw new Error("En iPhone hay que abrir Organizador desde el icono de la pantalla de inicio (Compartir → «Añadir a pantalla de inicio»). Desde Safari no se pueden activar los avisos.");
+ if(!avSoporte())throw new Error("Este navegador no admite notificaciones."+(esIOS?" Necesitas iOS 16.4 o superior.":""));
+ const permiso=await Notification.requestPermission();   // tiene que ser lo primero: iOS exige que salga de un toque
+ if(permiso!=="granted")throw new Error(permiso==="denied"
+  ?(esIOS?"Las notificaciones están bloqueadas. En el iPhone: Ajustes → Notificaciones → Organizador → Permitir notificaciones."
+          :"Las notificaciones están bloqueadas. En Android: Ajustes → Aplicaciones → Organizador → Notificaciones → permitir.")
+  :"No has dado permiso para las notificaciones.");
  const reg=await navigator.serviceWorker.ready;
+ const r=await fetch("vapid-publica.txt?t="+Date.now(),{cache:"no-store"});
+ if(!r.ok)throw new Error("Falta el archivo vapid-publica.txt en la web (ejecuta generar_claves.py y súbelo a GitHub).");
+ const clavePub=urlB64((await r.text()).trim());
  let sub=await reg.pushManager.getSubscription();
- if(!sub){const r=await fetch("vapid-publica.txt?t="+Date.now(),{cache:"no-store"});
-  if(!r.ok)throw new Error("Falta el archivo vapid-publica.txt en la web (ejecuta generar_claves.py y súbelo a GitHub).");
-  sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlB64((await r.text()).trim())})}
+ if(sub){const k=sub.options&&sub.options.applicationServerKey;      // suscripción hecha con otra clave: no sirve
+  if(k&&!mismaClave(new Uint8Array(k),clavePub)){try{await sub.unsubscribe()}catch(e){}sub=null}}
+ if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:clavePub});
  const j=sub.toJSON();
  avisos.dispositivos=[...avisos.dispositivos.filter((d)=>d.id!==MI_DISP&&d.sub.endpoint!==j.endpoint),{id:MI_DISP,nombre:nombreDisp(),sub:{endpoint:j.endpoint,keys:j.keys}}];
- tocar("avisos")}
+ tocar("avisos");
+ try{await reg.showNotification("Avisos activados ✅",{body:"Así se verán tus notificaciones en este dispositivo.",icon:"icon-192.png",tag:"prueba-local"})}catch(e){}}
 async function desactivarAvisos(){
  try{const reg=await navigator.serviceWorker.ready,sub=await reg.pushManager.getSubscription();if(sub)await sub.unsubscribe()}catch(e){}
  avisos.dispositivos=avisos.dispositivos.filter((d)=>d.id!==MI_DISP);tocar("avisos")}
+// Prueba de extremo a extremo: pide a GitHub que mande un aviso real a todos tus dispositivos.
+async function pruebaReal(){
+ if(!token)throw new Error("Necesitas el token de GitHub en «Sincronización».");
+ await sincronizar();
+ const r=await fetch(GH+repo+"/actions/workflows/avisos.yml/dispatches",{method:"POST",headers:{...cabGH(),"Content-Type":"application/json"},body:JSON.stringify({ref:"main"})});
+ if(r.status===204)return;
+ if([401,403,404].includes(r.status))throw new Error("Tu token de GitHub no puede lanzar acciones. Hazlo a mano: GitHub → Actions → «Avisos al móvil» → Run workflow.");
+ throw new Error("GitHub respondió "+r.status+".")}
 function vAvisos(){
  if(!P.base)return"";
  const c=avisos.cfg,aqui=avisos.dispositivos.find((d)=>d.id===MI_DISP),n=avisos.dispositivos.length;
  const chk=(k,t)=>`<label style="display:flex;gap:.6rem;align-items:center;margin:.4rem 0"><input type="checkbox" class="rd" data-av="${k}" ${c[k]?"checked":""}>${t}</label>`;
  const hora=(k)=>`<input type="time" data-avt="${k}" value="${esc(c[k])}" style="max-width:9rem">`;
- const est=!avSoporte()?"Este navegador no admite notificaciones. En iPhone, primero hay que añadir la web a la pantalla de inicio (iOS 16.4 o superior).":aqui?"✅ Activadas en este dispositivo.":"Desactivadas en este dispositivo.";
+ const ayudaIOS=esIOS&&!esApp()?`<p class="estado aviso" style="margin:.5rem 0;font-weight:500">Para recibir avisos en iPhone: pulsa <b>Compartir</b> (el cuadrado con la flecha) → <b>«Añadir a pantalla de inicio»</b>, abre <b>Organizador</b> desde su icono y activa los avisos desde aquí. Hace falta iOS 16.4 o superior.</p>`:"";
+ const est=esIOS&&!esApp()?"Falta instalar la app en la pantalla de inicio.":!avSoporte()?"Este navegador no admite notificaciones."+(esIOS?" Necesitas iOS 16.4 o superior.":""):aqui?"✅ Activadas en este dispositivo.":"Desactivadas en este dispositivo.";
+ const lista=n?` Dispositivos con avisos: ${avisos.dispositivos.map((d)=>esc(d.nombre||"?")).join(", ")}.`:"";
+ const puede=avSoporte()&&!(esIOS&&!esApp());
  return `<h2>Notificaciones</h2><div class="card" id="avCard"><p>Recibe avisos en el móvil aunque la app esté cerrada. Eliges aquí de qué y cuándo.</p>
- <p class="estado"><b>${est}</b>${n?` Dispositivos con avisos: ${n}.`:""}${token?"":" Necesitas el token de GitHub (sección «Sincronización», más abajo)."}</p>
- <div class="botones">${avSoporte()?(aqui?'<button type="button" id="avTest">Probar en este dispositivo</button><button type="button" class="rojo" id="avOff">Desactivar aquí</button>':'<button type="button" class="pri" id="avOn">Activar avisos en este dispositivo</button>'):""}</div>
+ <p class="estado"><b>${est}</b>${lista}${token?"":" Necesitas el token de GitHub (sección «Sincronización», más abajo)."}</p>${ayudaIOS}
+ <div class="botones">${puede?(aqui?'<button type="button" id="avTest">Probar en este dispositivo</button><button type="button" id="avReal">Prueba real (desde GitHub)</button><button type="button" class="rojo" id="avOff">Desactivar aquí</button>':'<button type="button" class="pri" id="avOn">Activar avisos en este dispositivo</button>'):""}</div>
  <p class="estado" id="avMsg" style="margin-top:.7rem">${esc(avMsg)}</p>
  <div class="bloque"><span class="lbl">Avisar de</span>${chk("tareas","Entregas de Aules")}${chk("mis","Mis tareas")}${chk("examenes","Exámenes")}${chk("eventos","Eventos")}</div>
  <div class="bloque"><span class="lbl">Cuándo avisar</span>${ANTES.map(([m,t])=>`<label style="display:flex;gap:.6rem;align-items:center;margin:.4rem 0"><input type="checkbox" class="rd" data-ant="${m}" ${c.antes.includes(m)?"checked":""}>${t}</label>`).join("")}</div>
  <div class="bloque"><span class="lbl">Resumen diario</span>${chk("resumen","Un aviso al día con lo que viene en los próximos 3 días")}${c.resumen?`<div style="margin-top:.4rem"><label class="lbl" style="margin:0 0 .3rem">A partir de las</label>${hora("horaResumen")}</div>`:""}</div>
  <div class="bloque"><span class="lbl">No molestar</span>${chk("silencio","No avisar durante unas horas (los avisos pendientes salen al terminar)")}${c.silencio?`<div class="botones" style="margin-top:.4rem;align-items:center">${hora("desde")}<span class="estado">hasta</span>${hora("hasta")}</div>`:""}</div>
- <p class="estado">Los avisos los envía GitHub aproximadamente cada 15 minutos, así que pueden llegar con unos minutos de retraso. Se leen los datos ya sincronizados: si cambias algo, tarda un momento en reflejarse.</p></div>`}
+ <p class="estado">Los avisos los envía GitHub aproximadamente cada 15 minutos, así que pueden llegar con unos minutos de retraso. Se leen los datos ya sincronizados: si cambias algo, tarda un momento en reflejarse. Solo recibe avisos tu cuenta, no la de Mireia.</p></div>`}
 function enlazarAvisos(){
  if(!$("avCard"))return;
  const msg=(t,err)=>{avMsg=t;const el=$("avMsg");if(el){el.textContent=t;el.style.color=err?"var(--hoy)":""}};
  document.querySelectorAll("[data-av]").forEach((x)=>x.onchange=()=>{avisos.cfg[x.dataset.av]=x.checked;tocar("avisos");if(x.dataset.av==="resumen"||x.dataset.av==="silencio")pintar()});
  document.querySelectorAll("[data-ant]").forEach((x)=>x.onchange=()=>{const s=new Set(avisos.cfg.antes),m=+x.dataset.ant;if(x.checked)s.add(m);else s.delete(m);avisos.cfg.antes=[...s].sort((a,b)=>b-a);tocar("avisos")});
  document.querySelectorAll("[data-avt]").forEach((x)=>x.onchange=()=>{if(x.value){avisos.cfg[x.dataset.avt]=x.value;tocar("avisos")}});
- const on=$("avOn");if(on)on.onclick=async()=>{try{msg("Activando…");await activarAvisos();avMsg="Listo: avisos activados en este dispositivo.";pintar()}catch(e){msg(e.message||"No se pudo activar.",true)}};
+ const on=$("avOn");if(on)on.onclick=async()=>{try{msg("Activando…");await activarAvisos();avMsg="Listo: avisos activados en este dispositivo. Pulsa «Prueba real» para comprobar que llegan desde GitHub.";pintar()}catch(e){msg(e.message||"No se pudo activar.",true)}};
  const off=$("avOff");if(off)off.onclick=async()=>{await desactivarAvisos();avMsg="Avisos desactivados en este dispositivo.";pintar()};
- const test=$("avTest");if(test)test.onclick=async()=>{try{const reg=await navigator.serviceWorker.ready;await reg.showNotification("Avisos activados ✅",{body:"Así se verán tus notificaciones.",icon:"icon-192.png",tag:"prueba-local"});msg("Si no ves nada, revisa que el móvil no tenga bloqueadas las notificaciones de esta app.")}catch(e){msg("No se pudo mostrar la prueba: "+(e.message||e),true)}}}
+ const test=$("avTest");if(test)test.onclick=async()=>{try{const reg=await navigator.serviceWorker.ready;await reg.showNotification("Avisos activados ✅",{body:"Así se verán tus notificaciones.",icon:"icon-192.png",tag:"prueba-local"});msg("Si no ves nada, revisa que el móvil no tenga bloqueadas las notificaciones de esta app.")}catch(e){msg("No se pudo mostrar la prueba: "+(e.message||e),true)}};
+ const real=$("avReal");if(real)real.onclick=async()=>{try{real.disabled=true;msg("Pidiendo a GitHub que envíe un aviso…");await pruebaReal();msg("Enviado. En 1 o 2 minutos debería llegarte el aviso. Si no llega, mira GitHub → Actions → «Avisos al móvil»: ahí aparece el motivo.")}catch(e){msg(e.message||"No se pudo lanzar la prueba.",true)}finally{real.disabled=false}}}
 
 function vAjustes(){
  const m=(id)=>{const p=PRESETS[id];return `<button type="button" class="muestra" data-fondo="${id}" aria-pressed="${ap.fondo===id}"><i style="background:linear-gradient(135deg,${(oscuro()?p.d:p.l)[1].slice(0,3).join(",")})"></i>${p.n}</button>`};
@@ -729,7 +794,6 @@ function vAjustes(){
  <div class="bloque"><span class="lbl">Tamaño y forma</span>
   ${rng("escala","Tamaño del texto",80,130,1,FMT.escala)}${rng("ancho","Ancho de la página",50,90,1,FMT.ancho)}${rng("radio","Redondeo de los paneles",4,34,1,FMT.radio)}</div>
  <div class="bloque"><span class="lbl">Color de acento</span><div class="botones" style="align-items:center"><input type="color" class="cp" id="apColor" value="${/^#[0-9a-f]{6}$/i.test(ap.acento)?ap.acento:"#0a84ff"}" aria-label="Elegir color de acento"><span class="estado">Elige cualquier color, o uno rápido:</span></div><div class="acentos" style="margin-top:.7rem">${ACENTOS.map(([c,n])=>`<button type="button" data-acento="${c}" style="background:${c}" aria-label="${n}" title="${n}" aria-pressed="${ap.acento===c}"></button>`).join("")}</div></div>
- <div class="bloque"><span class="lbl">Efecto de burbujas en los botones</span>${seg("burbujas",[["on","Activado"],["off","Desactivado"]])}<p class="estado">Al pasar el ratón por un botón (o pulsarlo en el móvil), se llena de burbujas de colores.</p></div>
  <div class="bloque"><button type="button" id="apReset">Restablecer apariencia</button></div></div>
  <h2>Cuenta</h2><div class="card"><div style="display:flex;gap:1.1rem;align-items:center;margin-bottom:.8rem">${avatar(P.id,"pp")}<div><b>${esc(nombrePerfil(P.id))}</b><div class="estado">${esc(P.tipo)}</div></div></div>
  <div class="botones"><button id="cuFoto">Cambiar foto de perfil</button>${fotos[P.id]?'<button class="rojo" id="cuQuitarFoto">Quitar foto</button>':""}<input type="file" id="cuFile" accept="image/*"></div>
@@ -765,6 +829,10 @@ function pintar(){if(!datos)return;const ruta=location.hash.slice(1).split("/");
  if(ruta[2]){const el=$("t_"+ruta[2]);if(el)el.scrollIntoView()}else scrollTo(0,y)}
 
 function enlazar(a,ruta){enlazarAvisos();
+ document.querySelectorAll("[data-cdia]").forEach((b)=>b.onclick=()=>{calDia=b.dataset.cdia;pintar()});
+ const calIr=(n)=>{calMes=new Date(calMes.getFullYear(),calMes.getMonth()+n,1);const h=new Date();calDia=(calMes.getFullYear()===h.getFullYear()&&calMes.getMonth()===h.getMonth())?ymd(h):ymd(calMes);pintar()};
+ const cp=$("calPrev");if(cp)cp.onclick=()=>calIr(-1);const cs=$("calSig");if(cs)cs.onclick=()=>calIr(1);
+ const ch=$("calHoy");if(ch)ch.onclick=()=>{const h=new Date();calMes=new Date(h.getFullYear(),h.getMonth(),1);calDia=ymd(h);pintar()};
  document.querySelectorAll("[data-ej]").forEach((c)=>c.addEventListener("change",()=>{hechos["ej_"+c.dataset.ej]=c.checked;guardarHechos();pintar()}));
  document.querySelectorAll("[data-sem]").forEach((b)=>b.addEventListener("click",()=>{location.hash="#"+a.id+"/"+b.dataset.sem}));
  document.querySelectorAll(".cuerpo:not(.ed) pre").forEach((p)=>{const b=document.createElement("button");b.type="button";b.className="copiar";b.textContent="Copiar";

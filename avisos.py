@@ -10,6 +10,7 @@ Uso:  python avisos.py          -> revisar y avisar
       python avisos.py probar   -> además manda un aviso de prueba a tus dispositivos
       AVISOS_SIMULAR=1 ...      -> no envía nada, solo muestra lo que enviaría
 """
+import base64
 import json
 import os
 import pathlib
@@ -105,24 +106,54 @@ def en_silencio(cfg, ahora_local):
 
 # ---------------------------------------------------------------- envío
 def enviar_a_todos(dispositivos, carga, clave):
-    """Devuelve True si al menos un dispositivo lo recibió."""
+    """Devuelve cuántos dispositivos lo recibieron (0 = no llegó a ninguno)."""
     if os.environ.get("AVISOS_SIMULAR"):
         print("[SIMULADO]", json.dumps(carga, ensure_ascii=False))
-        return True
+        return len(dispositivos)
     from pywebpush import WebPushException, webpush
-    bien = False
+    bien = 0
     for d in dispositivos:
+        nombre = d.get("nombre", "?")
         try:
             webpush(subscription_info=d["sub"], data=json.dumps(carga, ensure_ascii=False),
                     vapid_private_key=clave, vapid_claims={"sub": SUB}, ttl=86400, headers={"Urgency": "high"})
-            bien = True
+            bien += 1
+            print(f"Enviado a '{nombre}'.")
         except WebPushException as error:
             codigo = getattr(error.response, "status_code", None)
             if codigo in (404, 410):
-                print(f"Dispositivo '{d.get('nombre', '?')}' ya no existe (desactivó los avisos); se ignora.")
+                print(f"Dispositivo '{nombre}': el aviso ya no existe (se desinstaló la app o se desactivaron los avisos). Actívalos de nuevo en ese dispositivo.")
+            elif codigo in (401, 403):
+                print(f"Dispositivo '{nombre}': el servicio de avisos rechazó la clave (HTTP {codigo}). Desactiva y vuelve a activar los avisos en ese dispositivo.")
             else:
-                print(f"Fallo al avisar a '{d.get('nombre', '?')}': {error}")
+                print(f"Fallo al avisar a '{nombre}' (HTTP {codigo}): {error}")
+        except Exception as error:  # clave mal pegada, datos corruptos...
+            print(f"Fallo al avisar a '{nombre}': {type(error).__name__}: {error}")
     return bien
+
+
+def comprobar_claves(clave):
+    """La clave privada de GitHub tiene que ser la pareja de docs/vapid-publica.txt; si no, ningún móvil recibe nada."""
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric import ec
+    try:
+        crudo = base64.urlsafe_b64decode(clave + "=" * (-len(clave) % 4))
+        privada = ec.derive_private_key(int.from_bytes(crudo, "big"), ec.SECP256R1())
+    except Exception:
+        sys.exit("VAPID_PRIVATE_KEY no es una clave válida. Cópiala entera (una sola línea, sin comillas ni espacios) "
+                 "de lo que mostró generar_claves.py y vuelve a guardarla como secreto en GitHub.")
+    if len(crudo) != 32:
+        sys.exit("VAPID_PRIVATE_KEY no tiene el tamaño correcto: ¿has copiado la clave PÚBLICA por error? Usa la privada.")
+    publica = base64.urlsafe_b64encode(privada.public_key().public_bytes(
+        serialization.Encoding.X962, serialization.PublicFormat.UncompressedPoint)).rstrip(b"=").decode("ascii")
+    esperada = (REPO / "docs" / "vapid-publica.txt").read_text(encoding="utf-8").strip()
+    if publica != esperada:
+        sys.exit("La clave privada guardada en GitHub (VAPID_PRIVATE_KEY) NO corresponde con docs/vapid-publica.txt, "
+                 "así que los móviles rechazan todos los avisos.\n"
+                 "Solución: o vuelves a guardar la clave privada que te dio generar_claves.py, o borras docs/vapid-publica.txt, "
+                 "ejecutas generar_claves.py otra vez, guardas la nueva privada en GitHub, subes el archivo nuevo y "
+                 "activas los avisos de nuevo en cada dispositivo.")
+    print("Claves VAPID correctas.")
 
 
 def cargar_estado():
@@ -139,7 +170,7 @@ def guardar_estado(estado):
 
 # ---------------------------------------------------------------- principal
 def main(argumentos):
-    contrasena, clave = os.environ.get("DASH_PASSWORD", ""), os.environ.get("VAPID_PRIVATE_KEY", "").strip()
+    contrasena, clave = os.environ.get("DASH_PASSWORD", ""), os.environ.get("VAPID_PRIVATE_KEY", "").strip().strip("\"'")
     if not contrasena:
         sys.exit("Falta el secreto DASH_PASSWORD.")
     if not clave and not os.environ.get("AVISOS_SIMULAR"):
@@ -151,9 +182,14 @@ def main(argumentos):
         print("Aún no hay ningún dispositivo con avisos activados (actívalo en la web: Ajustes > Notificaciones).")
         return
     cfg = {**CFG_DEF, **ajustes.get("cfg", {})}
+    print("Dispositivos con avisos:", ", ".join(d.get("nombre", "?") for d in dispositivos))
+    if not os.environ.get("AVISOS_SIMULAR"):
+        comprobar_claves(clave)
 
     if "probar" in argumentos:
-        enviar_a_todos(dispositivos, {"title": "Avisos activados ✅", "body": "Si ves esto, las notificaciones funcionan.", "url": "./", "tag": "prueba"}, clave)
+        llegaron = enviar_a_todos(dispositivos, {"title": "Avisos activados ✅", "body": "Si ves esto, las notificaciones funcionan.", "url": "./", "tag": "prueba"}, clave)
+        if not llegaron:
+            sys.exit("La prueba no llegó a ningún dispositivo. El motivo está en las líneas de arriba.")
 
     ahora = int(time.time())
     ahora_local = datetime.fromtimestamp(ahora, ZONA)
