@@ -1,11 +1,11 @@
 name: Avisos al móvil
 
-# Cada 15 minutos mira tus entregas (docs/tareas.enc) y te manda una notificación por ntfy.
-# Funciona aunque tu PC esté apagado y la web cerrada.
+# Cada 15 minutos mira tus entregas, exámenes y eventos, y manda las notificaciones que hayas
+# configurado en la web (Ajustes > Notificaciones). Funciona aunque tu PC esté apagado.
 on:
   schedule:
     - cron: "*/15 * * * *"
-  workflow_dispatch:          # botón "Run workflow": además manda una notificación de prueba
+  workflow_dispatch:          # botón "Run workflow": además manda un aviso de prueba
 
 permissions:
   contents: read
@@ -24,7 +24,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      - run: pip install cryptography
+      - run: pip install cryptography pywebpush
 
       # Recuerda de qué ya te avisó, para no repetir notificaciones
       - uses: actions/cache@v4
@@ -33,8 +33,8 @@ jobs:
           key: avisos-${{ github.run_id }}
           restore-keys: avisos-
 
-      - name: Revisar entregas y avisar
+      - name: Revisar y avisar
         env:
           DASH_PASSWORD: ${{ secrets.DASH_PASSWORD }}
-          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
         run: python avisos.py ${{ github.event_name == 'workflow_dispatch' && 'probar' || '' }}

@@ -1,52 +1,85 @@
-"""Avisos al móvil con ntfy.sh. Lo ejecuta GitHub Actions cada 15 minutos (no hace falta tu PC encendido).
+"""Manda las notificaciones al móvil (Web Push). Lo ejecuta GitHub Actions cada 15 minutos.
 
-Lee docs/tareas.enc (lo que ya sube ia_diaria.py), lo abre con tu contraseña y, cuando una entrega
-está cerca, manda una notificación al móvil. No avisa dos veces de lo mismo.
+Lee tus datos cifrados (tareas de Aules, tus tareas, exámenes y eventos) y tu configuración de avisos
+(la que eliges en la web, en Ajustes > Notificaciones), y envía un aviso a cada dispositivo que lo
+tenga activado. No hace falta ninguna otra app: el aviso lo muestra la propia web instalada.
 
-Variables (en GitHub: Settings > Secrets and variables > Actions):
-  DASH_PASSWORD  la misma contraseña de la web
-  NTFY_TOPIC     el nombre secreto del canal de ntfy (largo y aleatorio)
-Opcionales: NTFY_SERVER (por defecto https://ntfy.sh), AVISOS_HORAS (por defecto "24,3").
+Secretos de GitHub necesarios:  DASH_PASSWORD (la contraseña de la web)  y  VAPID_PRIVATE_KEY.
 
 Uso:  python avisos.py          -> revisar y avisar
-      python avisos.py probar   -> además manda una notificación de prueba
-      NTFY_SIMULAR=1 ...        -> no envía nada, solo lo escribe en pantalla
+      python avisos.py probar   -> además manda un aviso de prueba a tus dispositivos
+      AVISOS_SIMULAR=1 ...      -> no envía nada, solo muestra lo que enviaría
 """
 import json
 import os
 import pathlib
 import sys
 import time
-import urllib.request
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
 from cifrado import descifrar
 
 REPO = pathlib.Path(__file__).resolve().parent
-ARCHIVOS = ["tareas"]  # docs/tareas.enc. Para otra cuenta, añade p. ej. "tareas-mireia"
 ESTADO = REPO / ".estado" / "avisos.json"
 ZONA = ZoneInfo("Europe/Madrid")
 DIAS = ["lun", "mar", "mié", "jue", "vie", "sáb", "dom"]
+SUB = "https://haverxx.github.io"      # dato de contacto que exige el estándar Web Push
+MAX_SUELTOS = 3                        # si hay más avisos a la vez, se juntan en uno solo
+CFG_DEF = {"tareas": True, "mis": True, "examenes": True, "eventos": True, "antes": [1440, 180],
+           "resumen": False, "horaResumen": "08:00", "silencio": False, "desde": "23:00", "hasta": "08:00"}
 
 
-def horas_de_aviso():
-    texto = os.environ.get("AVISOS_HORAS", "24,3")
-    return sorted({float(h) for h in texto.split(",") if h.strip()}, reverse=True)
+# ---------------------------------------------------------------- lectura de datos
+def abrir(nombre, contrasena):
+    ruta = REPO / "docs" / f"{nombre}.enc"
+    if not ruta.exists():
+        return None
+    try:
+        return descifrar(json.loads(ruta.read_text(encoding="utf-8")), contrasena)
+    except Exception:
+        sys.exit(f"No se pudo abrir {ruta.name}: ¿DASH_PASSWORD es la misma contraseña de la web?")
 
 
-def enviar(mensaje):
-    topic = os.environ["NTFY_TOPIC"].strip()
-    if os.environ.get("NTFY_SIMULAR"):
-        print("[SIMULADO]", json.dumps({"topic": topic[:3] + "…", **mensaje}, ensure_ascii=False))
-        return
-    servidor = os.environ.get("NTFY_SERVER", "https://ntfy.sh").rstrip("/")
-    cuerpo = json.dumps({"topic": topic, **mensaje}).encode("utf-8")
-    peticion = urllib.request.Request(servidor, data=cuerpo, headers={"Content-Type": "application/json"})
-    with urllib.request.urlopen(peticion, timeout=20) as r:
-        r.read()
+def a_ts(texto):
+    """'2026-11-09T09:00' (hora de España, como lo escribes en la web) -> segundos."""
+    return int(datetime.fromisoformat(texto).replace(tzinfo=ZONA).timestamp())
 
 
+def recoger(cfg, tareas, web):
+    """Junta todo lo que puede avisar, según lo que hayas marcado en la web."""
+    hechos = web.get("hechos", {})
+    cosas = []
+    if cfg["tareas"]:
+        for t in (tareas or {}).get("tareas", []):
+            vence = int(t.get("vence", 0))
+            if hechos.get(f"au_{t.get('nombre')}|{vence}"):
+                continue
+            url = t.get("url", "")
+            cosas.append({"id": f"au|{t.get('nombre')}|{vence}", "icono": "📝", "titulo": t.get("nombre", "Entrega"),
+                          "detalle": t.get("asignatura", ""), "ts": vence, "url": url if url.startswith("http") else "./#tareas"})
+    if cfg["mis"]:
+        for t in web.get("misTareas", []):
+            if t.get("hecha") or not t.get("fecha"):
+                continue
+            cosas.append({"id": f"mi|{t.get('id')}|{t['fecha']}", "icono": "✅", "titulo": t.get("nombre", "Tarea"),
+                          "detalle": "", "ts": a_ts(t["fecha"]), "url": "./#tareas"})
+    if cfg["examenes"]:
+        for e in web.get("examenes", []):
+            if e.get("aprox") or not e.get("fecha"):
+                continue  # fecha sin confirmar: mejor no avisar de algo que puede ser mentira
+            cosas.append({"id": f"ex|{e.get('id')}|{e['fecha']}", "icono": "🎓", "titulo": e.get("titulo", "Examen"),
+                          "detalle": "", "ts": a_ts(e["fecha"]), "url": "./#examenes"})
+    if cfg["eventos"]:
+        for e in web.get("eventos", []):
+            if not e.get("fecha"):
+                continue
+            cosas.append({"id": f"ev|{e.get('id', e.get('titulo'))}|{e['fecha']}", "icono": "📅", "titulo": e.get("titulo", "Evento"),
+                          "detalle": e.get("lugar", ""), "ts": a_ts(e["fecha"]), "url": "./#examenes"})
+    return cosas
+
+
+# ---------------------------------------------------------------- textos
 def cuanto_queda(segundos):
     minutos = int(segundos // 60)
     if minutos >= 48 * 60:
@@ -54,8 +87,42 @@ def cuanto_queda(segundos):
     if minutos >= 120:
         return f"{round(minutos / 60)} horas"
     if minutos >= 60:
-        return f"1 hora {minutos - 60} min"
+        return f"1 hora y {minutos - 60} min"
     return f"{max(minutos, 1)} minutos"
+
+
+def cuando(ts):
+    f = datetime.fromtimestamp(ts, ZONA)
+    return f"{DIAS[f.weekday()]} {f:%d/%m %H:%M}"
+
+
+def en_silencio(cfg, ahora_local):
+    if not cfg["silencio"]:
+        return False
+    d, h, ahora = cfg["desde"], cfg["hasta"], f"{ahora_local:%H:%M}"
+    return (d <= ahora < h) if d <= h else (ahora >= d or ahora < h)
+
+
+# ---------------------------------------------------------------- envío
+def enviar_a_todos(dispositivos, carga, clave):
+    """Devuelve True si al menos un dispositivo lo recibió."""
+    if os.environ.get("AVISOS_SIMULAR"):
+        print("[SIMULADO]", json.dumps(carga, ensure_ascii=False))
+        return True
+    from pywebpush import WebPushException, webpush
+    bien = False
+    for d in dispositivos:
+        try:
+            webpush(subscription_info=d["sub"], data=json.dumps(carga, ensure_ascii=False),
+                    vapid_private_key=clave, vapid_claims={"sub": SUB}, ttl=86400, headers={"Urgency": "high"})
+            bien = True
+        except WebPushException as error:
+            codigo = getattr(error.response, "status_code", None)
+            if codigo in (404, 410):
+                print(f"Dispositivo '{d.get('nombre', '?')}' ya no existe (desactivó los avisos); se ignora.")
+            else:
+                print(f"Fallo al avisar a '{d.get('nombre', '?')}': {error}")
+    return bien
 
 
 def cargar_estado():
@@ -70,62 +137,84 @@ def guardar_estado(estado):
     ESTADO.write_text(json.dumps(estado), encoding="utf-8")
 
 
+# ---------------------------------------------------------------- principal
 def main(argumentos):
-    contrasena = os.environ.get("DASH_PASSWORD", "")
+    contrasena, clave = os.environ.get("DASH_PASSWORD", ""), os.environ.get("VAPID_PRIVATE_KEY", "").strip()
     if not contrasena:
         sys.exit("Falta el secreto DASH_PASSWORD.")
-    if not os.environ.get("NTFY_TOPIC", "").strip():
-        sys.exit("Falta el secreto NTFY_TOPIC.")
+    if not clave and not os.environ.get("AVISOS_SIMULAR"):
+        sys.exit("Falta el secreto VAPID_PRIVATE_KEY (créalo con generar_claves.py).")
+
+    ajustes = abrir("avisos", contrasena)
+    dispositivos = [d for d in (ajustes or {}).get("dispositivos", []) if d.get("sub", {}).get("endpoint")]
+    if not dispositivos:
+        print("Aún no hay ningún dispositivo con avisos activados (actívalo en la web: Ajustes > Notificaciones).")
+        return
+    cfg = {**CFG_DEF, **ajustes.get("cfg", {})}
 
     if "probar" in argumentos:
-        enviar({"title": "Avisos activados", "message": "Si lees esto, las notificaciones funcionan.", "tags": ["white_check_mark"]})
+        enviar_a_todos(dispositivos, {"title": "Avisos activados ✅", "body": "Si ves esto, las notificaciones funcionan.", "url": "./", "tag": "prueba"}, clave)
 
     ahora = int(time.time())
-    horas = horas_de_aviso()
-    estado = {k: v for k, v in cargar_estado().items() if v > ahora - 7 * 86400}  # olvida lo viejo
-    enviados = 0
+    ahora_local = datetime.fromtimestamp(ahora, ZONA)
+    estado = {k: v for k, v in cargar_estado().items() if v > ahora - 7 * 86400}
+    if en_silencio(cfg, ahora_local):
+        print("Ahora mismo es hora de no molestar; los avisos pendientes salen al terminar.")
+        guardar_estado(estado)
+        return
 
-    for nombre_archivo in ARCHIVOS:
-        ruta = REPO / "docs" / f"{nombre_archivo}.enc"
-        if not ruta.exists():
+    cosas = recoger(cfg, abrir("tareas", contrasena), abrir("estado", contrasena) or {})
+    pendientes = []  # (cosa, claves a marcar, restante)
+    for c in cosas:
+        restante = c["ts"] - ahora
+        if restante <= 0:
             continue
-        try:
-            datos = descifrar(json.loads(ruta.read_text(encoding="utf-8")), contrasena)
-        except Exception:
-            sys.exit(f"No se pudo abrir {ruta.name}: ¿DASH_PASSWORD es la misma contraseña de la web?")
+        alcanzados = [m for m in cfg["antes"] if restante <= m * 60]
+        if not alcanzados:
+            continue
+        menor = min(alcanzados)
+        if f"{c['id']}|{menor}" in estado:
+            continue
+        pendientes.append((c, [f"{c['id']}|{m}" for m in alcanzados], restante))
+    pendientes.sort(key=lambda p: p[0]["ts"])
 
-        for tarea in datos.get("tareas", []):
-            vence = int(tarea.get("vence", 0))
-            restante = vence - ahora
-            if restante <= 0:
-                continue  # ya vencida: no molestamos
-            alcanzados = [h for h in horas if restante <= h * 3600]
-            if not alcanzados:
-                continue
-            nombre = tarea.get("nombre", "Entrega")
-            base = f"{nombre_archivo}|{nombre}|{vence}"
-            claves = [f"{base}|{h:g}" for h in alcanzados]
-            umbral = min(alcanzados)
-            if f"{base}|{umbral:g}" in estado:
-                continue
+    marcar = {}
+    if pendientes and len(pendientes) > MAX_SUELTOS:
+        lineas = [f"{c['icono']} {c['titulo']} · {cuando(c['ts'])}" for c, _, _ in pendientes[:6]]
+        carga = {"title": f"Tienes {len(pendientes)} avisos", "body": "\n".join(lineas), "url": "./#tareas", "tag": "varios"}
+        if enviar_a_todos(dispositivos, carga, clave):
+            for c, claves, _ in pendientes:
+                marcar.update({k: c["ts"] for k in claves})
+    else:
+        for c, claves, restante in pendientes:
+            cuerpo = f"{c['detalle']}\n" if c["detalle"] else ""
+            carga = {"title": f"{c['icono']} {c['titulo']}", "body": f"{cuerpo}{cuando(c['ts'])} · quedan {cuanto_queda(restante)}",
+                     "url": c["url"], "tag": c["id"]}
+            if enviar_a_todos(dispositivos, carga, clave):
+                marcar.update({k: c["ts"] for k in claves})
+                estado.update(marcar)
+                guardar_estado(estado)  # tras cada envío: si algo falla después, no se repite
+    estado.update(marcar)
 
-            limite = datetime.fromtimestamp(vence, ZONA)
-            mensaje = {
-                "title": f"⏰ {nombre}",
-                "message": f"{tarea.get('asignatura', '')}\nVence {DIAS[limite.weekday()]} {limite:%d/%m %H:%M} · quedan {cuanto_queda(restante)}".strip(),
-                "priority": 5 if umbral <= 1 else 4 if umbral <= 3 else 3,
-                "tags": ["rotating_light" if umbral <= 3 else "books"],
-            }
-            if str(tarea.get("url", "")).startswith("http"):
-                mensaje["click"] = tarea["url"]
-            enviar(mensaje)
-            for c in claves:
-                estado[c] = vence
-            guardar_estado(estado)  # se guarda tras cada envío: si algo falla después, no se repite
-            enviados += 1
+    # Resumen diario (si lo activaste): una vez al día, a partir de la hora elegida
+    if cfg["resumen"]:
+        hoy = f"resumen|{ahora_local:%Y-%m-%d}"
+        h, m = (int(x) for x in cfg["horaResumen"].split(":"))
+        minutos = ahora_local.hour * 60 + ahora_local.minute
+        if hoy not in estado and h * 60 + m <= minutos < h * 60 + m + 360:
+            proximas = sorted((c for c in cosas if 0 < c["ts"] - ahora <= 72 * 3600), key=lambda c: c["ts"])
+            if proximas:
+                lineas = [f"{c['icono']} {c['titulo']} · {cuando(c['ts'])}" for c in proximas[:6]]
+                if len(proximas) > 6:
+                    lineas.append(f"…y {len(proximas) - 6} más")
+                carga = {"title": "Resumen: próximos 3 días", "body": "\n".join(lineas), "url": "./#tareas", "tag": "resumen"}
+                if enviar_a_todos(dispositivos, carga, clave):
+                    estado[hoy] = ahora
+            else:
+                estado[hoy] = ahora  # nada que contar hoy
 
     guardar_estado(estado)
-    print(f"Avisos enviados: {enviados}")
+    print(f"Avisos enviados: {len(pendientes)}")
 
 
 if __name__ == "__main__":
