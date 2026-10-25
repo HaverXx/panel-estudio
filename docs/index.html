@@ -715,6 +715,7 @@ const nombreDisp=()=>/Android/i.test(UA)?"Android":/iPad/i.test(UA)?"iPad":esIOS
 const avSoporte=()=>"serviceWorker" in navigator&&"PushManager" in window&&"Notification" in window;
 const ANTES=[[10080,"1 semana antes"],[2880,"2 días antes"],[1440,"1 día antes"],[720,"12 horas antes"],[180,"3 horas antes"],[60,"1 hora antes"],[30,"30 minutos antes"]];
 let avMsg="";
+const permOk=()=>!("Notification" in window)||Notification.permission==="granted";
 const mismaClave=(a,b)=>a&&b&&a.length===b.length&&a.every((x,i)=>x===b[i]);
 async function activarAvisos(){
  if(!token)throw new Error("Primero guarda el token de GitHub en «Sincronización» (más abajo): sin él los avisos no pueden funcionar.");
@@ -750,15 +751,16 @@ async function pruebaReal(){
  throw new Error("GitHub respondió "+r.status+".")}
 function vAvisos(){
  if(!P.base)return"";
- const c=avisos.cfg,aqui=avisos.dispositivos.find((d)=>d.id===MI_DISP),n=avisos.dispositivos.length;
+ const c=avisos.cfg,reg0=avisos.dispositivos.find((d)=>d.id===MI_DISP),sinPerm=!!reg0&&!permOk(),aqui=sinPerm?null:reg0,n=avisos.dispositivos.length;
  const chk=(k,t)=>`<label style="display:flex;gap:.6rem;align-items:center;margin:.4rem 0"><input type="checkbox" class="rd" data-av="${k}" ${c[k]?"checked":""}>${t}</label>`;
  const hora=(k)=>`<input type="time" data-avt="${k}" value="${esc(c[k])}" style="max-width:9rem">`;
  const ayudaIOS=esIOS&&!esApp()?`<p class="estado aviso" style="margin:.5rem 0;font-weight:500">Para recibir avisos en iPhone: pulsa <b>Compartir</b> (el cuadrado con la flecha) → <b>«Añadir a pantalla de inicio»</b>, abre <b>Organizador</b> desde su icono y activa los avisos desde aquí. Hace falta iOS 16.4 o superior.</p>`:"";
- const est=esIOS&&!esApp()?"Falta instalar la app en la pantalla de inicio.":!avSoporte()?"Este navegador no admite notificaciones."+(esIOS?" Necesitas iOS 16.4 o superior.":""):aqui?"✅ Activadas en este dispositivo.":"Desactivadas en este dispositivo.";
+ const est=sinPerm?"⚠️ Este dispositivo está registrado, pero el móvil tiene BLOQUEADAS las notificaciones de esta app.":esIOS&&!esApp()?"Falta instalar la app en la pantalla de inicio.":!avSoporte()?"Este navegador no admite notificaciones."+(esIOS?" Necesitas iOS 16.4 o superior.":""):aqui?"✅ Activadas en este dispositivo.":"Desactivadas en este dispositivo.";
  const lista=n?` Dispositivos con avisos: ${avisos.dispositivos.map((d)=>esc(d.nombre||"?")).join(", ")}.`:"";
+ const ayudaPerm=sinPerm?`<p class="estado aviso" style="margin:.5rem 0;font-weight:500">${esIOS?"En el iPhone: Ajustes → Notificaciones → Organizador → Permitir notificaciones.":"En Android: mantén pulsado el icono de Organizador → Información de la app → Notificaciones → activar (y deja activadas también las categorías)."} Después vuelve aquí y pulsa «Activar avisos».</p>`:"";
  const puede=avSoporte()&&!(esIOS&&!esApp());
  return `<h2>Notificaciones</h2><div class="card" id="avCard"><p>Recibe avisos en el móvil aunque la app esté cerrada. Eliges aquí de qué y cuándo.</p>
- <p class="estado"><b>${est}</b>${lista}${token?"":" Necesitas el token de GitHub (sección «Sincronización», más abajo)."}</p>${ayudaIOS}
+ <p class="estado"><b>${est}</b>${lista}${token?"":" Necesitas el token de GitHub (sección «Sincronización», más abajo)."}</p>${ayudaIOS}${ayudaPerm}
  <div class="botones">${puede?(aqui?'<button type="button" id="avTest">Probar en este dispositivo</button><button type="button" id="avReal">Prueba real (desde GitHub)</button><button type="button" class="rojo" id="avOff">Desactivar aquí</button>':'<button type="button" class="pri" id="avOn">Activar avisos en este dispositivo</button>'):""}</div>
  <p class="estado" id="avMsg" style="margin-top:.7rem">${esc(avMsg)}</p>
  <div class="bloque"><span class="lbl">Avisar de</span>${chk("tareas","Entregas de Aules")}${chk("mis","Mis tareas")}${chk("examenes","Exámenes")}${chk("eventos","Eventos")}</div>
