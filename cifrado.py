@@ -23,3 +23,12 @@ def cifrar(datos: dict, contrasena: str) -> dict:
         "iv": base64.b64encode(iv).decode("ascii"),
         "datos": base64.b64encode(cifrado).decode("ascii"),
     }
+
+
+def descifrar(payload: dict, contrasena: str) -> dict:
+    """Lo contrario de cifrar(): abre un archivo .enc con la misma contraseña."""
+    clave = hashlib.pbkdf2_hmac("sha256", contrasena.encode("utf-8"), SAL, ITERACIONES, dklen=32)
+    texto = AESGCM(clave).decrypt(
+        base64.b64decode(payload["iv"]), base64.b64decode(payload["datos"]), None
+    )
+    return json.loads(texto.decode("utf-8"))
