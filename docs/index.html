@@ -319,6 +319,7 @@ ol{line-height:1.7}
 </section></main>
 <script src="apuntes.js"></script>
 <script src="apuntes-das.js"></script>
+<script src="apuntes-dem.js"></script>
 <script>
 const SAL=new TextEncoder().encode("aules-dashboard-v1"),ITERACIONES=600000;
 const $=(id)=>document.getElementById(id);
@@ -495,7 +496,7 @@ const ASIG_PERFIL={mireia:[
  ["tut","TUT","Tutoria Segon","#8e6fd0",["tutoria","tutoría"],57943]
 ].map(([id,corto,nombre,color,claves,curso])=>({id,corto,nombre,color,claves,profesor:"",semanas:[],temas:{},ejercicios:{},aulesUrl:SITIOS.semi+"/course/view.php?id="+curso}))};
 // Apuntes ya escritos (apuntes-das.js): se añaden a la asignatura correspondiente
-if(typeof DAS_APUNTES!=="undefined"){const d=ASIG_PERFIL.mireia.find((x)=>x.id==="das");if(d)Object.assign(d,DAS_APUNTES)}
+for(const [id,ap] of [["das",typeof DAS_APUNTES!=="undefined"?DAS_APUNTES:null],["dem",typeof DEM_APUNTES!=="undefined"?DEM_APUNTES:null]]){const d=ap&&ASIG_PERFIL.mireia.find((x)=>x.id===id);if(d)Object.assign(d,ap)}
 const ASIG_BASE=P.base?ASIGNATURAS.slice():(ASIG_PERFIL[P.id]||[]).slice();ASIG_BASE.forEach((a)=>{a._o={color:a.color,nombre:a.nombre,corto:a.corto}});
 let TODAS=ASIG_BASE.slice();
 function aplicarAsig(){ASIG_BASE.forEach((a)=>{const c=cfgAsig[a.id]||{};a.color=c.color||a._o.color;a.nombre=c.nombre||a._o.nombre;a.corto=c.corto||a._o.corto});
