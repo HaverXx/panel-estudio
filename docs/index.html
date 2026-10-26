@@ -370,8 +370,8 @@ matchMedia("(prefers-color-scheme:dark)").addEventListener("change",aplicar);
 aplicar();opBD("readonly",(s)=>s.get(KFONDO)).then((v)=>{if(v){imgFondo=v;aplicar()}}).catch(()=>{});
 async function reducirCuadrada(file){const url=URL.createObjectURL(file);try{const im=new Image();await new Promise((ok,mal)=>{im.onload=ok;im.onerror=mal;im.src=url});const l=Math.min(im.width,im.height),c=document.createElement("canvas");c.width=c.height=256;c.getContext("2d").drawImage(im,(im.width-l)/2,(im.height-l)/2,l,l,0,0,256,256);return c.toDataURL("image/jpeg",.85)}finally{URL.revokeObjectURL(url)}}
 async function reducirImagen(file){const url=URL.createObjectURL(file);try{const im=new Image();await new Promise((ok,mal)=>{im.onload=ok;im.onerror=mal;im.src=url});
- const k=Math.min(1,1920/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
- c.getContext("2d").drawImage(im,0,0,c.width,c.height);return c.toDataURL("image/jpeg",.8)}finally{URL.revokeObjectURL(url)}}
+ const k=Math.min(1,1600/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
+ c.getContext("2d").drawImage(im,0,0,c.width,c.height);return c.toDataURL("image/jpeg",.7)}finally{URL.revokeObjectURL(url)}}
 
 const SEMILLA=[{id:"psp-u1",asig:"psp",titulo:"Examen Unidad 1 · Programación concurrente",fecha:"2026-11-09T09:00",aprox:true,notas:"Semana 9 (09–15/11). Día y hora exactos por confirmar: pulsa Editar."}];
 let examenes=LS.get("examenes",null)||(P.base?SEMILLA.map((e)=>({...e})):[]);
@@ -411,13 +411,16 @@ function guardarLocal(){LS.set("avisos",avisos);LS.set("misTareas",misTareas);LS
 function tocar(n){MODS[n]=Date.now();PEND[n]=true;guardarLocal();if(!token){estadoSync("local");return}estadoSync("guardando");clearTimeout(timer);timer=setTimeout(sincronizar,1500)}
 function cambio(){tocar("estado")}
 const guardarEx=cambio,guardarHechos=cambio,guardarPs=cambio;
+let repetir=false;
 async function sincronizar(reintento){
- if(!clave||ocupado)return;ocupado=true;let nuevo=false;
+ if(!clave)return;if(ocupado){repetir=true;return}   // si ya hay una sincronización en marcha, repite al terminar (antes el cambio se quedaba esperando 5 min)
+ ocupado=true;let nuevo=false;const fallos=[];
  try{
   const shas={};
   if(token){const r=await fetch(GH+repo+"/contents/docs?ref=main&t="+Date.now(),{headers:cabGH(),cache:"no-store"});
    if(r.status===401||r.status===403)throw new Error("token sin permiso");if(!r.ok)throw new Error("GitHub "+r.status);for(const x of await r.json())shas[x.name]=x.sha}
   for(const pk of PAQ){
+   try{
    let remoto=null,igual=false;
    if(token){const sh=shas[pk.f];
     if(sh&&VISTOS[pk.n]===sh)igual=true;
@@ -431,10 +434,13 @@ async function sincronizar(reintento){
     if(r.status===401||r.status===403||r.status===404)throw new Error("token sin permiso sobre "+repo);
     if(!r.ok)throw new Error("GitHub "+r.status);
     const nsha=(await r.json()).content.sha;shas[pk.f]=nsha;VISTOS[pk.n]=nsha;PEND[pk.n]=false;guardarLocal()}
+   }catch(e){if(/token sin permiso/.test(e.message))throw e;fallos.push(pk.n+": "+(e.message||e))}   // un archivo que falla ya no bloquea a los demás (fondo, notas…)
   }
-  estadoSync(token?"ok":"local");if(nuevo){aplicar();aplicarAsig();if(!enEdicion())pintar()}
- }catch(e){estadoSync(token?"error":"local",token?e.message:"")}
- ocupado=false}
+  if(fallos.length){estadoSync("error",fallos.join(" · "));clearTimeout(timer);timer=setTimeout(()=>sincronizar(),30000)}
+  else estadoSync(token?"ok":"local");
+  if(nuevo){aplicar();aplicarAsig();if(!enEdicion())pintar()}
+ }catch(e){estadoSync(token?"error":"local",token?e.message:"");if(token){clearTimeout(timer);timer=setTimeout(()=>sincronizar(),30000)}}
+ ocupado=false;if(repetir){repetir=false;setTimeout(()=>sincronizar(),800)}}
 
 // ---------- Aules: conexión directa desde esta web ----------
 let aulesMsg="",refrescando=false,ultRef=0;
@@ -821,14 +827,20 @@ function vAjustes(){
 <div class="ancho botones"><button type="submit" class="pri">Guardar y sincronizar</button>${token?'<button type="button" class="rojo" id="ajQuitar">Quitar token de este dispositivo</button>':""}</div></form>
 <p class="estado" style="margin-top:.9rem">El token se guarda solo en este navegador. Los datos se cifran con tu contraseña antes de subirse, igual que las tareas. Si lo pierdes o se filtra, bórralo en GitHub y crea otro.</p></div>`}
 
+// Los repintados automáticos (reloj, sincronización) no deben deshacer lo que el usuario tiene abierto o escrito.
+let ultHash=null;
+function capturarUI(){const b=$("busca");return{d:[...document.querySelectorAll("#vista details")].map((d,i)=>[d.id||"#"+i,d.open]),q:b?b.value:""}}
+function restaurarUI(st){document.querySelectorAll("#vista details").forEach((d,i)=>{const e=st.d.find((x)=>x[0]===(d.id||"#"+i));if(e)d.open=e[1]});
+ const b=$("busca");if(b&&st.q){b.value=st.q;if(b._filtrar)b._filtrar(false)}}
+const vistaConReloj=()=>{const v=location.hash.slice(1).split("/")[0]||"inicio";return !asig(v)&&v!=="ajustes"&&v!=="asignaturas"};
 function pintar(){if(!datos)return;const ruta=location.hash.slice(1).split("/");let v=ruta[0]||"inicio",html;
  const a=asig(v);document.querySelectorAll("#menu [data-v]").forEach((b)=>{const on=b.dataset.v===(a?"asignaturas":v)||(!v&&b.dataset.v==="inicio");b.classList.toggle("on",on);if(on)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
  if(a)html=vAsignatura(a,ruta[1],ruta[2]);else if(v==="semana")html=vSemana();else if(v==="horario")html=vHorario();else if(v==="tareas")html=vTareas();else if(v==="examenes")html=vExamenes();else if(v==="asignaturas")html=vAsignaturas();else if(v==="ajustes")html=vAjustes();else html=vInicio();
- const y=scrollY;$("vista").innerHTML=html;enlazar(a,ruta);
+ const y=scrollY,hAct=location.hash,igualRuta=hAct===ultHash,ui=igualRuta?capturarUI():null;$("vista").innerHTML=html;enlazar(a,ruta);if(ui)restaurarUI(ui);ultHash=hAct;
  const h=new Date().getHours();$("saludo").textContent=(h<7?"Buenas noches":h<14?"Buenos días":h<21?"Buenas tardes":"Buenas noches")+", "+nombrePerfil(P.id);$("avatarCab").innerHTML=avatar(P.id,"pp");
  $("fechaHoy").textContent=fechaLarga(new Date());
  pintarEstadoAules();
- if(ruta[2]){const el=$("t_"+ruta[2]);if(el)el.scrollIntoView()}else scrollTo(0,y)}
+ if(ruta[2]&&!igualRuta){const el=$("t_"+ruta[2]);if(el)el.scrollIntoView()}else scrollTo(0,y)}
 
 function enlazar(a,ruta){enlazarAvisos();
  document.querySelectorAll("[data-cdia]").forEach((b)=>b.onclick=()=>{calDia=b.dataset.cdia;pintar()});
@@ -839,7 +851,7 @@ function enlazar(a,ruta){enlazarAvisos();
  document.querySelectorAll("[data-sem]").forEach((b)=>b.addEventListener("click",()=>{location.hash="#"+a.id+"/"+b.dataset.sem}));
  document.querySelectorAll(".cuerpo:not(.ed) pre").forEach((p)=>{const b=document.createElement("button");b.type="button";b.className="copiar";b.textContent="Copiar";
   b.onclick=async()=>{try{await navigator.clipboard.writeText(p.querySelector("code").textContent);b.textContent="Copiado"}catch(e){b.textContent="Error"}setTimeout(()=>b.textContent="Copiar",1500)};p.appendChild(b)});
- const bu=$("busca");if(bu)bu.addEventListener("input",()=>{const q=bu.value.toLowerCase();document.querySelectorAll(".tema").forEach((d)=>{const ok=!q||d.textContent.toLowerCase().includes(q);d.hidden=!ok;if(q&&ok)d.open=true})});
+ const bu=$("busca");if(bu){const filtrar=(abrir)=>{const q=bu.value.toLowerCase();document.querySelectorAll(".tema").forEach((d)=>{const ok=!q||d.textContent.toLowerCase().includes(q);d.hidden=!ok;if(abrir&&q&&ok)d.open=true})};bu._filtrar=filtrar;bu.addEventListener("input",()=>filtrar(true))}
  // Disposición del inicio
  const lm=$("layModo");if(lm){lm.onclick=()=>{modoLay=!modoLay;pintar()};const lr=$("layReset");if(lr)lr.onclick=()=>{layout={orden:[],ocultos:[],ancho:{}};cambio();pintar()}}
  document.querySelectorAll("[data-bm]").forEach((b)=>b.onclick=()=>{const [id,d]=b.dataset.bm.split("|"),o=ordenActual.slice(),i=o.indexOf(id),j=i+Number(d);if(j<0||j>=o.length)return;[o[i],o[j]]=[o[j],o[i]];layout.orden=o;cambio();pintar()});
@@ -958,7 +970,7 @@ document.querySelectorAll("#menu [data-v]").forEach((b)=>b.addEventListener("cli
 addEventListener("hashchange",()=>{if(clave){edNota=null;pintar();if(!location.hash.split("/")[2])scrollTo(0,0)}});
 setInterval(()=>{if(clave)refrescarAules()},5*60*1000);
 $("btnAules").addEventListener("click",()=>refrescarAules());
-setInterval(()=>{if(clave&&!enEdicion())pintar()},60*1000);
+setInterval(()=>{if(clave&&!enEdicion()&&vistaConReloj())pintar()},60*1000);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&clave){sincronizar();if(Date.now()-ultRef>2*60*1000)refrescarAules()}});
 setInterval(()=>sincronizar(),5*60*1000);
 iniciar();
