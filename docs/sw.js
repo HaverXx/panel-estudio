@@ -1,8 +1,8 @@
 // Service worker: permite instalar la web como app, abrirla sin internet y recibir avisos (notificaciones).
 // Primero intenta la red (siempre ves lo último); si no hay red, usa la copia guardada.
 // Los archivos .enc (tus datos) nunca se guardan aquí.
-const V = "organizador-v5";
-const BASE = ["./", "index.html", "apuntes.js", "apuntes-das.js", "apuntes-dem.js", "manifest.json"];
+const V = "organizador-v6";
+const BASE = ["./", "index.html", "apuntes.js", "apuntes-das.js", "apuntes-dem.js", "apuntes-di.js", "manifest.json"];
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(V).then(c => c.addAll(BASE)).then(() => self.skipWaiting()));
 });

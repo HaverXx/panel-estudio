@@ -90,7 +90,7 @@ a:hover .card.enlace{transform:translateY(-2px)}
 .perfilBtn:hover,.perfilBtn:focus-visible{color:var(--txt);outline:none}
 .perfilBtn:hover .logo,.perfilBtn:focus-visible .logo{border-color:var(--txt);transform:scale(1.07)}
 .perfilBtn:active .logo{transform:scale(.97)}
-.logo.av{background-size:cover;background-position:center;color:transparent}
+.logo.av{background-color:var(--color);background-size:cover;background-position:center;background-repeat:no-repeat;color:transparent;overflow:hidden}
 .logo.pp{width:3.6rem;height:3.6rem;border-radius:50%;font-size:1.3rem}
 .perfilBtn .sub{font-size:.8rem;color:var(--suave);margin-top:-.6rem}
 .cab .fecha{font-size:.8rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--suave)}
@@ -320,6 +320,7 @@ ol{line-height:1.7}
 <script src="apuntes.js"></script>
 <script src="apuntes-das.js"></script>
 <script src="apuntes-dem.js"></script>
+<script src="apuntes-di.js"></script>
 <script>
 const SAL=new TextEncoder().encode("aules-dashboard-v1"),ITERACIONES=600000;
 const $=(id)=>document.getElementById(id);
@@ -346,7 +347,8 @@ const LS=mkLS(P.base?"panel_":"panel_"+P.id+"_");
 let nombres={...Object.fromEntries(PERFILES.map((x)=>[x.id,x.defecto])),...LSG.get("perfiles",{})};
 const nombrePerfil=(id)=>nombres[id]||PERFILES.find((x)=>x.id===id).defecto;
 let fotos=LSG.get("fotos",{});
-const avatar=(id,extra="")=>{const x=PERFILES.find((y)=>y.id===id);return fotos[id]?`<span class="logo av ${extra}" style="background-image:url(${JSON.stringify(fotos[id])})" role="img" aria-label="${nombrePerfil(id)}"></span>`:`<span class="logo ${extra}" style="--color:${x.color}">${nombrePerfil(id).charAt(0).toUpperCase()}</span>`};
+const fotoOk=(f)=>typeof f==="string"&&/^data:image\/[a-z+.-]+;base64,[A-Za-z0-9+\/=]+$/i.test(f);
+const avatar=(id,extra="")=>{const x=PERFILES.find((y)=>y.id===id);return fotoOk(fotos[id])?`<span class="logo av ${extra}" style="--color:${x.color};background-image:url('${fotos[id]}')" role="img" aria-label="${esc(nombrePerfil(id))}"></span>`:`<span class="logo ${extra}" style="--color:${x.color}">${nombrePerfil(id).charAt(0).toUpperCase()}</span>`};
 const KFONDO=P.base?"fondo":"fondo_"+P.id;
 const FEST=P.base?"estado.enc":"estado-"+P.id+".enc";
 
@@ -497,6 +499,7 @@ const ASIG_PERFIL={mireia:[
 ].map(([id,corto,nombre,color,claves,curso])=>({id,corto,nombre,color,claves,profesor:"",semanas:[],temas:{},ejercicios:{},aulesUrl:SITIOS.semi+"/course/view.php?id="+curso}))};
 // Apuntes ya escritos (apuntes-das.js): se añaden a la asignatura correspondiente
 for(const [id,ap] of [["das",typeof DAS_APUNTES!=="undefined"?DAS_APUNTES:null],["dem",typeof DEM_APUNTES!=="undefined"?DEM_APUNTES:null]]){const d=ap&&ASIG_PERFIL.mireia.find((x)=>x.id===id);if(d)Object.assign(d,ap)}
+if(P.base&&typeof DI_APUNTES!=="undefined"){const d=ASIGNATURAS.find((x)=>x.id==="di");if(d)Object.assign(d,DI_APUNTES)}
 const ASIG_BASE=P.base?ASIGNATURAS.slice():(ASIG_PERFIL[P.id]||[]).slice();ASIG_BASE.forEach((a)=>{a._o={color:a.color,nombre:a.nombre,corto:a.corto}});
 let TODAS=ASIG_BASE.slice();
 function aplicarAsig(){ASIG_BASE.forEach((a)=>{const c=cfgAsig[a.id]||{};a.color=c.color||a._o.color;a.nombre=c.nombre||a._o.nombre;a.corto=c.corto||a._o.corto});
