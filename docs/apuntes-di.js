@@ -1,6 +1,10 @@
 // Apuntes de «Desarrollo de interfaces» (2º DAM, cuenta de Julen). Curso 2025-26. Profesor: Luis J. Salmerón Contreras.
 // Fuentes: U0 (presentación del módulo), UT1 (usabilidad y accesibilidad), UT2 (diseño visual y prototipado),
+<<<<<<< HEAD
 // UT3 (color, tipografía y mensajes), enunciados de las tareas y tests de Aules.
+=======
+// UT3 (color, tipografía y mensajes, más la transcripción de la clase de UT3), enunciados de las tareas y tests de Aules.
+>>>>>>> 635a20b (Clase de interfaces)
 // Para añadir otra unidad: nuevo objeto en `semanas`, sus ejercicios en `ejercicios` y sus temas en `temas`.
 // Las fechas de U3 son una estimación (Aules aún no las publica): ajústalas cuando salgan.
 const DI_APUNTES = {
@@ -15,7 +19,11 @@ const DI_APUNTES = {
       temas: ["u2_repaso", "u2_figma", "u2_wire", "u2_mock", "u2_flujo", "u2_ctrl", "u2_rest", "u2_replica"],
       ejercicios: ["Replicar wireframe", "Wireframe restaurante", "Test UT2"] },
     { n: "U3", ini: "2026-11-02", fin: "2026-11-22", titulo: "UT3 · Aspectos visuales: color, tipografía y mensajes",
+<<<<<<< HEAD
       temas: ["u3_repaso", "u3_prin", "u3_estet", "u3_color", "u3_tipo", "u3_msg"],
+=======
+      temas: ["u3_repaso", "u3_ruta", "u3_prin", "u3_clase", "u3_estet", "u3_color", "u3_tipo", "u3_msg"],
+>>>>>>> 635a20b (Clase de interfaces)
       ejercicios: [] },
   ],
   ejercicios: {
@@ -348,7 +356,90 @@ ${warn("En el enunciado, Home (3) pide ListView con menús y platos individuales
 <h4>Criterios de evaluación de la unidad (RA4, 10 % cada uno)</h4>
 <ul><li><b>c)</b> Diseñar el aspecto de la interfaz (colores y fuentes, entre otros) atendiendo a su <b>legibilidad</b>.</li>
 <li><b>d)</b> Verificar que los mensajes generados por la aplicación son adecuados en <b>extensión y claridad</b>.</li></ul>
+<<<<<<< HEAD
 <p>Este tema aún no tiene tarea ni test publicados en Aules: lo que hay es el PDF de teoría (65 diapositivas).</p>`},
+=======
+<h4>Añadido de la clase</h4><ul><li><b>Prueba en escala de grises</b> para validar el contraste, <b>entrecerrar los ojos / voltear</b> la composición para validar el equilibrio, y <b>dos o tres dimensiones de contraste como máximo</b> (lo habitual: peso + tamaño).</li><li>Espaciado en múltiplos de <b>4/8</b>, proporción áurea (≈1,618) y <b>dientes de sierra</b> como error de alineación (suele preguntarse en examen escrito).</li><li>Fases del proyecto: <b>wireframe → hoja de estilos → aplicar el diseño</b>. Detalles en «Hoja de ruta» y «Notas de la clase».</li></ul><p>Este tema aún no tiene tarea ni test publicados en Aules: lo que hay es el PDF de teoría (65 diapositivas) y las clases.</p>`},
+
+    u3_ruta: { t: "Hoja de ruta del diseño y hoja de estilos (clase)", resumen: "Para qué sirve UT3 dentro del proyecto: wireframe → hoja de estilos → aplicar el diseño.",
+      html: `
+<p>Lo que el profesor explicó al empezar el tema (la transcripción habla de «wildfire/wireframe más boca»: es el <b>wireframe</b>, y «boca» se refiere al paso siguiente, el estilo).</p>
+<h4>Dónde encaja UT3</h4>
+<ul><li>UT1 enseñó a <b>probar</b> una interfaz (usabilidad y accesibilidad). UT2 enseñó a <b>estructurarla</b> (wireframe). UT3 enseña <b>con qué colores, tipografías, iconos y mensajes</b> se viste.</li>
+<li>El objetivo práctico de UT3 es elaborar una <b>hoja de estilos</b>: elegir qué colores, iconos, tipografías, títulos y estilos de componente usará la aplicación.</li></ul>
+<h4>Las tres fases del diseño (también para el proyecto intermodular)</h4>
+<ol><li><b>Wireframe:</b> objetivos, casos de uso, necesidades que cubre la app, qué pantallas tiene y cómo interactúa el usuario con ellas.</li>
+<li><b>Hoja de estilos:</b> definir los colores (primario, secundario, texto…) y las tipografías que importan para el proyecto, y la jerarquía visual.</li>
+<li><b>Aplicar:</b> copiar el wireframe a otro archivo/proyecto y empezar a asignar a cada elemento su color primario, secundario, de texto, etc. Así se pasa a mockup <b>antes de escribir una sola línea de código</b>.</li></ol>
+<p>El profesor comentó que esto es la segunda pata de la fase de diseño del proyecto intermodular, y que el curso pasado se partía de un wireframe (un bar) y luego se le aplicaba el color.</p>
+${warn("El profesor no tenía claro en clase si la actividad de UT3 se hace sobre el wireframe del restaurante («creo que sí», pero «no, eso es un wireframe solo»). Confírmalo cuando se publique la tarea en Aules antes de dar por hecho que hay que reutilizar el restaurante.")}
+<h4>Criterios para la hoja de estilos</h4>
+<ul><li><b>Define solo lo que vayas a necesitar.</b> Una hoja de estilos profesional define todos los pesos tipográficos posibles (extra fina, fina, regular, media, negrita, extra negrita…); en las prácticas, no hace falta definir los que no uses. Es una norma de cualquier hoja de estilos.</li>
+<li>En la hoja de estilos normalmente <b>no se define cada propiedad por separado</b>, sino «nivel 1 de jerarquía = tamaño X, peso Y, color Z», aplicando las dimensiones de contraste que consideres necesarias.</li>
+<li>Muchas cosas ya se intuyen en el wireframe (línea más gorda para el título, espacio, botón principal); la hoja de estilos las fija con valores.</li></ul>
+<h4>Por qué importan jerarquía y color (comentario inicial)</h4>
+<ul><li>Jerarquía = que lo importante sea más llamativo y más grande; son recursos para guiar al usuario y decirle por dónde moverse y dónde pulsar.</li>
+<li>Que los botones tengan los mismos colores es <b>consistencia</b>, no jerarquía (el profesor lo corrigió en clase).</li>
+<li>El color puede empujar a una acción de forma implícita (por ejemplo, en una tienda online, el color del botón de comprar) y hay <b>psicología del color</b>: por eso las marcas de un mismo sector suelen compartir color.</li></ul>`},
+
+    u3_clase: { t: "Notas de la clase de UT3 (equilibrio, contraste, jerarquía y alineación)", resumen: "Explicaciones, ejemplos y trucos del profesor que complementan las diapositivas.",
+      html: `
+<p>Contrastado con el PDF de UT3: lo que sigue <b>amplía</b> las diapositivas con lo que se dijo en clase (los datos que ya están en «Principios básicos» no se repiten). La transcripción termina al empezar <b>consistencia</b>, que se verá en la siguiente clase.</p>
+<h4>Idea general</h4>
+<ul><li>Los principios del diseño visual (equilibrio, contraste, jerarquía, alineación y consistencia) hacen que la interfaz sea <b>útil, agradable y que no canse</b> al usuario. Parecen conceptos muy distintos o muy iguales y marean: se verán uno a uno.</li>
+<li>No hay fórmulas mágicas: la <b>experiencia como usuario</b> pesa más que cualquier consejo. Ya has usado miles de apps y sabes «de forma instintiva» qué está bien o mal; si inventas una interfaz, saldrá algo parecido a las existentes (como al inventar una canción acabas usando los mismos acordes del pop). Aun así, hay trucos para validar.</li></ul>
+<h4>1. Equilibrio</h4>
+<ul><li>Al meter elementos, la interfaz adquiere un <b>centro de gravedad</b> y los ojos navegan entre ellos. Equilibrar es distribuir el <b>peso visual</b> (tamaño, color, cantidad de cosas, contraste) para que no parezca todo amontonado o con todo el color en una parte. Piensa que estás metiendo «bultos» en una superficie.</li>
+<li>Dos filosofías: <b>simetría</b> (cuadrícula, todo periódico y ordenado; al cerebro le gusta el orden y da estabilidad) o <b>asimetría</b> jugando con los espacios en blanco para repartir la información sin cargar.</li>
+<li><b>Retículas, columnas y márgenes:</b> no empieces «pegando» elementos sobre un lienzo en blanco; reparte primero el espacio en columnas y deja márgenes respecto a los bordes (como al escribir en una hoja).</li>
+<li><b>Espaciado de 4/8:</b> usa solo múltiplos de 4 u 8 px para todos los espacios (los botones de 48 y 40 px del ejemplo son múltiplos de 8).</li>
+<li><b>Proporción áurea (≈1,618):</b> proporción muy usada en arte, fotografía y composición. Sale de un rectángulo que, al recortarle un cuadrado, deja otro rectángulo con la <b>misma proporción</b> entre lados; se relaciona con la sucesión de Fibonacci (el cociente entre términos consecutivos tiende a ese número). Repetida, dibuja la <b>espiral áurea</b>: un patrón <b>asimétrico</b> que da sensación de regularidad y armonía. Las cuadrículas de «regla de tercios»/espiral que muestran algunos móviles al hacer fotos siguen esta idea. (En la transcripción se oye «1,6/1,8»: el valor correcto es 1,618.)</li>
+<li>Equilibra bloques grandes (imágenes, textos, controles) con <b>espacio en blanco y tipografía de más peso</b>, y no satures una zona con muchas llamadas a la acción: <b>si todo llama la atención, nada llama la atención</b>.</li>
+<li>El peso no depende solo del tamaño: también del <b>color, la cantidad de información y la densidad</b>. Un texto pequeño puede pesar mucho si lo metes en una caja con contraste.</li>
+<li>Ejemplo típico de desequilibrio: encabezado cargado (logo, título, menú, botones) y pie vacío. Solución: compensar, por ejemplo poniendo la navegación abajo.</li></ul>
+<p><b>Cómo validar el equilibrio (trucos de clase):</b></p>
+<ol><li><b>Entrecerrar los ojos</b> (o mirar de lejos): solo deberías ver «manchas»; ¿están repartidas o la masa tira hacia un lado?</li>
+<li><b>Descansar la vista:</b> si llevas mucho tiempo mirando lo mismo, apaga la pantalla o aléjate y vuelve a mirar; la primera impresión al volver indica dónde está el peso.</li>
+<li><b>Dar la vuelta (rotar/voltear) la composición</b> (no el monitor): así se ve enseguida si «se cae» hacia un lado. En el ejemplo de clase, una composición con una gran masa de color en la parte inferior parecía estable, pero al girarla «se caía» y todo el peso visual se iba a esa mancha, dejando el texto y los botones casi invisibles.</li>
+<li>La <b>rejilla</b> da estabilidad por simetría: filas y columnas con elementos periódicos y homogéneos aportan equilibrio por sí mismos. Esto vale también para carteles, cuadros y fotografías.</li></ol>
+<h4>2. Contraste</h4>
+<ul><li><b>Para qué sirve:</b> leer, ordenar la información en tu cabeza y dar <b>ritmo</b>. Es como los títulos en negrita en un trabajo o los capítulos de un libro: marcan una pausa y avisan de que empieza otra sección (un texto sin puntos ni párrafos «te ahoga»). Permite ver de un vistazo dónde está lo importante y luego profundizar.</li>
+<li><b>Dimensiones:</b> tamaño, peso, color, <b>forma</b>, textura y <b>posición</b>. Ejemplos de clase: en una cuadrícula de productos, uno con forma de estrella o de etiqueta de oferta destaca por <b>forma</b>; desplazar un elemento unos píxeles de la línea de los demás destaca por <b>posición</b> porque el ojo busca patrones y regularidad y lo ve como señal de alarma.</li>
+<li><b>Regla de clase:</b> está «prohibido» usarlas todas a la vez («menos es más»). Con <b>una o dos</b> (como mucho dos o tres) basta; quien use cuatro tendrá que justificarlo. Lo habitual es <b>peso + tamaño</b> en los títulos; si usas color, quita tamaño o peso. Con textura y posición, cuidado.</li>
+<li><b>Tamaño:</b> el ojo percibe primero lo más grande, así que el tamaño define la jerarquía. Ejemplo: formulario con «Aceptar» y «Cancelar»; quieres que acepte, así que el botón primario es algo mayor (48 px frente a 40 px). Pero si la diferencia es muy visible, puede dar un contraste «negativo»: lo habitual es que ambos botones midan igual y se diferencien con el <b>color</b> (relleno vs. borde).</li>
+<li><b>Peso tipográfico:</b> grosor del trazo dentro de una misma familia (extra fina, fina, regular, media, negrita, extra negrita). Útil para destacar la palabra clave de una definición sin cambiar tamaño ni color. En formularios, etiquetas y placeholders con peso más ligero para no competir con el dato; botones primarios en negrita. Error: abusar.</li>
+<li><b>Color y luminosidad:</b> el contraste de color se juega con <b>tono, saturación y brillo</b>, las tres dimensiones de todo color (se definirán al ver el color). El profesor es daltónico y recomienda «pecar de básico antes que de artista conceptual». Sirve sobre todo para los <b>call to action</b> (CTA): llamadas a que el usuario deje de ser pasivo y actúe (botón «Enviar» con otro color y tamaño que dice «apriétame»). Los neutros se dejan para fondos, elementos secundarios o desactivados, para dar calma.</li></ul>
+<p><b>Errores comunes (con los ejemplos de clase):</b></p>
+<ul><li>Texto/fondo con contraste insuficiente (típico en móvil con pantalla muy brillante; como los textos casi ilegibles del formulario de userinyerface de UT1).</li>
+<li><b>Usar solo el color para transmitir información:</b> un formulario de 20 campos en el que el error solo se marca con rojo; el usuario no encuentra el campo fallido. Solución: añadir <b>texto o icono</b> (además de revisar el daltonismo).</li>
+<li><b>Contraste extremo en todo:</b> cansa la vista y se pierde la jerarquía; si todo destaca, no sé qué es cada parte.</li>
+<li><b>Fondos variables:</b> una foto de fondo que, al hacer scroll, deja el texto sobre una nube blanca e ilegible. Solución: poner una capa/contenedor semitransparente casi gris entre el fondo y el texto.</li>
+<li><b>Modo oscuro:</b> implica hacer <b>dos hojas de estilos</b> (claro y oscuro) y asegurar contraste y legibilidad en ambas. No es simplemente invertir (negativo) los colores: los editores como Visual Studio tienen muchos temas oscuros que no son el negativo del claro. Al programar suele preferirse fondo oscuro porque emite menos luz, pero si el contraste es insuficiente se pierde en esfuerzo de lectura lo que se gana en descanso. Un equipo del curso pasado lo hizo; solo se recomienda si te sobra tiempo.</li></ul>
+<p><b>Consejos del profesor:</b></p>
+<ul><li>Sé <b>simple, eficaz y eficiente</b>; «eficacia sobre florituras». Si el contraste funciona a la 1.ª o 2.ª, bien; a la 3.ª, sigue adelante y no pierdas tres días.</li>
+<li><b>Prueba en escala de grises</b> (en pantalla o imprimiendo en blanco y negro): si aún se distingue la jerarquía, el contraste está bien aplicado; si todo parece igual, solo te apoyabas en el color. Es una buena prueba para justificar decisiones.</li>
+<li>Combina 2–3 dimensiones, mantén el contraste en modo oscuro (si lo tienes) y recuerda que la paleta debe respetar 4,5:1 / 3:1.</li></ul>
+<p><b>Ejemplo del login explicado en clase</b> (tabla de las diapositivas, con matices):</p>
+<ul><li>Título «Iniciar sesión»: más grande, negrita y el color de texto más oscuro → nivel 1 de jerarquía.</li>
+<li>Subtítulo «Introduce tus credenciales»: algo más pequeño y gris más claro → jerarquía secundaria.</li>
+<li>Botón de acción: color saturado, mayor tamaño, bien visible → <b>CTA principal</b>.</li>
+<li>«¿Olvidaste tu contraseña?»: más ligero, menor tamaño y color tenue → acción <b>secundaria</b>, porque lo prioritario es meter el correo. Si el usuario falla, es cuando el enlace puede ganar contraste.</li>
+<li>Fondo blanco amplio con espacios, para dar centralidad y claridad a la composición.</li></ul>
+<h4>3. Jerarquía</h4>
+<ul><li>Jerarquizar = <b>ordenar los elementos por importancia</b>. Lo grande y lo que contrasta se entiende como importante, y de un primer vistazo se capta qué hay; después la curiosidad lleva a profundizar.</li>
+<li><b>Periódico:</b> columnas, titular grande, foto en medio y texto alrededor. En web puede bastar una sola columna con grandes elementos de contraste (fotos, títulos); en apps y webs se añaden barras de navegación o <b>índices</b> (como el de la Wikipedia).</li>
+<li><b>Patrón F:</b> el más habitual en contenido con texto; se prioriza el título y cada «rama horizontal» de la F debe estar muy marcada (cabeceras claras) para que el usuario decida si lee ese apartado o pasa al siguiente.</li>
+<li><b>Patrón Z:</b> típico de <b>portadas y páginas con poco texto</b>, con una zona despejada y una imagen ligera. Se recorre: identidad/logo y primera acción arriba → información breve → segunda llamada a la acción abajo. Ejemplo de clase: portada de Microsoft 365, donde «Probar gratis» tiene más contraste (acción principal, arriba a la derecha, pensada para captar usuarios) que «Iniciar sesión»; y, abajo, un segundo CTA para quien no se convenció a la primera.</li>
+<li><b>Cards repetibles:</b> muy usadas hoy en apps táctiles (Netflix, Disney+…) porque los usuarios ya están acostumbrados a patrones de tarjetas con imagen que invitan a pulsar. Es el patrón de la carta y los favoritos del restaurante. El patrón de columnas queda más para texto/periódicos que para apps.</li></ul>
+<h4>4. Alineación</h4>
+<ul><li>Es el eje que usas para colocar elementos y dar orden. Ya lo trabajaste en Figma con el wireframe (guías, rejillas, alineación y distribución).</li>
+<li>Pasos: definir <b>contenedor</b> (ancho máximo del texto) y <b>columnas</b> (p. ej. 12); mantener la <b>misma alineación en cada sección</b> (puedes cambiarla entre secciones, pero dentro de una sección no); usar paddings de 4/8 y repetir el espaciado «como una canción machacona».</li>
+<li><b>Dientes de sierra</b> (se pregunta en exámenes escritos): bordes irregulares en una columna o grupo de elementos cuyos extremos no coinciden. En texto rompe la lectura de líneas, y se corrige <b>justificando</b> o ajustando; en cajas/botones, reordenándolos, jugando con los tamaños o agrupándolos en columnas para que compartan borde (nunca «uno hacia dentro y otro hacia fuera»). También sirve centrar verticalmente un elemento grande y alinear el resto en columna.</li>
+<li><b>Elementos que flotan sin eje común:</b> no están alineados con nada. En Figma, las guías y rejillas hacen que un elemento «enganche» con el borde izquierdo, derecho o centro de otro.</li>
+<li><b>Diseño responsive:</b> coloca los elementos de forma <b>relativa</b> y no con posiciones absolutas (como cajas dentro de cajas en CSS, con mínimos, máximos y alturas), porque los móviles y tablets tienen distintos anchos y alturas.</li>
+<li><b>Línea base</b> (baseline): la línea imaginaria sobre la que «se apoyan» las letras (algunas letras sobresalen por debajo). Se comprueba que títulos y párrafos «respiran» a múltiplos del espaciado (4/8). Viene de la imprenta antigua (tipos de plomo y medidas en puntos); en pantalla se usan píxeles.</li></ul>
+${tip("Preguntas probables de examen (dichas en clase o muy sugeridas): ¿por qué es importante la jerarquía?, diferencia entre jerarquía y consistencia, qué son los dientes de sierra y cómo se corrigen, cómo comprobar el equilibrio (entrecerrar ojos, voltear, descansar la vista), cuántas dimensiones de contraste usar, por qué no basta el color solo, prueba en escala de grises y por qué el espaciado 4/8.")}`},
+>>>>>>> 635a20b (Clase de interfaces)
 
     u3_prin: { t: "Principios básicos del diseño visual", resumen: "Equilibrio, contraste, jerarquía, alineación y consistencia, con errores típicos y cómo validarlos.",
       html: `
